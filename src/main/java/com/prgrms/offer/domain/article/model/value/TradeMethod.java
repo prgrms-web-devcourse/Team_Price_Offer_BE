@@ -23,13 +23,13 @@ public enum TradeMethod {
         return Arrays.stream(TradeMethod.values())
                 .filter(v -> v.code == code)
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ResponseMessage.PRODUCT_STATUS_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.TRADE_METHOD_NOT_FOUND));
     }
 
     public static TradeMethod of(String name) {
         return Arrays.stream(TradeMethod.values())
                 .filter(v -> v.name.equals(name))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ResponseMessage.PRODUCT_STATUS_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.TRADE_METHOD_NOT_FOUND));
     }
 }
