@@ -11,32 +11,32 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
-public class UserService {
+public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
+    private final MemberRepository MemberRepository;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public MemberService(PasswordEncoder passwordEncoder, MemberRepository MemberRepository) {
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
+        this.MemberRepository = MemberRepository;
     }
 
     @Transactional(readOnly = true)
-    public User login(String principal, String credentials) {
+    public Member login(String principal, String credentials) {
         checkArgument(isNotEmpty(principal), "principal must be provided.");
         checkArgument(isNotEmpty(credentials), "credentials must be provided.");
 
-        User user = userRepository.findByLoginId(principal)
+        Member member = MemberRepository.findByLoginId(principal)
                 .orElseThrow(() -> new UsernameNotFoundException("Could not found user for " + principal));
-        user.checkPassword(passwordEncoder, credentials);
-        return user;
+        member.checkPassword(passwordEncoder, credentials);
+        return member;
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> findByLoginId(String loginId) {
+    public Optional<Member> findByLoginId(String loginId) {
         checkArgument(isNotEmpty(loginId), "loginId must be provided.");
-        return  userRepository.findByLoginId(loginId);
+        return MemberRepository.findByLoginId(loginId);
     }
 
 }

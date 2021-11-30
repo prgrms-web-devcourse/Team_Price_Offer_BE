@@ -3,8 +3,7 @@ import com.prgrms.offer.core.jwt.Jwt;
 import com.prgrms.offer.core.jwt.JwtAuthenticationFilter;
 import com.prgrms.offer.core.jwt.JwtAuthenticationProvider;
 import com.prgrms.offer.core.jwt.JwtConfigure;
-import com.prgrms.offer.domain.member.model.entity.UserService;
-import lombok.NonNull;
+import com.prgrms.offer.domain.member.model.entity.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,8 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAuthenticationProvider jwtAuthenticationProvider() {
         Jwt jwt = getApplicationContext().getBean(Jwt.class);
-        UserService userService = getApplicationContext().getBean(UserService.class);
-        return new JwtAuthenticationProvider(jwt, userService);
+        MemberService memberService = getApplicationContext().getBean(MemberService.class);
+        return new JwtAuthenticationProvider(jwt, memberService);
     }
 
     @Bean
@@ -96,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/api/user/me").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/api/user/me").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 /**

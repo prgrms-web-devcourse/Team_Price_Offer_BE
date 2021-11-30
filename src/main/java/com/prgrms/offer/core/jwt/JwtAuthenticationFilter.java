@@ -1,7 +1,6 @@
 package com.prgrms.offer.core.jwt;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,10 +45,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                     Jwt.Claims claims = verify(token);
                     log.debug("Jwt parse result: {}", claims);
 
-                    String username = claims.username;
+                    String username = claims.loginId;
                     List<GrantedAuthority> authorities = getAuthorities(claims);
 
-                    if (StringUtils.hasText(username) && authorities.size() > 0) {
+                    if (StringUtils.hasText(username)) {
                         JwtAuthenticationToken authentication =
                                 new JwtAuthenticationToken(new JwtAuthentication(token, username), null, authorities);
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

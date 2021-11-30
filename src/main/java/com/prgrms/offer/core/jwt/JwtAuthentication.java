@@ -9,20 +9,20 @@ import org.springframework.util.Assert;
 public class JwtAuthentication {
 
     public final String token;
-    public final String username;
+    public final String loginId;
 
-    public JwtAuthentication(String token, String username) {
+    public JwtAuthentication(String token, String loginId) {
         Assert.hasText(token, "token must not be empty");
-        Assert.hasText(username, "username must not be empty");
+        Assert.hasText(loginId, "loginId must not be empty");
         this.token = token;
-        this.username = username;
+        this.loginId = loginId;
     }
 
     @Override
     public String toString() {
         return "JwtAuthentication{" +
                 "token='" + token + '\'' +
-                ", username='" + username + '\'' +
+                ", loginId='" + loginId + '\'' +
                 '}';
     }
 }

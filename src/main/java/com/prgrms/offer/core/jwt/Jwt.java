@@ -7,8 +7,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -45,7 +43,7 @@ public final class Jwt {
         if (expirySeconds > 0) {
             builder.withExpiresAt(new Date(now.getTime() + expirySeconds * 1_000L));
         }
-        builder.withClaim("username", claims.username);
+        builder.withClaim("loginId", claims.loginId);
         builder.withArrayClaim("roles", claims.roles);
         return builder.sign(algorithm);
     }
@@ -75,7 +73,7 @@ public final class Jwt {
     }
 
     static public class Claims {
-        String username;
+        String loginId;
         String[] roles;
         Date iat;
         Date exp;
@@ -83,9 +81,9 @@ public final class Jwt {
         private Claims() {/*no-op*/}
 
         Claims(DecodedJWT decodedJWT) {
-            Claim username = decodedJWT.getClaim("username");
-            if (!username.isNull())
-                this.username = username.asString();
+            Claim loginId = decodedJWT.getClaim("loginId");
+            if (!loginId.isNull())
+                this.loginId = loginId.asString();
             Claim roles = decodedJWT.getClaim("roles");
             if (!roles.isNull()) {
                 this.roles = roles.asArray(String.class);
@@ -94,16 +92,16 @@ public final class Jwt {
             this.exp = decodedJWT.getExpiresAt();
         }
 
-        public static Claims from(String username, String[] roles) {
+        public static Claims from(String loginId, String[] roles) {
             Claims claims = new Claims();
-            claims.username = username;
+            claims.loginId = loginId;
             claims.roles = roles;
             return claims;
         }
 
         public Map<String, Object> asMap() {
             Map<String, Object> map = new HashMap<>();
-            map.put("username", username);
+            map.put("loginId", loginId);
             map.put("roles", roles);
             map.put("iat", iat());
             map.put("exp", exp());
@@ -128,12 +126,12 @@ public final class Jwt {
 
         @Override
         public String toString() {
-            return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                    .append("username", username)
-                    .append("roles", Arrays.toString(roles))
-                    .append("iat", iat)
-                    .append("exp", exp)
-                    .toString();
+            return "Claims{" +
+                    "loginId='" + loginId + '\'' +
+                    ", roles=" + Arrays.toString(roles) +
+                    ", iat=" + iat +
+                    ", exp=" + exp +
+                    '}';
         }
     }
 

@@ -1,25 +1,25 @@
 package com.prgrms.offer.core.jwt;
 
-import com.prgrms.offer.domain.member.model.entity.User;
-import com.prgrms.offer.domain.member.model.entity.UserService;
+import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.member.model.entity.MemberService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final Jwt jwt;
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public JwtAuthenticationProvider(Jwt jwt, UserService userService) {
+    public JwtAuthenticationProvider(Jwt jwt, MemberService memberService) {
         this.jwt = jwt;
-        this.userService = userService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -38,13 +38,14 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private Authentication processUserAuthentication(String principal, String credential) {
         try {
-            User user = userService.login(principal, credential);
-            List<GrantedAuthority> authorities = user.getGroup().getAuthorities();
-            String token = getToken(user.getLoginId(), authorities);
+            Member member = memberService.login(principal, credential);
+            // 현재 서비스에서는 ROLE이 필요하지 않음
+            List<GrantedAuthority> authorities = Collections.emptyList();
+            String token = getToken(member.getLoginId(), authorities);
             JwtAuthenticationToken authenticated =
-                    new JwtAuthenticationToken(new JwtAuthentication(token, user.getLoginId()),
+                    new JwtAuthenticationToken(new JwtAuthentication(token, member.getLoginId()),
                             null, authorities);
-            authenticated.setDetails(user);
+            authenticated.setDetails(member);
             return authenticated;
         } catch (IllegalArgumentException e) {
             throw new BadCredentialsException(e.getMessage());
