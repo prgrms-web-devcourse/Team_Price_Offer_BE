@@ -1,5 +1,7 @@
 package com.prgrms.offer.domain.article.model.entity;
 
+import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.error.exception.BusinessException;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -77,7 +79,7 @@ public class Article {
 
     public void subtractLikeCount(){
         if(this.likeCount <= 0)
-            throw new RuntimeException();
+            throw new BusinessException(ResponseMessage.INTERNAL_SERVER_ERROR);
 
         this.likeCount--;
     }
