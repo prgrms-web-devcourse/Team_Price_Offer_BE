@@ -35,4 +35,8 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> of(ResponseMessage responseMessage, T data) {
         return new ApiResponse(responseMessage.getStatus().value(), responseMessage.getMessage(), data);
     }
+
+    public static ApiResponse of(ResponseMessage responseMessage) {
+        return new ApiResponse(responseMessage.getStatus().value(), responseMessage.getMessage(), null);
+    }
 }
