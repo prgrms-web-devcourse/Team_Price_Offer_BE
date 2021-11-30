@@ -3,6 +3,7 @@ package com.prgrms.offer.domain.article.controller;
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,16 @@ public class ArticleController {
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(Pageable pageable) {
         Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("카테고리 목록 조회")
+    @GetMapping(value = "/categories")
+    public ResponseEntity<ApiResponse> getAllCategories() {
+        CategoriesResponse response = articleService.findAllCategories();
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

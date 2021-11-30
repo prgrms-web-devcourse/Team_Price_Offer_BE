@@ -1,6 +1,7 @@
 package com.prgrms.offer.domain.article.service;
 
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,9 @@ public class ArticleService {
         Page<Article> postPage = articleRepository.findAll(pageable);
 
         return postPage.map(p -> converter.toArticleBriefViewResponse(p));
+    }
+
+    public CategoriesResponse findAllCategories() {
+        return converter.toCategoriesResponse();
     }
 }
