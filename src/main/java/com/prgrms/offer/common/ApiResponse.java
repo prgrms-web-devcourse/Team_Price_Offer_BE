@@ -2,6 +2,8 @@ package com.prgrms.offer.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Optional;
+
+import com.prgrms.offer.common.message.ResponseMessage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,5 +30,9 @@ public class ApiResponse<T> {
             .orElse(HttpStatus.OK)
             .value();
         return new ApiResponse<>(code, message, data);
+    }
+
+    public static <T> ApiResponse<T> of(ResponseMessage responseMessage, T data) {
+        return new ApiResponse(responseMessage.getStatus().value(), responseMessage.getMessage(), data);
     }
 }
