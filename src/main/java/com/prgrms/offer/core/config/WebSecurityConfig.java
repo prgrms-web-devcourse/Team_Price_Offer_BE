@@ -98,33 +98,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/user/me").authenticated()
                 .anyRequest().permitAll()
                 .and()
-                /**
-                 * formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
-                 */
-                .formLogin()
-                .disable()
-                .csrf()
-                .disable()
-                .headers()
-                .disable()
-                .httpBasic()
-                .disable()
-                .rememberMe()
-                .disable()
-                .logout()
-                .disable()
-                /**
-                 * Session 사용하지 않음
-                 */
+                 // formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
+                .formLogin().disable()
+                .csrf().disable()
+                .headers().disable()
+                .httpBasic().disable()
+                .rememberMe().disable()
+                .logout().disable()
+                 // Session 사용하지 않음
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                /**
-                 * 예외처리 핸들러
-                 */
+                 // 예외처리 핸들러
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
+                // 커스텀 JwtFilter 추가
                 .addFilterAfter(jwtAuthenticationFilter(), SecurityContextPersistenceFilter.class)
         ;
 

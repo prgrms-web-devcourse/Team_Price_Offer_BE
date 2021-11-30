@@ -4,11 +4,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 public class MemberService {
@@ -24,8 +22,8 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member login(String principal, String credentials) {
-        checkArgument(isNotEmpty(principal), "principal must be provided.");
-        checkArgument(isNotEmpty(credentials), "credentials must be provided.");
+        Assert.hasText(principal, "principal must be provided.");
+        Assert.hasText(credentials, "credentials must be provided.");
 
         Member member = MemberRepository.findByLoginId(principal)
                 .orElseThrow(() -> new UsernameNotFoundException("Could not found user for " + principal));
@@ -35,7 +33,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Optional<Member> findByLoginId(String loginId) {
-        checkArgument(isNotEmpty(loginId), "loginId must be provided.");
+        Assert.hasText(loginId, "loginId must be provided.");
         return MemberRepository.findByLoginId(loginId);
     }
 

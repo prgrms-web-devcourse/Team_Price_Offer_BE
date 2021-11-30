@@ -2,7 +2,7 @@ package com.prgrms.offer.core.jwt;
 
 import org.springframework.util.Assert;
 
-/*
+/**
 * 인증 완료 후 인증된 사용자를 표현하기 위한 객체
 * JwtAuthenticationToken의 principal에 해당
 * */

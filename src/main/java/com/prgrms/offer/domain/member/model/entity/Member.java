@@ -1,6 +1,5 @@
 package com.prgrms.offer.domain.member.model.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

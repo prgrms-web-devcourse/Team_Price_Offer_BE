@@ -7,12 +7,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public final class Jwt {
 
     private final String issuer;
@@ -50,26 +52,6 @@ public final class Jwt {
 
     public Claims verify(String token) throws JWTVerificationException {
         return new Claims(jwtVerifier.verify(token));
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public int getExpirySeconds() {
-        return expirySeconds;
-    }
-
-    public Algorithm getAlgorithm() {
-        return algorithm;
-    }
-
-    public JWTVerifier getJwtVerifier() {
-        return jwtVerifier;
     }
 
     static public class Claims {

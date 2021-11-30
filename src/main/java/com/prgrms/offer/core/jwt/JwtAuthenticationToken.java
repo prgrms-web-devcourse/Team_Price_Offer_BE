@@ -10,7 +10,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private final Object principal;
     private String credentials;
 
-    //* 인증 전 호출되는 생성자
+    // 인증 전 호출되는 생성자
     public JwtAuthenticationToken(Object principal, String credentials) {
         super(null);
         super.setAuthenticated(false);
@@ -18,7 +18,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.principal = principal;
         this.credentials = credentials;
     }
-    //* 인증 후 호출되는 생성자
+    // 인증 후 호출되는 생성자
     public JwtAuthenticationToken(Object principal, String credentials,
                                   Collection<? extends GrantedAuthority> authorities) {
         super(authorities);

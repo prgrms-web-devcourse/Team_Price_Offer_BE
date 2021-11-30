@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         this.jwt = jwt;
     }
 
-
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
