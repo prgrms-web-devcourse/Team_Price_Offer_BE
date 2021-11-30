@@ -17,6 +17,7 @@ public enum ResponseMessage {
     // article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),
     PRODUCT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 상품 상태(중고상품, 새상품)가 올바르지 않습니다."),
+    TRADE_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 게시글 상태가 존재하지 않습니다."),
 
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
