@@ -89,7 +89,7 @@ public class Article {
         this.likeCount--;
     }
 
-    public void setMainImageUrl(String mainImageUrl) {
+    public void updateMainImageUrl(String mainImageUrl) {
         this.mainImageUrl = mainImageUrl;
     }
 }
