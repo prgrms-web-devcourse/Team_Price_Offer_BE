@@ -5,7 +5,9 @@ import com.prgrms.offer.core.error.exception.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -47,5 +49,14 @@ public enum Category {
                 .filter(v -> v.name.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ResponseMessage.CATEGORY_NOT_FOUND));
+    }
+
+    public static List<String> getAllCategoryName() {
+        final List<String> result = new ArrayList<>();
+
+        Arrays.stream(Category.values())
+                .map(v -> result.add(v.getName()));
+
+        return result;
     }
 }
