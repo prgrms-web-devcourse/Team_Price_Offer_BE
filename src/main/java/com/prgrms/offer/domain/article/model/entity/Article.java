@@ -26,8 +26,8 @@ public class Article {
     @Column(name = "category_code")
     private Integer categoryCode;
 
-    @Column(name = "status_code")
-    private Integer statusCode;
+    @Column(name = "product_status_code")
+    private Integer productStatusCode;
 
     @Column(name = "trade_area")
     private String tradeArea;
@@ -35,8 +35,11 @@ public class Article {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "tradeMethodCode")
+    @Column(name = "trade_method_code")
     private Integer tradeMethodCode;
+
+    @Column(name = "trade_status_code")
+    private Integer tradeStatusCode;
 
     @Column(name = "main_image_url")
     private String mainImageUrl;
@@ -60,8 +63,8 @@ public class Article {
         modifiedDate = LocalDateTime.now();
     }
 
-    public void updateStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+    public void updateStatusCode(int tradeStatusCode) {
+        this.tradeStatusCode = tradeStatusCode;
     }
 
     public void updateTradeMethodCode(int tradeMethodCode) {
