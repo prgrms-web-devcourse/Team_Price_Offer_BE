@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.article.model.entity;
 
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.domain.member.model.entity.Member;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -15,6 +16,10 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "article_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id", referencedColumnName = "member_id")
+    private Member writer;
 
     @Column(name = "like_count")
     private Integer likeCount = 0;
