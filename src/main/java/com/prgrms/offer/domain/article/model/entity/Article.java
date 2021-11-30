@@ -21,43 +21,43 @@ public class Article {
     @JoinColumn(name = "writer_id", referencedColumnName = "member_id")
     private Member writer;
 
-    @Column(name = "like_count")
+    @Column
     private Integer likeCount = 0;
 
-    @Column(name = "title")
+    @Column
     private String title;
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "category_code")
+    @Column
     private Integer categoryCode;
 
-    @Column(name = "product_status_code")
+    @Column
     private Integer productStatusCode;
 
-    @Column(name = "trade_area")
+    @Column
     private String tradeArea;
 
-    @Column(name = "quantity")
+    @Column
     private Integer quantity;
 
-    @Column(name = "trade_method_code")
+    @Column
     private Integer tradeMethodCode;
 
-    @Column(name = "trade_status_code")
+    @Column
     private Integer tradeStatusCode;
 
-    @Column(name = "main_image_url")
+    @Column
     private String mainImageUrl;
 
-    @Column(name = "price")
+    @Column
     private Integer price;
 
-    @Column(name = "created_date")
+    @Column
     private LocalDateTime createdDate = LocalDateTime.now();
 
-    @Column(name = "modified_date")
+    @Column
     private LocalDateTime modifiedDate;
 
     public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity) {
@@ -66,16 +66,17 @@ public class Article {
         this.categoryCode = categoryCode;
         this.tradeArea = tradeArea;
         this.quantity = quantity;
-
         modifiedDate = LocalDateTime.now();
     }
 
     public void updateStatusCode(int tradeStatusCode) {
         this.tradeStatusCode = tradeStatusCode;
+        modifiedDate = LocalDateTime.now();
     }
 
     public void updateTradeMethodCode(int tradeMethodCode) {
         this.tradeMethodCode = tradeMethodCode;
+        modifiedDate = LocalDateTime.now();
     }
 
     public void addLikeCount(){
@@ -91,5 +92,6 @@ public class Article {
 
     public void updateMainImageUrl(String mainImageUrl) {
         this.mainImageUrl = mainImageUrl;
+        modifiedDate = LocalDateTime.now();
     }
 }
