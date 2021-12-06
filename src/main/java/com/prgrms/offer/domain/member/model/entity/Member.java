@@ -1,9 +1,7 @@
 package com.prgrms.offer.domain.member.model.entity;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
@@ -18,8 +16,10 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique = true)
     private String principal;
+
+    private String provider;
+    private String providerId;
 
     private String password;
     private String nickname;
@@ -34,13 +34,16 @@ public class Member {
     }
 
     @Builder
-    public Member(String principal, String password, String nickname, String address, String profileImage, int appleLevel) {
+    public Member(String principal, String password, String nickname, String address, String profileImage, int appleLevel
+    , String provider, String providerId) {
         this.principal = principal;
         this.password = password;
         this.nickname = nickname;
         this.address = address;
         this.profileImage = profileImage;
         this.appleLevel = appleLevel;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
