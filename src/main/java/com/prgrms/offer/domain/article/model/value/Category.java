@@ -51,11 +51,12 @@ public enum Category {
                 .orElseThrow(() -> new BusinessException(ResponseMessage.CATEGORY_NOT_FOUND));
     }
 
-    public static List<String> getAllCategoryName() {
-        final List<String> result = new ArrayList<>();
+    public static List<Category> getAllCategory() {
+        final List<Category> result = new ArrayList<>();
 
-        Arrays.stream(Category.values())
-                .map(v -> result.add(v.getName()));
+        for(var category : Category.values()){
+            result.add(category);
+        }
 
         return result;
     }

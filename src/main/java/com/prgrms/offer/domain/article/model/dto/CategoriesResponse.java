@@ -1,14 +1,20 @@
 package com.prgrms.offer.domain.article.model.dto;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class CategoriesResponse {
-    private List<String> categories;
+    private List<Categories> categories = new ArrayList<>();
 
-    public CategoriesResponse(List<String> categories) {
-        this.categories = categories;
+    @Getter
+    @RequiredArgsConstructor
+    public static class Categories{
+        private final int code;
+        private final String name;
     }
+
 }

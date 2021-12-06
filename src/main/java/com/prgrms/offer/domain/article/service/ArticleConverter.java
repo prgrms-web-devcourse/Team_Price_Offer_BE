@@ -27,7 +27,14 @@ public class ArticleConverter {
     }
 
     public CategoriesResponse toCategoriesResponse() {
-        return new CategoriesResponse(Category.getAllCategoryName());
+        var response = new CategoriesResponse();
+
+        for(var category : Category.getAllCategory()){
+            var categories = new CategoriesResponse.Categories(category.getCode(), category.getName());
+            response.getCategories().add(categories);
+        }
+
+        return response;
     }
 
     public Article toEntity(ArticleCreateRequest request, Member writer) {
