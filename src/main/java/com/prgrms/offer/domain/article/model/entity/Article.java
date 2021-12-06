@@ -3,13 +3,16 @@ package com.prgrms.offer.domain.article.model.entity;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.member.model.entity.Member;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Article {
 
     @Id
@@ -48,17 +51,20 @@ public class Article {
     @Column
     private Integer tradeStatusCode;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String mainImageUrl;
 
     @Column
     private Integer price;
 
     @Column
+    private Integer viewCount;
+
+    @Column
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @Column
-    private LocalDateTime modifiedDate;
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
     public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity) {
         this.title = title;
@@ -83,6 +89,10 @@ public class Article {
         this.likeCount++;
     }
 
+    public void addViewCount(){
+        this.viewCount++;
+    }
+
     public void subtractLikeCount(){
         if(this.likeCount <= 0)
             throw new BusinessException(ResponseMessage.INTERNAL_SERVER_ERROR);
@@ -94,4 +104,5 @@ public class Article {
         this.mainImageUrl = mainImageUrl;
         modifiedDate = LocalDateTime.now();
     }
+
 }

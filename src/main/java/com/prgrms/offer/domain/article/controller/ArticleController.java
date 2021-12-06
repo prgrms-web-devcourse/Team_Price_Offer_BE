@@ -2,7 +2,9 @@ package com.prgrms.offer.domain.article.controller;
 
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
@@ -13,6 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +30,38 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
 
     private final ArticleService articleService;
+
+    @ApiOperation("이미지 -> URL 변환")
+    @PostMapping(value = "/imageUrls", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> convertToImageUrls(@ModelAttribute List<MultipartFile> images) throws IOException {
+
+        if(images == null || images.isEmpty()){
+            throw new BusinessException(ResponseMessage.INVALID_IMAGE_EXCEPTION);
+        }
+
+        List<String> imageUrls = articleService.getImageUrls(images);
+
+        Map response = new HashMap<String, List<String>>();
+        response.put("imageUrls", imageUrls);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("게시글 등록")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> insert(
+            @Valid @RequestBody ArticleCreateRequest request
+            //TODO: 인증 추가
+    ) {
+
+        var response = articleService.create(request, 1L);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
 
     @ApiOperation("게시글 전체 조회")
     @GetMapping()
