@@ -27,6 +27,10 @@ public enum ResponseMessage {
     // review
     REVIEW_CREATION_FAIL(HttpStatus.BAD_REQUEST, "해당 사용자와 거래한 상품이 없습니다."),
 
+    // s3
+    FILE_CONVERTION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일을 전환하는데 실패했습니다."),
+    INVALID_IMAGE_EXCEPTION(HttpStatus.BAD_REQUEST, "변환할 이미지가 존재하지 않습니다."),
+
     ;
 
     private final HttpStatus status;
