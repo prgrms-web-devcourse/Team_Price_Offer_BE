@@ -4,7 +4,7 @@ import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
@@ -49,14 +49,14 @@ public class ArticleController {
         );
     }
 
-    @ApiOperation("게시글 등록")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("게시글 등록/수정")
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> insert(
-            @Valid @RequestBody ArticleCreateRequest request
+            @Valid @RequestBody ArticleCreateOrUpdateRequest request
             //TODO: 인증 추가
     ) {
 
-        var response = articleService.create(request, 1L);
+        var response = articleService.createOrUpdate(request, 1L);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

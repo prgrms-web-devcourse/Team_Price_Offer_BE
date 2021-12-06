@@ -13,7 +13,9 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ArticleCreateRequest {
+public class ArticleCreateOrUpdateRequest {
+
+    private Long id;
 
     @NotBlank(message = DtoValidationMessage.INVALID_POST_TITLE)
     private String title;

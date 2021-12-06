@@ -1,8 +1,8 @@
 package com.prgrms.offer.domain.article.service;
 
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.value.Category;
@@ -37,7 +37,7 @@ public class ArticleConverter {
         return response;
     }
 
-    public Article toEntity(ArticleCreateRequest request, Member writer) {
+    public Article toEntity(ArticleCreateOrUpdateRequest request, Member writer) {
         return Article.builder()
                 .writer(writer)
                 .likeCount(0)
@@ -55,7 +55,11 @@ public class ArticleConverter {
                 .build();
     }
 
-    public ArticleCreateResponse toArticleCreateResponse(Article articleEntity) {
-        return new ArticleCreateResponse(articleEntity.getId(), articleEntity.getCreatedDate());
+    public ArticleCreateOrUpdateResponse toArticleCreateOrUpdateResponse(Article article) {
+        return new ArticleCreateOrUpdateResponse(
+                article.getId(),
+                article.getCreatedDate(),
+                article.getModifiedDate()
+        );
     }
 }

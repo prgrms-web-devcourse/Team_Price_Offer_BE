@@ -4,8 +4,8 @@ import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
@@ -59,12 +59,22 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateResponse create(ArticleCreateRequest request, Long writerId) {
+    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, Long writerId) {
         Member writer = memberRepository.findById(writerId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Article article = converter.toEntity(request, writer);
-        Article articleEntity = articleRepository.save(article);
+        Article articleEntity = null;
+
+        if(request.getId() == null || request.getId().longValue() == 0) { // 신규 생성일 경우
+            Article article = converter.toEntity(request, writer);
+            articleEntity = articleRepository.save(article);
+        }
+        else{  // 수정일 경우
+            articleEntity = articleRepository.findById(request.getId())
+                    .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+            productImageRepository.deleteAllByArticle(articleEntity);
+        }
 
         if(request.getImageUrls() != null && !request.getImageUrls().isEmpty()){
             for(var imageUrl : request.getImageUrls()) {
@@ -73,6 +83,6 @@ public class ArticleService {
             }
         }
 
-        return converter.toArticleCreateResponse(articleEntity);
+        return converter.toArticleCreateOrUpdateResponse(articleEntity);
     }
 }
