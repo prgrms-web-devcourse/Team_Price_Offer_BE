@@ -3,8 +3,10 @@ package com.prgrms.offer.domain.article.model.entity;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.member.model.entity.Member;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article {
 
     @Id
@@ -103,4 +106,5 @@ public class Article {
         this.mainImageUrl = mainImageUrl;
         modifiedDate = LocalDateTime.now();
     }
+    
 }
