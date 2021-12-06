@@ -1,10 +1,16 @@
 package com.prgrms.offer.domain.article.service;
 
+import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
+import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
+import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.member.model.entity.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final MemberRepository memberRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -46,5 +53,16 @@ public class ArticleService {
         }
 
         return imageUrls;
+    }
+
+    @Transactional
+    public ArticleCreateResponse create(ArticleCreateRequest request, Long writerId) {
+        Member writer = memberRepository.findById(writerId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        Article article = converter.toEntity(request, writer);
+        Article articleEntity = articleRepository.save(article);
+
+        return converter.toArticleCreateResponse(articleEntity);
     }
 }
