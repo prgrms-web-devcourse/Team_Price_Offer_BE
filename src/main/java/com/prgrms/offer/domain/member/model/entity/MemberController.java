@@ -28,7 +28,7 @@ public class MemberController {
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<MemberCreateResponse>> createUser(@RequestBody MemberCreateRequest request) {
         Member member = memberService.createMember(request);
-        MemberCreateResponse response = getMemberResponse(member);
+        MemberCreateResponse response = toMemberCreateResponse(member);
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
         );
@@ -41,23 +41,13 @@ public class MemberController {
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         Member member = (Member) resultToken.getDetails();
 
-        MemberResponse.MemberDto memberDto = MemberResponse.MemberDto.builder()
-                .id(member.getId())
-                .email(member.getPrincipal())
-                .token(authentication.token)
-                .nickname(member.getNickname())
-                .appleLevel(member.getAppleLevel())
-                .address(member.getAddress())
-                .profileImage(member.getProfileImage())
-                .build();
-
-        MemberResponse response = new MemberResponse(memberDto);
+        MemberResponse response = toMemberResponse(member, authentication.token);
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
         );
     }
 
-    private MemberCreateResponse getMemberResponse(Member member) {
+    private MemberCreateResponse toMemberCreateResponse(Member member) {
         MemberCreateResponse.MemberDto memberDto = MemberCreateResponse.MemberDto.builder()
                 .id(member.getId())
                 .address(member.getAddress())
@@ -65,6 +55,19 @@ public class MemberController {
                 .nickname(member.getNickname())
                 .build();
         return new MemberCreateResponse(memberDto);
+    }
+
+    private MemberResponse toMemberResponse(Member member, String token) {
+        MemberResponse.MemberDto memberDto = MemberResponse.MemberDto.builder()
+                .id(member.getId())
+                .email(member.getPrincipal())
+                .token(token)
+                .nickname(member.getNickname())
+                .appleLevel(member.getAppleLevel())
+                .address(member.getAddress())
+                .profileImage(member.getProfileImage())
+                .build();
+        return new MemberResponse(memberDto);
     }
 
     @GetMapping(path = "/user/me")
