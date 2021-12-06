@@ -27,7 +27,7 @@ create table article (
 )
 
 -- product_image schema
-DROP TABLE IF EXISTS article CASCADE;
+DROP TABLE IF EXISTS product_image CASCADE;
 
 create table product_image (
                                product_image_id bigint not null,
@@ -35,3 +35,4 @@ create table product_image (
                                article_id bigint,
                                primary key (product_image_id)
 )
+

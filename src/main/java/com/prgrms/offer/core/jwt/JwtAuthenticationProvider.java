@@ -41,9 +41,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             Member member = memberService.login(principal, credential);
             // 현재 서비스에서는 ROLE이 필요하지 않음
             List<GrantedAuthority> authorities = Collections.emptyList();
-            String token = getToken(member.getLoginId(), authorities);
+            String token = getToken(member.getPrincipal(), authorities);
             JwtAuthenticationToken authenticated =
-                    new JwtAuthenticationToken(new JwtAuthentication(token, member.getLoginId()),
+                    new JwtAuthenticationToken(new JwtAuthentication(token, member.getPrincipal()),
                             null, authorities);
             authenticated.setDetails(member);
             return authenticated;

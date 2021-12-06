@@ -23,6 +23,7 @@ public enum ResponseMessage {
 
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "해당 사용자가 이미 존재합니다."),
 
     // review
     REVIEW_CREATION_FAIL(HttpStatus.BAD_REQUEST, "해당 사용자와 거래한 상품이 없습니다."),
