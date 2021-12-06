@@ -3,6 +3,8 @@ import com.prgrms.offer.core.jwt.Jwt;
 import com.prgrms.offer.core.jwt.JwtAuthenticationFilter;
 import com.prgrms.offer.core.jwt.JwtAuthenticationProvider;
 import com.prgrms.offer.core.jwt.JwtConfigure;
+import com.prgrms.offer.core.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.prgrms.offer.core.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.prgrms.offer.domain.member.model.entity.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
@@ -29,9 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtConfigure jwtConfigure;
+    private final OAuth2AuthorizedClientRepository authorizedClientRepository;
 
-    public WebSecurityConfig(JwtConfigure jwtConfigure) {
+    public WebSecurityConfig(JwtConfigure jwtConfigure, OAuth2AuthorizedClientRepository authorizedClientRepository) {
         this.jwtConfigure = jwtConfigure;
+        this.authorizedClientRepository = authorizedClientRepository;
     }
 
     @Bean
@@ -91,6 +98,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/assets/**", "/h2-console/**");
     }
 
+    @Bean
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler(Jwt jwt, MemberService memberService) {
+        return new OAuth2AuthenticationSuccessHandler(jwt, memberService);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -108,6 +125,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                  // Session 사용하지 않음
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                // OAuth2 설정
+                .oauth2Login()
+                .authorizationEndpoint()
+                .authorizationRequestRepository(authorizationRequestRepository())
+                .and()
+                .successHandler(getApplicationContext().getBean(OAuth2AuthenticationSuccessHandler.class))
+                .authorizedClientRepository(authorizedClientRepository)
                 .and()
                  // 예외처리 핸들러
                 .exceptionHandling()

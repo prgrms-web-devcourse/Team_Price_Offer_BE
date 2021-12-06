@@ -1,4 +1,4 @@
-package com.prgrms.offer.domain.member.model.entity;
+package com.prgrms.offer.domain.member.model.dto;
 
 import lombok.Getter;
 
