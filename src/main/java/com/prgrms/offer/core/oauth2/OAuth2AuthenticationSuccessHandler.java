@@ -1,10 +1,18 @@
 package com.prgrms.offer.core.oauth2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prgrms.offer.common.ApiResponse;
+import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.jwt.Jwt;
+import com.prgrms.offer.domain.member.model.dto.MemberResponse;
 import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.member.service.MemberConverter;
 import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
@@ -19,19 +27,37 @@ import java.io.IOException;
 @Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-
     private final Jwt jwt;
-
     private final MemberService memberService;
+    private final MemberConverter memberConverter;
 
-    public OAuth2AuthenticationSuccessHandler(Jwt jwt, MemberService memberService) {
+    public OAuth2AuthenticationSuccessHandler(Jwt jwt, MemberService memberService, MemberConverter memberConverter) {
         this.jwt = jwt;
         this.memberService = memberService;
+        this.memberConverter = memberConverter;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-        // TODO: 2021/12/06 멤버 응답 반환 로직 작성
+        OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
+        OAuth2User principal = oauth2Token.getPrincipal();
+        String registrationId = oauth2Token.getAuthorizedClientRegistrationId();
+
+        Member member = processUserOAuth2UserJoin(principal, registrationId);
+        String token = generateToken(member);
+
+        MemberResponse memberResponse = memberConverter.toMemberResponse(member, token);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.OK.value());
+        response.setCharacterEncoding("utf-8");
+
+        response.getWriter()
+                .write(
+                        objectMapper.writeValueAsString(ApiResponse.of(ResponseMessage.SUCCESS, memberResponse))
+                );
+
     }
 
     private Member processUserOAuth2UserJoin(OAuth2User oAuth2User, String registrationId) {

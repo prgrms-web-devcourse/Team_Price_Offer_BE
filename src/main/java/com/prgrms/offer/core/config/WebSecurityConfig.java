@@ -5,6 +5,7 @@ import com.prgrms.offer.core.jwt.JwtAuthenticationProvider;
 import com.prgrms.offer.core.jwt.JwtConfigure;
 import com.prgrms.offer.core.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.prgrms.offer.core.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.prgrms.offer.domain.member.service.MemberConverter;
 import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -104,8 +105,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler(Jwt jwt, MemberService memberService) {
-        return new OAuth2AuthenticationSuccessHandler(jwt, memberService);
+    public OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler(
+            Jwt jwt,
+            MemberService memberService,
+            MemberConverter memberConverter) {
+
+        return new OAuth2AuthenticationSuccessHandler(jwt, memberService, memberConverter);
     }
 
     @Override
