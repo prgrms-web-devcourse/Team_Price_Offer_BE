@@ -1,9 +1,6 @@
 package com.prgrms.offer.domain.article.model.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +8,7 @@ import javax.persistence.*;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ProductImage {
 
     @Id
@@ -23,5 +21,10 @@ public class ProductImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
+
+    public ProductImage(String imageUrl, Article article){
+        this.imageUrl = imageUrl;
+        this.article = article;
+    }
 
 }

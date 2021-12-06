@@ -8,7 +8,9 @@ import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
 import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
+import com.prgrms.offer.domain.article.model.entity.ProductImage;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
+import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.model.entity.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import java.util.List;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
+    private final ProductImageRepository productImageRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -62,6 +65,13 @@ public class ArticleService {
 
         Article article = converter.toEntity(request, writer);
         Article articleEntity = articleRepository.save(article);
+
+        if(request.getImageUrls() != null && !request.getImageUrls().isEmpty()){
+            for(var imageUrl : request.getImageUrls()) {
+                var productImage = new ProductImage(imageUrl, articleEntity);
+                productImageRepository.save(productImage);
+            }
+        }
 
         return converter.toArticleCreateResponse(articleEntity);
     }
