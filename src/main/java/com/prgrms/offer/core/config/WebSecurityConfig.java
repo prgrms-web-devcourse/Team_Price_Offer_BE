@@ -5,7 +5,7 @@ import com.prgrms.offer.core.jwt.JwtAuthenticationProvider;
 import com.prgrms.offer.core.jwt.JwtConfigure;
 import com.prgrms.offer.core.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.prgrms.offer.core.oauth2.OAuth2AuthenticationSuccessHandler;
-import com.prgrms.offer.domain.member.model.entity.MemberService;
+import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -141,7 +141,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 커스텀 JwtFilter 추가
                 .addFilterAfter(jwtAuthenticationFilter(), SecurityContextPersistenceFilter.class)
         ;
-
     }
 
 }

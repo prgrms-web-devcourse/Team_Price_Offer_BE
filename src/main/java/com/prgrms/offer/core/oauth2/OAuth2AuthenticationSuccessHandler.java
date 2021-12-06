@@ -1,13 +1,10 @@
 package com.prgrms.offer.core.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prgrms.offer.core.jwt.Jwt;
-import com.prgrms.offer.domain.member.model.dto.MemberResponse;
 import com.prgrms.offer.domain.member.model.entity.Member;
-import com.prgrms.offer.domain.member.model.entity.MemberService;
+import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
@@ -15,7 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /*
 * 인증이 완료되었을 때 핸들러

@@ -1,7 +1,7 @@
 package com.prgrms.offer.core.jwt;
 
 import com.prgrms.offer.domain.member.model.entity.Member;
-import com.prgrms.offer.domain.member.model.entity.MemberService;
+import com.prgrms.offer.domain.member.service.MemberService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;

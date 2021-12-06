@@ -1,9 +1,18 @@
-package com.prgrms.offer.domain.member.model.entity;
+package com.prgrms.offer.domain.member.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.core.jwt.JwtAuthentication;
+import com.prgrms.offer.core.jwt.JwtAuthenticationToken;
+import com.prgrms.offer.domain.member.model.dto.EmailLoginRequest;
 import com.prgrms.offer.domain.member.model.dto.MemberCreateRequest;
+import com.prgrms.offer.domain.member.model.dto.MemberCreateResponse;
+import com.prgrms.offer.domain.member.model.dto.MemberResponse;
+import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -19,12 +28,16 @@ import java.util.Optional;
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
-
     private final MemberRepository memberRepository;
+    private final MemberConverter memberConverter;
+    private final AuthenticationManager authenticationManager;
 
-    public MemberService(PasswordEncoder passwordEncoder, MemberRepository memberRepository) {
+
+    public MemberService(PasswordEncoder passwordEncoder, MemberRepository memberRepository, MemberConverter memberConverter, AuthenticationManager authenticationManager) {
         this.passwordEncoder = passwordEncoder;
         this.memberRepository = memberRepository;
+        this.memberConverter = memberConverter;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional(readOnly = true)
@@ -36,6 +49,15 @@ public class MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException("Could not found user for " + principal));
         member.checkPassword(passwordEncoder, credentials);
         return member;
+    }
+
+
+    public MemberResponse login(EmailLoginRequest request) {
+        JwtAuthenticationToken token = new JwtAuthenticationToken(request.getEmail(), request.getPassword());
+        Authentication resultToken = authenticationManager.authenticate(token);
+        JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
+        Member member = (Member) resultToken.getDetails();
+        return memberConverter.toMemberResponse(member, authentication.token);
     }
 
     @Transactional(readOnly = true)
@@ -50,22 +72,15 @@ public class MemberService {
         return memberRepository.findByPrincipal(principal);
     }
 
-    public Member createMember(MemberCreateRequest request) {
+    public MemberCreateResponse createMember(MemberCreateRequest request) {
 
         Optional<Member> optionalMember = memberRepository.findByPrincipal(request.getEmail());
         if (optionalMember.isPresent()) {
             throw new BusinessException(ResponseMessage.MEMBER_ALREADY_EXIST);
         }
-
-
-        Member member = Member.builder()
-                .principal(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .address(request.getAddress())
-                .nickname(request.getNickname())
-                .build();
-
-        return memberRepository.save(member);
+        Member member = memberConverter.toEntity(request, passwordEncoder);
+        Member savedMember = memberRepository.save(member);
+        return memberConverter.toMemberCreateResponse(savedMember);
     }
 
     public Member join(OAuth2User oAuth2User, String registrationId) {
