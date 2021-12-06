@@ -48,17 +48,20 @@ public class Article {
     @Column
     private Integer tradeStatusCode;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String mainImageUrl;
 
     @Column
     private Integer price;
 
     @Column
+    private Integer viewCount;
+
+    @Column
     private LocalDateTime createdDate = LocalDateTime.now();
 
     @Column
-    private LocalDateTime modifiedDate;
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
     public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity) {
         this.title = title;
@@ -81,6 +84,10 @@ public class Article {
 
     public void addLikeCount(){
         this.likeCount++;
+    }
+
+    public void addViewCount(){
+        this.viewCount++;
     }
 
     public void subtractLikeCount(){
