@@ -9,6 +9,7 @@ import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
+import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
@@ -84,5 +85,17 @@ public class ArticleService {
         }
 
         return converter.toArticleCreateOrUpdateResponse(articleEntity);
+    }
+
+    @Transactional
+    public void updateTradeStatus(Long articleId, int code, Long writerId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+//        if(!article.validateWriter(writerId)){   // TODO: 인증 과정 구현 후 예정
+//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//        }
+
+        article.updateTradeStatusCode(TradeStatus.of(code).getCode());
     }
 }

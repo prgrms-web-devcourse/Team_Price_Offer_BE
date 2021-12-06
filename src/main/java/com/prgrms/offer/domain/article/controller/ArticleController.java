@@ -6,6 +6,7 @@ import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
 import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.TradeStatusUpdateRequest;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,6 +61,21 @@ public class ArticleController {
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("판매 상태 변경")
+    @PatchMapping(value = "/{articleId}/tradeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> updateTradeStatus(
+            @PathVariable Long articleId,
+            @Valid @RequestBody TradeStatusUpdateRequest request
+            //TODO: 인증 추가
+    ) {
+
+        articleService.updateTradeStatus(articleId, request.getCode(),1L);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS)
         );
     }
 

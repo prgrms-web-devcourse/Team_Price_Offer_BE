@@ -75,7 +75,7 @@ public class Article {
         modifiedDate = LocalDateTime.now();
     }
 
-    public void updateStatusCode(int tradeStatusCode) {
+    public void updateTradeStatusCode(int tradeStatusCode) {
         this.tradeStatusCode = tradeStatusCode;
         modifiedDate = LocalDateTime.now();
     }
@@ -103,6 +103,10 @@ public class Article {
     public void updateMainImageUrl(String mainImageUrl) {
         this.mainImageUrl = mainImageUrl;
         modifiedDate = LocalDateTime.now();
+    }
+
+    public boolean validateWriter(Long writerId){
+        return this.writer.getId().longValue() == writerId.longValue() ? true : false;
     }
 
 }
