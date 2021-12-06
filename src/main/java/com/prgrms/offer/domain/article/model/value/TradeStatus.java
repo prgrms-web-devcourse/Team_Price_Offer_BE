@@ -11,7 +11,8 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum TradeStatus {
     RESERVING("예약중", 2),
-    COMPLETED("거래완료", 4),
+    ON_SALE("판매중", 4),
+    COMPLETED("거래완료", 8),
 
     ;
 
