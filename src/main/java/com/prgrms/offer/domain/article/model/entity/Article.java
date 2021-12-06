@@ -106,5 +106,5 @@ public class Article {
         this.mainImageUrl = mainImageUrl;
         modifiedDate = LocalDateTime.now();
     }
-    
+
 }
