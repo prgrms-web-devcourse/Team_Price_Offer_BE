@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class MemberController {
 
     private final MemberService memberService;
