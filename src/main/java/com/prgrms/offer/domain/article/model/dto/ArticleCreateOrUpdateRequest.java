@@ -17,31 +17,30 @@ public class ArticleCreateOrUpdateRequest {
 
     private Long id;
 
-    @NotBlank(message = DtoValidationMessage.INVALID_POST_TITLE)
+    @NotBlank(message = DtoValidationMessage.INVALID_TITLE_LENGTH)
     private String title;
 
     private List<String> imageUrls;
 
-    @Min(value = 1)
+    @Min(value = 1, message = DtoValidationMessage.INVALID_CODE)
     private int categoryCode;
 
     @NotBlank(message = DtoValidationMessage.INVALID_TRADE_AREA)
     private String tradeArea;
 
-    @Min(value = 1)
+    @Min(value = 1, message = DtoValidationMessage.INVALID_CODE)
     private int productStatusCode;
 
-    @Min(value = 1)
+    @Min(value = 1, message = DtoValidationMessage.INVALID_CODE)
     private int tradeMethodCode;
 
-    @Min(value = 1)
+    @Min(value = 1, message = DtoValidationMessage.INVALID_CODE)
     private int quantity;
 
-    @Min(value = 1)
+    @Min(value = 1, message = DtoValidationMessage.INVALID_PRICE)
     private int price;
 
-    @Size(min = 5, max = 4000)
-    @NotBlank(message = DtoValidationMessage.INVALID_TRADE_AREA)
+    @Size(min = 1, max = 4000, message = DtoValidationMessage.INVALID_CONTENT_LENGTH)
     private String content;
 
 }
