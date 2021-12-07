@@ -71,6 +71,10 @@ public class ArticleService {
             articleEntity = articleRepository.findById(request.getId())
                     .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
+//            if(!articleEntity.validateWriter(writerId)){    //TODO: 인증 부분 구현 후 주석 해제
+//                throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//            }
+
             articleEntity.updateInfo(
                     request.getTitle(),
                     request.getContent(),
@@ -119,5 +123,17 @@ public class ArticleService {
         }
 
         return response;
+    }
+
+    @Transactional
+    public void deleteOne(Long articleId, Long writerId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+//        if(!article.validateWriter(writerId)){   //TODO: 인증 부분 구현 후 주석 해제
+//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//        }
+
+        articleRepository.delete(article);
     }
 }

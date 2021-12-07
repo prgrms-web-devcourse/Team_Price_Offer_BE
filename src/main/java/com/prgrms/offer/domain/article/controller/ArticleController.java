@@ -108,4 +108,17 @@ public class ArticleController {
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
         );
     }
+
+    @ApiOperation("게시글 삭제")
+    @DeleteMapping(value = "/{articleId}")
+    public ResponseEntity<ApiResponse> deleteOne(
+            @PathVariable Long articleId
+            //TODO: 인증 필요
+    ) {
+        articleService.deleteOne(articleId, 1L);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS)
+        );
+    }
 }
