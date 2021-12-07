@@ -29,7 +29,7 @@ public class ArticleConverter {
         var response = new CategoriesResponse();
 
         for(var category : Category.getAllCategory()){
-            var categories = new CategoriesResponse.Categories(category.getCode(), category.getName());
+            var categories = new CodeAndName(category.getCode(), category.getName());
             response.getCategories().add(categories);
         }
 
@@ -82,20 +82,20 @@ public class ArticleConverter {
                 .title(article.getTitle())
                 .content(article.getContent())
                 .category(
-                        new ArticleDetailResponse.CodeAndName(
+                        new CodeAndName(
                                 Category.of(article.getCategoryCode()).getCode(),
                                 Category.of(article.getCategoryCode()).getName()
                         )
                 )
                 .tradeStatus(
-                        new ArticleDetailResponse.CodeAndName(
+                        new CodeAndName(
                                 TradeStatus.of(article.getTradeStatusCode()).getCode(),
                                 TradeStatus.of(article.getTradeStatusCode()).getName()
                         )
                 )
                 .tradeArea(article.getTradeArea())
                 .tradeMethod(
-                        new ArticleDetailResponse.CodeAndName(
+                        new CodeAndName(
                                 TradeMethod.of(article.getTradeMethodCode()).getCode(),
                                 TradeMethod.of(article.getTradeMethodCode()).getName()
                         )

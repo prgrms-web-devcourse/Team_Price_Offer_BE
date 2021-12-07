@@ -75,12 +75,4 @@ public class ArticleDetailResponse {
         private String address;
     }
 
-    @Getter
-    @AllArgsConstructor
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    public static class CodeAndName {
-        private int code;
-
-        private String name;
-    }
 }
