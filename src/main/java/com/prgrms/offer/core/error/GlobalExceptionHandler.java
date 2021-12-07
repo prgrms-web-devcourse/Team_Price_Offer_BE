@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     /**
-     * @Valid 에서 검증 실패시 예외 처리
+     * validation 실패 시, 예외처리
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse handleMethodValidException(MethodArgumentNotValidException exception){
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * @Validated 에서 검증 실패시 예외 처
+     * 데이터 바인딩 실패 시, 예외처리
      */
     @ExceptionHandler(BindException.class)
     public ApiResponse handleBindException(BindException exception){
