@@ -120,4 +120,12 @@ public class MemberService {
     public Optional<Member> findByProviderId(String kakaoId) {
         return memberRepository.findByProviderId(kakaoId);
     }
+
+    public boolean isDuplicateEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByPrincipal(email);
+        if (optionalMember.isPresent()) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -26,9 +26,17 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/members")
+    public ResponseEntity<ApiResponse> checkDuplicateEmail(@RequestParam String email) {
+        boolean isDuplicateEmail = memberService.isDuplicateEmail(email);
+        if (isDuplicateEmail) {
+            return ResponseEntity.ok(ApiResponse.of(ResponseMessage.DUPLICATE_EMAIL));
+        }
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.VALID_EMAIL));
+    }
 
     @PostMapping("/members")
-    public ResponseEntity<ApiResponse<MemberCreateResponse>> createUser(@RequestBody @Valid MemberCreateRequest request, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse> createUser(@RequestBody @Valid MemberCreateRequest request, BindingResult bindingResult) {
         MemberCreateResponse response = memberService.createMember(request);
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -36,7 +44,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/login")
-    public ResponseEntity<ApiResponse<MemberResponse>> emailLogin(@RequestBody @Valid EmailLoginRequest request) {
+    public ResponseEntity<ApiResponse> emailLogin(@RequestBody @Valid EmailLoginRequest request) {
         MemberResponse response = memberService.login(request);
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
