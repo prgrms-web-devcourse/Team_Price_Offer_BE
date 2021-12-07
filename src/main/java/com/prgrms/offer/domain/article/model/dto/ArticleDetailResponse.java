@@ -1,52 +1,66 @@
 package com.prgrms.offer.domain.article.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ArticleDetailResponse {
-    private Long id;
+    private ArticleDto article;
 
-    private AuthorDetail author;
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ArticleDto{
 
-    private String title;
+        private Long id;
 
-    private String content;
+        private AuthorDetail author;
 
-    private CodeAndName category;
+        private String title;
 
-    private CodeAndName tradeStatus;
+        private String content;
 
-    private String tradeArea;
+        private CodeAndName category;
 
-    private CodeAndName tradeMethod;
+        private CodeAndName tradeStatus;
 
-    private int quantity;
+        private String tradeArea;
 
-    private int price;
+        private CodeAndName tradeMethod;
 
-    private String mainImageUrl;
+        private int quantity;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdDate;
+        private int price;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime modifiedDate;
+        private String mainImageUrl;
 
-    private int likeCounts;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime createdDate;
 
-    private boolean liked;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime modifiedDate;
 
-    private int viewCount;
+        private int likeCounts;
+
+        private boolean liked;
+
+        private int viewCount;
+
+    }
 
     @Builder
     @AllArgsConstructor
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class AuthorDetail{
         private Long id;
 
@@ -63,6 +77,7 @@ public class ArticleDetailResponse {
 
     @Getter
     @AllArgsConstructor
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class CodeAndName {
         private int code;
 

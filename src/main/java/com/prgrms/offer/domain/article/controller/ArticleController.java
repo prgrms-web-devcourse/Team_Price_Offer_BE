@@ -89,10 +89,7 @@ public class ArticleController {
     @ApiOperation("게시글 단건 조회")
     @GetMapping(value = "/{articleId}")
     public ResponseEntity<ApiResponse> getOne(@PathVariable Long articleId) {
-        var result = articleService.findById(articleId);
-
-        Map response = new HashMap<String, ArticleDetailResponse>();
-        response.put("article", result);
+        var response = articleService.findById(articleId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

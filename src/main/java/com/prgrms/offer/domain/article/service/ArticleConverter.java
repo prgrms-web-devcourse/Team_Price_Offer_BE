@@ -67,9 +67,9 @@ public class ArticleConverter {
     public ArticleDetailResponse toArticleDetailResponse(Article article) {
         Member writer = article.getWriter();
 
-        return ArticleDetailResponse.builder()
+        var articleDto = ArticleDetailResponse.ArticleDto.builder()
                 .id(article.getId())
-                .author(  // TODO: jwt 필터에서 예외 발생
+                .author(
                         ArticleDetailResponse.AuthorDetail.builder()
                         .id(writer.getId())
                         .email(writer.getAddress())
@@ -109,5 +109,7 @@ public class ArticleConverter {
                 .liked(false) //TODO: 인증 인가 추가, likepost 도메인 구현 후 추가
                 .viewCount(article.getViewCount())
                 .build();
+
+        return new ArticleDetailResponse(articleDto);
     }
 }
