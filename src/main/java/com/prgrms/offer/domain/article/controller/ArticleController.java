@@ -3,10 +3,7 @@ package com.prgrms.offer.domain.article.controller;
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
-import com.prgrms.offer.domain.article.model.dto.TradeStatusUpdateRequest;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,7 +48,7 @@ public class ArticleController {
     }
 
     @ApiOperation("게시글 등록/수정")
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     public ResponseEntity<ApiResponse> putArticle(
             @Valid @RequestBody ArticleCreateOrUpdateRequest request
             //TODO: 인증 추가
@@ -83,6 +80,19 @@ public class ArticleController {
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(Pageable pageable) {
         Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("게시글 단건 조회")
+    @GetMapping(value = "/{articleId}")
+    public ResponseEntity<ApiResponse> getOne(@PathVariable Long articleId) {
+        var result = articleService.findById(articleId);
+
+        Map response = new HashMap<String, ArticleDetailResponse>();
+        response.put("article", result);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

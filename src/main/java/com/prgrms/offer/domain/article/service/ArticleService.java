@@ -136,4 +136,12 @@ public class ArticleService {
 
         articleRepository.delete(article);
     }
+
+    @Transactional(readOnly = true)
+    public ArticleDetailResponse findById(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+        return converter.toArticleDetailResponse(article);
+    }
 }
