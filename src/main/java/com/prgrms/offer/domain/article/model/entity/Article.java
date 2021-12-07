@@ -61,10 +61,10 @@ public class Article {
     private Integer viewCount;
 
     @Column
-    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime createdDate;
 
     @Column
-    private LocalDateTime modifiedDate = LocalDateTime.now();
+    private LocalDateTime modifiedDate;
 
     public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity) {
         this.title = title;
