@@ -3,9 +3,7 @@ package com.prgrms.offer.domain.article.controller;
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,17 +47,32 @@ public class ArticleController {
         );
     }
 
-    @ApiOperation("게시글 등록")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse> insert(
-            @Valid @RequestBody ArticleCreateRequest request
+    @ApiOperation("게시글 등록/수정")
+    @PutMapping()
+    public ResponseEntity<ApiResponse> putArticle(
+            @Valid @RequestBody ArticleCreateOrUpdateRequest request
             //TODO: 인증 추가
     ) {
 
-        var response = articleService.create(request, 1L);
+        ArticleCreateOrUpdateResponse response = articleService.createOrUpdate(request, 1L);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("판매 상태 변경")
+    @PatchMapping(value = "/{articleId}/tradeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> updateTradeStatus(
+            @PathVariable Long articleId,
+            @Valid @RequestBody TradeStatusUpdateRequest request
+            //TODO: 인증 추가
+    ) {
+
+        articleService.updateTradeStatus(articleId, request.getCode(),1L);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS)
         );
     }
 
@@ -73,6 +86,26 @@ public class ArticleController {
         );
     }
 
+    @ApiOperation("게시글 단건 조회")
+    @GetMapping(value = "/{articleId}")
+    public ResponseEntity<ApiResponse> getOne(@PathVariable Long articleId) {
+        ArticleDetailResponse response = articleService.findById(articleId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("단건 게시글의 이미지 전체 조회")
+    @GetMapping(value = "/{articleId}/imageUrls")
+    public ResponseEntity<ApiResponse> getAllImageUrls(@PathVariable Long articleId) {
+        ProductImageUrlsResponse response = articleService.findAllImageUrls(articleId);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
     @ApiOperation("카테고리 목록 조회")
     @GetMapping(value = "/categories")
     public ResponseEntity<ApiResponse> getAllCategories() {
@@ -80,6 +113,19 @@ public class ArticleController {
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("게시글 삭제")
+    @DeleteMapping(value = "/{articleId}")
+    public ResponseEntity<ApiResponse> deleteOne(
+            @PathVariable Long articleId
+            //TODO: 인증 필요
+    ) {
+        articleService.deleteOne(articleId, 1L);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS)
         );
     }
 }
