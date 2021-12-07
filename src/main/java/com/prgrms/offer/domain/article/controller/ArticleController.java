@@ -52,7 +52,7 @@ public class ArticleController {
 
     @ApiOperation("게시글 등록/수정")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse> insert(
+    public ResponseEntity<ApiResponse> putArticle(
             @Valid @RequestBody ArticleCreateOrUpdateRequest request
             //TODO: 인증 추가
     ) {
@@ -83,6 +83,16 @@ public class ArticleController {
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(Pageable pageable) {
         Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    @ApiOperation("단건 게시글의 이미지 전체 조회")
+    @GetMapping(value = "/{articleId}/imageUrls")
+    public ResponseEntity<ApiResponse> getAllImageUrls(@PathVariable Long articleId) {
+        var response = articleService.findAllImageUrls(articleId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

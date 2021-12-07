@@ -3,10 +3,7 @@ package com.prgrms.offer.domain.article.service;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
@@ -74,6 +71,15 @@ public class ArticleService {
             articleEntity = articleRepository.findById(request.getId())
                     .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
+            articleEntity.updateInfo(
+                    request.getTitle(),
+                    request.getContent(),
+                    request.getCategoryCode(),
+                    request.getTradeArea(),
+                    request.getQuantity()
+            );
+            articleEntity.updateMainImageUrl(request.getImageUrls().get(0));
+
             productImageRepository.deleteAllByArticle(articleEntity);
         }
 
@@ -97,5 +103,21 @@ public class ArticleService {
 //        }
 
         article.updateTradeStatusCode(TradeStatus.of(code).getCode());
+    }
+
+    @Transactional(readOnly = true)
+    public ProductImageUrlsResponse findAllImageUrls(Long articleId) {
+        if(!articleRepository.existsById(articleId)){
+            throw new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND);
+        }
+
+        List<ProductImage> productImages = productImageRepository.findAllByArticleId(articleId);
+
+        var response = new ProductImageUrlsResponse();
+        for(var productImage : productImages){
+            response.getImageUrls().add(productImage.getImageUrl());
+        }
+
+        return response;
     }
 }

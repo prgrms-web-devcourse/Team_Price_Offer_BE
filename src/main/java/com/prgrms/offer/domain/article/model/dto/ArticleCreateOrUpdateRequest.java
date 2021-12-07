@@ -22,13 +22,16 @@ public class ArticleCreateOrUpdateRequest {
 
     private List<String> imageUrls;
 
+    @Min(value = 1)
     private int categoryCode;
 
     @NotBlank(message = DtoValidationMessage.INVALID_TRADE_AREA)
     private String tradeArea;
 
+    @Min(value = 1)
     private int productStatusCode;
 
+    @Min(value = 1)
     private int tradeMethodCode;
 
     @Min(value = 1)

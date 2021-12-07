@@ -17,4 +17,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Override
     <S extends Article> S save(S entity);
+
+    @Override
+    boolean existsById(Long aLong);
 }
