@@ -54,7 +54,7 @@ public class ArticleController {
             //TODO: 인증 추가
     ) {
 
-        var response = articleService.createOrUpdate(request, 1L);
+        ArticleCreateOrUpdateResponse response = articleService.createOrUpdate(request, 1L);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -89,7 +89,7 @@ public class ArticleController {
     @ApiOperation("게시글 단건 조회")
     @GetMapping(value = "/{articleId}")
     public ResponseEntity<ApiResponse> getOne(@PathVariable Long articleId) {
-        var response = articleService.findById(articleId);
+        ArticleDetailResponse response = articleService.findById(articleId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -99,7 +99,7 @@ public class ArticleController {
     @ApiOperation("단건 게시글의 이미지 전체 조회")
     @GetMapping(value = "/{articleId}/imageUrls")
     public ResponseEntity<ApiResponse> getAllImageUrls(@PathVariable Long articleId) {
-        var response = articleService.findAllImageUrls(articleId);
+        ProductImageUrlsResponse response = articleService.findAllImageUrls(articleId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
