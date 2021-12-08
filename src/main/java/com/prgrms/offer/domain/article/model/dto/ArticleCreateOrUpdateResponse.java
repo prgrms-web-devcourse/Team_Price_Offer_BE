@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class ArticleCreateResponse {
+public class ArticleCreateOrUpdateResponse {
     private Long articleId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private final LocalDateTime createdDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private final LocalDateTime modifiedDate;
 }

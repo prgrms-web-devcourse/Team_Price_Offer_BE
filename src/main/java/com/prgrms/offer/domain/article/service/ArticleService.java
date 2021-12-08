@@ -3,12 +3,10 @@ package com.prgrms.offer.domain.article.service;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
+import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
@@ -59,12 +57,35 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateResponse create(ArticleCreateRequest request, Long writerId) {
+    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, Long writerId) {
         Member writer = memberRepository.findById(writerId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Article article = converter.toEntity(request, writer);
-        Article articleEntity = articleRepository.save(article);
+        Article articleEntity = null;
+
+        if(request.getId() == null || request.getId().longValue() == 0) { // 신규 생성일 경우
+            Article article = converter.toEntity(request, writer);
+            articleEntity = articleRepository.save(article);
+        }
+        else{  // 수정일 경우
+            articleEntity = articleRepository.findById(request.getId())
+                    .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+//            if(!articleEntity.validateWriter(writerId)){    //TODO: 인증 부분 구현 후 주석 해제
+//                throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//            }
+
+            articleEntity.updateInfo(
+                    request.getTitle(),
+                    request.getContent(),
+                    request.getCategoryCode(),
+                    request.getTradeArea(),
+                    request.getQuantity()
+            );
+            articleEntity.updateMainImageUrl(request.getImageUrls().get(0));
+
+            productImageRepository.deleteAllByArticle(articleEntity);
+        }
 
         if(request.getImageUrls() != null && !request.getImageUrls().isEmpty()){
             for(var imageUrl : request.getImageUrls()) {
@@ -73,6 +94,54 @@ public class ArticleService {
             }
         }
 
-        return converter.toArticleCreateResponse(articleEntity);
+        return converter.toArticleCreateOrUpdateResponse(articleEntity);
+    }
+
+    @Transactional
+    public void updateTradeStatus(Long articleId, int code, Long writerId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+//        if(!article.validateWriter(writerId)){   // TODO: 인증 과정 구현 후 예정
+//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//        }
+
+        article.updateTradeStatusCode(TradeStatus.of(code).getCode());
+    }
+
+    @Transactional(readOnly = true)
+    public ProductImageUrlsResponse findAllImageUrls(Long articleId) {
+        if(!articleRepository.existsById(articleId)){
+            throw new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND);
+        }
+
+        List<ProductImage> productImages = productImageRepository.findAllByArticleId(articleId);
+
+        var response = new ProductImageUrlsResponse();
+        for(var productImage : productImages){
+            response.getImageUrls().add(productImage.getImageUrl());
+        }
+
+        return response;
+    }
+
+    @Transactional
+    public void deleteOne(Long articleId, Long writerId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+//        if(!article.validateWriter(writerId)){   //TODO: 인증 부분 구현 후 주석 해제
+//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+//        }
+
+        articleRepository.delete(article);
+    }
+
+    @Transactional(readOnly = true)
+    public ArticleDetailResponse findById(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+        return converter.toArticleDetailResponse(article);
     }
 }

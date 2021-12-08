@@ -6,6 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class CategoriesResponse {
-    private List<CodeAndName> categories = new ArrayList<>();
+public class ProductImageUrlsResponse {
+    private final List<String> imageUrls = new ArrayList<>();
 }
