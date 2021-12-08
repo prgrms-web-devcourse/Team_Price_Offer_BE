@@ -1,9 +1,6 @@
 package com.prgrms.offer.domain.article.service;
 
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateResponse;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.value.Category;
 import com.prgrms.offer.domain.article.model.value.ProductStatus;
@@ -11,6 +8,8 @@ import com.prgrms.offer.domain.article.model.value.TradeMethod;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class ArticleConverter {
@@ -27,10 +26,17 @@ public class ArticleConverter {
     }
 
     public CategoriesResponse toCategoriesResponse() {
-        return new CategoriesResponse(Category.getAllCategoryName());
+        var response = new CategoriesResponse();
+
+        for(var category : Category.getAllCategory()){
+            var categories = new CodeAndName(category.getCode(), category.getName());
+            response.getCategories().add(categories);
+        }
+
+        return response;
     }
 
-    public Article toEntity(ArticleCreateRequest request, Member writer) {
+    public Article toEntity(ArticleCreateOrUpdateRequest request, Member writer) {
         return Article.builder()
                 .writer(writer)
                 .likeCount(0)
@@ -44,11 +50,66 @@ public class ArticleConverter {
                 .tradeStatusCode(TradeStatus.ON_SALE.getCode())
                 .mainImageUrl(request.getImageUrls() == null || request.getImageUrls().isEmpty() ? null : request.getImageUrls().get(0))
                 .price(request.getPrice())
+                .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
                 .viewCount(0)
                 .build();
     }
 
-    public ArticleCreateResponse toArticleCreateResponse(Article articleEntity) {
-        return new ArticleCreateResponse(articleEntity.getId(), articleEntity.getCreatedDate());
+    public ArticleCreateOrUpdateResponse toArticleCreateOrUpdateResponse(Article article) {
+        return new ArticleCreateOrUpdateResponse(
+                article.getId(),
+                article.getCreatedDate(),
+                article.getModifiedDate()
+        );
+    }
+
+    public ArticleDetailResponse toArticleDetailResponse(Article article) {
+        Member writer = article.getWriter();
+
+        var articleDto = ArticleDetailResponse.ArticleDto.builder()
+                .id(article.getId())
+                .author(
+                        ArticleDetailResponse.AuthorDetail.builder()
+                        .id(writer.getId())
+                        .email(writer.getAddress())
+                        .appleLevel(writer.getAppleLevel())
+                        .nickname(writer.getNickname())
+                        .profileImageUrl(writer.getProfileImage())
+                        .address(writer.getAddress())
+                        .build()
+                )
+                .title(article.getTitle())
+                .content(article.getContent())
+                .category(
+                        new CodeAndName(
+                                Category.of(article.getCategoryCode()).getCode(),
+                                Category.of(article.getCategoryCode()).getName()
+                        )
+                )
+                .tradeStatus(
+                        new CodeAndName(
+                                TradeStatus.of(article.getTradeStatusCode()).getCode(),
+                                TradeStatus.of(article.getTradeStatusCode()).getName()
+                        )
+                )
+                .tradeArea(article.getTradeArea())
+                .tradeMethod(
+                        new CodeAndName(
+                                TradeMethod.of(article.getTradeMethodCode()).getCode(),
+                                TradeMethod.of(article.getTradeMethodCode()).getName()
+                        )
+                )
+                .quantity(article.getQuantity())
+                .price(article.getPrice())
+                .mainImageUrl(article.getMainImageUrl())
+                .createdDate(article.getCreatedDate())
+                .modifiedDate(article.getModifiedDate())
+                .likeCounts(article.getLikeCount())
+                .liked(false) //TODO: 인증 인가 추가, likepost 도메인 구현 후 추가
+                .viewCount(article.getViewCount())
+                .build();
+
+        return new ArticleDetailResponse(articleDto);
     }
 }
