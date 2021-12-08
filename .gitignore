@@ -239,8 +239,8 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,windows,macos,intellij+all
 
-*.yml
-*.properties
+src/main/resources/*.yml
+src/main/resources/*.properties
 
 *.png
 *.jpg
