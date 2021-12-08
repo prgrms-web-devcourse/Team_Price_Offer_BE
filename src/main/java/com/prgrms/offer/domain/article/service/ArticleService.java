@@ -148,8 +148,11 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-        final Optional<Member> currentMember = memberRepository.findByPrincipal(authentication.loginId);
         boolean isLiked = false;
+        Optional<Member> currentMember = Optional.empty();
+        if(authentication != null){
+            currentMember = memberRepository.findByPrincipal(authentication.loginId);
+        }
 
         if(currentMember.isPresent()){
             isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
