@@ -52,7 +52,7 @@ public class ArticleDetailResponse {
 
         private int likeCounts;
 
-        private boolean liked;
+        private boolean isLiked;
 
         private int viewCount;
 

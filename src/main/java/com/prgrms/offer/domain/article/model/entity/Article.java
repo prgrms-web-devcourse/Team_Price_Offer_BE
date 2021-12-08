@@ -105,8 +105,8 @@ public class Article {
         modifiedDate = LocalDateTime.now();
     }
 
-    public boolean validateWriter(Long writerId){
-        return this.writer.getId().longValue() == writerId.longValue() ? true : false;
+    public boolean validateWriterByPrincipal(String principal){
+        return this.writer.getPrincipal().equals(principal) ? true : false;
     }
 
 }

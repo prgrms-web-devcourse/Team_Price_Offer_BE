@@ -3,11 +3,13 @@ package com.prgrms.offer.domain.article.service;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
+import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.model.entity.MemberRepository;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
     private final ProductImageRepository productImageRepository;
+    private final LikeArticleRepository likeArticleRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -36,10 +40,12 @@ public class ArticleService {
     private final int MAX_IMAGE_SIZE = 3;
 
     @Transactional(readOnly = true)
-    public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable) {
+    public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable, JwtAuthentication authentication) {
         Page<Article> postPage = articleRepository.findAll(pageable);
 
-        return postPage.map(p -> converter.toArticleBriefViewResponse(p));
+        final Optional<Member> currentMember = memberRepository.findByPrincipal(authentication.loginId);
+
+        return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
     }
 
     public CategoriesResponse findAllCategories() {
@@ -58,13 +64,11 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, Long writerId) {
-        Member writer = memberRepository.findById(writerId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, JwtAuthentication authentication) {
+        String loginId = authentication.loginId;
 
-        if(request.getImageUrls() == null || request.getImageUrls().isEmpty()){
-            throw new BusinessException(ResponseMessage.EMPTY_IMAGE_URL);
-        }
+        Member writer = memberRepository.findByPrincipal(loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         Article articleEntity = null;
 
@@ -75,9 +79,7 @@ public class ArticleService {
             articleEntity = articleRepository.findById(request.getId())
                     .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-//            if(!articleEntity.validateWriter(writerId)){    //TODO: 인증 부분 구현 후 주석 해제
-//                throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-//            }
+            validateWriterOrElseThrow(articleEntity, loginId);
 
             articleEntity.updateInfo(
                     request.getTitle(),
@@ -91,24 +93,17 @@ public class ArticleService {
             productImageRepository.deleteAllByArticle(articleEntity);
         }
 
-        for (var imageUrl : request.getImageUrls()) {
-            if(imageUrl == null || imageUrl.isEmpty()) continue;
-
-            var productImage = new ProductImage(imageUrl, articleEntity);
-            productImageRepository.save(productImage);
-        }
+        saveImagseUrls(articleEntity, request.getImageUrls());
 
         return converter.toArticleCreateOrUpdateResponse(articleEntity);
     }
 
     @Transactional
-    public void updateTradeStatus(Long articleId, int code, Long writerId) {
+    public void updateTradeStatus(Long articleId, int code, String loginId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-//        if(!article.validateWriter(writerId)){   // TODO: 인증 과정 구현 후 예정
-//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-//        }
+        validateWriterOrElseThrow(article, loginId);
 
         article.updateTradeStatusCode(TradeStatus.of(code).getCode());
     }
@@ -135,22 +130,52 @@ public class ArticleService {
     }
 
     @Transactional
-    public void deleteOne(Long articleId, Long writerId) {
+    public void deleteOne(Long articleId, String loginId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-//        if(!article.validateWriter(writerId)){   //TODO: 인증 부분 구현 후 주석 해제
-//            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-//        }
+        validateWriterOrElseThrow(article, loginId);
 
         articleRepository.delete(article);
     }
 
     @Transactional(readOnly = true)
-    public ArticleDetailResponse findById(Long articleId) {
+    public ArticleDetailResponse findById(Long articleId, JwtAuthentication authentication) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-        return converter.toArticleDetailResponse(article);
+        final Optional<Member> currentMember = memberRepository.findByPrincipal(authentication.loginId);
+        boolean isLiked = false;
+
+        if(currentMember.isPresent()){
+            isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
+        }
+
+        return converter.toArticleDetailResponse(article, isLiked);
+    }
+
+    private void saveImagseUrls(Article article, List<String> imageUrls){
+        for (var imageUrl : imageUrls) {
+            if(imageUrl == null || imageUrl.isEmpty()) continue;
+
+            var productImage = new ProductImage(imageUrl, article);
+            productImageRepository.save(productImage);
+        }
+    }
+
+    private void validateWriterOrElseThrow(Article article, String principal){
+        if(!article.validateWriterByPrincipal(principal)){
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+    }
+
+    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Optional<Member> currentMember){
+        boolean isLiked = false;
+
+        if(currentMember.isPresent()){
+            isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
+        }
+
+        return converter.toArticleBriefViewResponse(article, isLiked);
     }
 }

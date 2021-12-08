@@ -28,4 +28,6 @@ public class ArticleBriefViewResponse {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime modifiedDate;
+
+    private boolean isLiked;
 }
