@@ -20,4 +20,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Override
     boolean existsById(Long aLong);
+
+    Page<Article> findByTitleIgnoreCaseContains(String title, Pageable pageable);
+    
 }
