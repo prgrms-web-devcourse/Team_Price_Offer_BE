@@ -62,6 +62,10 @@ public class ArticleService {
         Member writer = memberRepository.findById(writerId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
+        if(request.getImageUrls() == null || request.getImageUrls().isEmpty()){
+            throw new BusinessException(ResponseMessage.EMPTY_IMAGE_URL);
+        }
+
         Article articleEntity = null;
 
         if (request.getId() == null || request.getId().longValue() == 0) { // 신규 생성일 경우
@@ -87,13 +91,11 @@ public class ArticleService {
             productImageRepository.deleteAllByArticle(articleEntity);
         }
 
-        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
-            for (var imageUrl : request.getImageUrls()) {
-                if(imageUrl == null || imageUrl.isEmpty()) continue;
+        for (var imageUrl : request.getImageUrls()) {
+            if(imageUrl == null || imageUrl.isEmpty()) continue;
 
-                var productImage = new ProductImage(imageUrl, articleEntity);
-                productImageRepository.save(productImage);
-            }
+            var productImage = new ProductImage(imageUrl, articleEntity);
+            productImageRepository.save(productImage);
         }
 
         return converter.toArticleCreateOrUpdateResponse(articleEntity);

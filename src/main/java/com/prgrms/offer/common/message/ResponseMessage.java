@@ -11,6 +11,7 @@ public enum ResponseMessage {
     SUCCESS(HttpStatus.OK, "Success"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 내부적으로 에러가 발생했습니다."),
     PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다."),
+    EMPTY_IMAGE_URL(HttpStatus.BAD_REQUEST, "이미지 URL이 비어있습니다."),
 
     // authentication
     LOGIN_FAIL(HttpStatus.BAD_REQUEST, "email 또는 비밀번호가 일치하지 않습니다."),
