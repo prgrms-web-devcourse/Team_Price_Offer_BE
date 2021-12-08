@@ -9,7 +9,6 @@ import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +38,7 @@ public class MemberController {
     }
 
     @PostMapping("/members")
-    public ResponseEntity<ApiResponse> createUser(@RequestBody @Valid MemberCreateRequest request, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse> createUser(@RequestBody @Valid MemberCreateRequest request) {
         MemberCreateResponse response = memberService.createMember(request);
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

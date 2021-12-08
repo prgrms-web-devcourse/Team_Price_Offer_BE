@@ -27,6 +27,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
 
     private static final String PROFILE_IMG_DIR = "profileImage";
@@ -39,34 +40,19 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member login(String principal, String credentials) {
-        Assert.hasText(principal, "principal must be provided.");
-        Assert.hasText(credentials, "credentials must be provided.");
-
         Member member = memberRepository.findByPrincipal(principal)
-                .orElseThrow(() -> new UsernameNotFoundException("Could not found user for " + principal));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
         member.checkPassword(passwordEncoder, credentials);
         return member;
     }
 
-
+    @Transactional(readOnly = true)
     public MemberResponse login(EmailLoginRequest request) {
         JwtAuthenticationToken token = new JwtAuthenticationToken(request.getEmail(), request.getPassword());
         Authentication resultToken = authenticationManager.authenticate(token);
         JwtAuthentication authentication = (JwtAuthentication) resultToken.getPrincipal();
         Member member = (Member) resultToken.getDetails();
         return memberConverter.toMemberResponse(member, authentication.token);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Member> findByPrincipal(String principal) {
-        Assert.hasText(principal, "principal must be provided.");
-        return memberRepository.findByPrincipal(principal);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Member> findBy(String principal) {
-        Assert.hasText(principal, "principal must be provided.");
-        return memberRepository.findByPrincipal(principal);
     }
 
     // 자체 회원가입
@@ -96,7 +82,6 @@ public class MemberService {
         if (oAuth2User == null) {
             throw new IllegalArgumentException("oauth2User must be provided.");
         }
-        Assert.hasText(registrationId, "authorizedClientRegistrationId must be provided.");
 
         String providerId = oAuth2User.getName();
         return findByProviderAndProviderId(registrationId, providerId)
@@ -122,12 +107,8 @@ public class MemberService {
                 });
     }
 
-    public Optional<Member> findByProviderAndProviderId(String provider, String providerId) {
+    private Optional<Member> findByProviderAndProviderId(String provider, String providerId) {
         return memberRepository.findByProviderAndProviderId(provider, providerId);
-    }
-
-    public Optional<Member> findByProviderId(String kakaoId) {
-        return memberRepository.findByProviderId(kakaoId);
     }
 
     public boolean isDuplicateEmail(String email) {
