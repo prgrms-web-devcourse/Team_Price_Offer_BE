@@ -43,7 +43,11 @@ public class ArticleService {
     public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable, JwtAuthentication authentication) {
         Page<Article> postPage = articleRepository.findAll(pageable);
 
-        final Optional<Member> currentMember = memberRepository.findByPrincipal(authentication.loginId);
+        Optional<Member> tmpMember = null;
+        if(authentication != null){
+            tmpMember = memberRepository.findByPrincipal(authentication.loginId);
+        }
+        final Optional<Member> currentMember = tmpMember;
 
         return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
     }
