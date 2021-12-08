@@ -23,6 +23,12 @@ public class ArticleConverter {
                 .createdDate(article.getCreatedDate())
                 .modifiedDate(article.getModifiedDate())
                 .isLiked(isLiked)
+                .tradeStatus(
+                        new CodeAndName(
+                                TradeStatus.of(article.getTradeStatusCode()).getCode(),
+                                TradeStatus.of(article.getTradeStatusCode()).getName()
+                        )
+                )
                 .build();
     }
 
