@@ -10,10 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -51,14 +54,28 @@ public class MemberController {
         );
     }
 
-    @GetMapping(path = "/user/me")
-    public LoginResponse me(@AuthenticationPrincipal JwtAuthentication authentication) {
-        return memberService.findByPrincipal(authentication.loginId)
-                .map(member ->
-                        new LoginResponse(authentication.token, authentication.loginId)
-                )
-                .orElseThrow(() -> new IllegalArgumentException("Could not found user for " + authentication.loginId));
+    @PostMapping("/members/imageUrls")
+    public ResponseEntity<ApiResponse> convertToImageUrl(@ModelAttribute MultipartFile image) throws IOException {
+        if (image == null || image.isEmpty()) {
+            throw new BusinessException(ResponseMessage.INVALID_IMAGE_EXCEPTION);
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("imageUrl", memberService.getProfileImageUrl(image));
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
     }
 
+    @PatchMapping("/members/me")
+    public ResponseEntity<ApiResponse> editProfile(
+            @AuthenticationPrincipal JwtAuthentication authentication,
+            @RequestBody @Valid ProfileEdit request) {
+        MemberResponse response = memberService.editProfile(authentication, request);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
 
+    @GetMapping("/members/me")
+    public ResponseEntity<ApiResponse> getProfile(@AuthenticationPrincipal JwtAuthentication authentication) {
+        MemberResponse response = memberService.getProfile(authentication);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
 }
