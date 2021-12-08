@@ -33,6 +33,7 @@ public class ArticleService {
     private final S3ImageUploader s3ImageUploader;
 
     private final String PRODUCT_IMAGE_DIR = "productImage";
+    private final int MAX_IMAGE_SIZE = 3;
 
     @Transactional(readOnly = true)
     public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable) {
@@ -48,7 +49,7 @@ public class ArticleService {
     public List<String> getImageUrls(List<MultipartFile> images) throws IOException {
         List<String> imageUrls = new ArrayList<>();
 
-        for(var image : images) {
+        for (var image : images) {
             String uploadedImageUrl = s3ImageUploader.upload(image, PRODUCT_IMAGE_DIR);
             imageUrls.add(uploadedImageUrl);
         }
@@ -63,11 +64,10 @@ public class ArticleService {
 
         Article articleEntity = null;
 
-        if(request.getId() == null || request.getId().longValue() == 0) { // 신규 생성일 경우
+        if (request.getId() == null || request.getId().longValue() == 0) { // 신규 생성일 경우
             Article article = converter.toEntity(request, writer);
             articleEntity = articleRepository.save(article);
-        }
-        else{  // 수정일 경우
+        } else {  // 수정일 경우
             articleEntity = articleRepository.findById(request.getId())
                     .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
@@ -87,8 +87,10 @@ public class ArticleService {
             productImageRepository.deleteAllByArticle(articleEntity);
         }
 
-        if(request.getImageUrls() != null && !request.getImageUrls().isEmpty()){
-            for(var imageUrl : request.getImageUrls()) {
+        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+            for (var imageUrl : request.getImageUrls()) {
+                if(imageUrl == null || imageUrl.isEmpty()) continue;
+
                 var productImage = new ProductImage(imageUrl, articleEntity);
                 productImageRepository.save(productImage);
             }
@@ -111,15 +113,20 @@ public class ArticleService {
 
     @Transactional(readOnly = true)
     public ProductImageUrlsResponse findAllImageUrls(Long articleId) {
-        if(!articleRepository.existsById(articleId)){
+        if (!articleRepository.existsById(articleId)) {
             throw new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND);
         }
 
         List<ProductImage> productImages = productImageRepository.findAllByArticleId(articleId);
 
         var response = new ProductImageUrlsResponse();
-        for(var productImage : productImages){
+        for (var productImage : productImages) {
             response.getImageUrls().add(productImage.getImageUrl());
+        }
+
+        int curSize = response.getImageUrls().size();
+        for (int i = 1; i <= MAX_IMAGE_SIZE - curSize; i++) {
+            response.getImageUrls().add(null);
         }
 
         return response;
