@@ -43,7 +43,7 @@ public class ArticleService {
     public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable, JwtAuthentication authentication) {
         Page<Article> postPage = articleRepository.findAll(pageable);
 
-        Optional<Member> tmpMember = null;
+        Optional<Member> tmpMember = Optional.empty();
         if(authentication != null){
             tmpMember = memberRepository.findByPrincipal(authentication.loginId);
         }
