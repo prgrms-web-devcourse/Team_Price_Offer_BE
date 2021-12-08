@@ -11,4 +11,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Override
     <S extends Article> S save(S entity);
+
+    Page<Article> findByTitleIgnoreCaseContains(String title, Pageable pageable);
+
 }
