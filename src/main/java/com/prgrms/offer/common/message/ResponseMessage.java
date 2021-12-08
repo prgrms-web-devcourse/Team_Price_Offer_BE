@@ -14,6 +14,8 @@ public enum ResponseMessage {
 
     // authentication
     LOGIN_FAIL(HttpStatus.BAD_REQUEST, "email 또는 비밀번호가 일치하지 않습니다."),
+    DUPLICATE_EMAIL(HttpStatus.OK, "이미 존재하는 이메일입니다."),
+    VALID_EMAIL(HttpStatus.OK, "사용 가능한 이메일입니다."),
 
     // article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 게시글을 찾을 수 없습니다."),

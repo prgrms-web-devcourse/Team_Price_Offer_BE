@@ -10,7 +10,7 @@ import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
-import com.prgrms.offer.domain.member.model.entity.MemberRepository;
+import com.prgrms.offer.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

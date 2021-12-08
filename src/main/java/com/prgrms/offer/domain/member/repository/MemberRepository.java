@@ -1,6 +1,7 @@
-package com.prgrms.offer.domain.member.model.entity;
+package com.prgrms.offer.domain.member.repository;
 
 
+import com.prgrms.offer.domain.member.model.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

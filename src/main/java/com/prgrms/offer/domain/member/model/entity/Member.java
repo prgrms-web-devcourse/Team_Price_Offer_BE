@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "members")
@@ -27,7 +28,8 @@ public class Member {
 
     private String profileImage;
 
-    private int appleLevel;
+    @Builder.Default
+    private int appleLevel = 1;
 
 
     protected Member() {
@@ -49,5 +51,45 @@ public class Member {
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
         if (!passwordEncoder.matches(credentials, password))
             throw new IllegalArgumentException("Bad credential");
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeAddress(String address) {
+        this.address = address;
+    }
+
+    public void changeProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member member = (Member) o;
+        return id.equals(member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", principal='" + principal + '\'' +
+                ", provider='" + provider + '\'' +
+                ", providerId='" + providerId + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", address='" + address + '\'' +
+                ", profileImage='" + profileImage + '\'' +
+                ", appleLevel=" + appleLevel +
+                '}';
     }
 }
