@@ -241,3 +241,7 @@ gradle-app.setting
 
 *.yml
 *.properties
+
+*.png
+*.jpg
+*.jpeg
