@@ -34,11 +34,15 @@ public class LikeArticleService {
         if(likeArticleRepository.existsByMemberAndArticle(member, article)){
             likeArticleRepository.deleteByMemberIdAndArticleId(member.getId(), articleId);
 
+            article.subtractLikeCount();
+
             return converter.toLikeArticleStatusResponse(false);
         }
 
         LikeArticle likeArticle = new LikeArticle(member, article);
         likeArticleRepository.save(likeArticle);
+
+        article.addLikeCount();
 
         return converter.toLikeArticleStatusResponse(true);
     }
