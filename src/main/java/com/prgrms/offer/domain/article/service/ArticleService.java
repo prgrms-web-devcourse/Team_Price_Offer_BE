@@ -45,7 +45,6 @@ public class ArticleService {
 
     private final String PRODUCT_IMAGE_DIR = "productImage";
     private final int MAX_IMAGE_SIZE = 3;
-    private final int EMPTY_CATEGORY = -1;
 
     public CategoriesResponse findAllCategories() {
         return converter.toCategoriesResponse();
