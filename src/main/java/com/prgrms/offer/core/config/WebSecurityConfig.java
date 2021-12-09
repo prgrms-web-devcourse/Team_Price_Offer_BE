@@ -10,6 +10,7 @@ import com.prgrms.offer.domain.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final static String BASE_URI = "/api/v1";
 
     private final JwtConfigure jwtConfigure;
     private final OAuth2AuthorizedClientRepository authorizedClientRepository;
@@ -117,7 +120,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/api/user/me").authenticated()
+                .antMatchers(HttpMethod.GET, BASE_URI+"/members/{\\d+}/profiles/articles/likes").permitAll()
+                .antMatchers(HttpMethod.POST,
+                        BASE_URI+"/reviews/**",
+                        BASE_URI+"/articles/**").permitAll()
+                .antMatchers(HttpMethod.PATCH,
+                        BASE_URI+"/members/me",
+                        BASE_URI+"/articles/**").permitAll()
+                .antMatchers(BASE_URI+"/messages/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                  // formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
