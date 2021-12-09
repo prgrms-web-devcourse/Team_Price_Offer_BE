@@ -90,7 +90,7 @@ public class ArticleController {
     @ApiOperation("게시글 전체 조회")
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(
-            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
             @RequestParam(value = "categoryCode", required = false) Integer categoryCode,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
