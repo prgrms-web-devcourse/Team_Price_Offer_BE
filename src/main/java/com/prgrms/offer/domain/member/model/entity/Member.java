@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "members")
 @Getter
 public class Member {
 
