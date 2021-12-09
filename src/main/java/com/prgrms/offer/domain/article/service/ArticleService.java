@@ -150,6 +150,8 @@ public class ArticleService {
             isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
         }
 
+        article.addViewCount();
+
         return converter.toArticleDetailResponse(article, isLiked);
     }
 
