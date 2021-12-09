@@ -18,10 +18,12 @@ import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,20 +46,6 @@ public class ArticleService {
     private final String PRODUCT_IMAGE_DIR = "productImage";
     private final int MAX_IMAGE_SIZE = 3;
 
-    @Transactional(readOnly = true)
-    public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable,
-        JwtAuthentication authentication) {
-        Page<Article> postPage = articleRepository.findAll(pageable);
-
-        if (authentication == null) {
-            return postPage.map(p -> makeBriefViewResponse(p));
-        }
-
-        Member currentMember = memberRepository.findByPrincipal(authentication.loginId).get();
-
-        return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
-    }
-
     public CategoriesResponse findAllCategories() {
         return converter.toCategoriesResponse();
     }
@@ -74,12 +62,11 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request,
-        JwtAuthentication authentication) {
+    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, JwtAuthentication authentication) {
         String loginId = authentication.loginId;
 
         Member writer = memberRepository.findByPrincipal(loginId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         Article articleEntity = null;
 
@@ -88,16 +75,16 @@ public class ArticleService {
             articleEntity = articleRepository.save(article);
         } else {  // 수정일 경우
             articleEntity = articleRepository.findById(request.getId())
-                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+                    .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
             validateWriterOrElseThrow(articleEntity, loginId);
 
             articleEntity.updateInfo(
-                request.getTitle(),
-                request.getContent(),
-                request.getCategoryCode(),
-                request.getTradeArea(),
-                request.getQuantity()
+                    request.getTitle(),
+                    request.getContent(),
+                    request.getCategoryCode(),
+                    request.getTradeArea(),
+                    request.getQuantity()
             );
             articleEntity.updateMainImageUrl(request.getImageUrls().get(0));
 
@@ -112,7 +99,7 @@ public class ArticleService {
     @Transactional
     public void updateTradeStatus(Long articleId, int code, String loginId) {
         Article article = articleRepository.findById(articleId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         validateWriterOrElseThrow(article, loginId);
 
@@ -143,7 +130,7 @@ public class ArticleService {
     @Transactional
     public void deleteOne(Long articleId, String loginId) {
         Article article = articleRepository.findById(articleId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         validateWriterOrElseThrow(article, loginId);
 
@@ -151,21 +138,49 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public ArticleDetailResponse findById(Long articleId, JwtAuthentication authentication) {
+    public ArticleDetailResponse findById(Long articleId, Optional<JwtAuthentication> authenticationOptional) {
         Article article = articleRepository.findById(articleId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         boolean isLiked = false;
-        Optional<Member> currentMember = Optional.empty();
-        if (authentication != null) {
-            currentMember = memberRepository.findByPrincipal(authentication.loginId);
-        }
+        if (authenticationOptional.isPresent()) {
+            Member currentMember = memberRepository.findByPrincipal(authenticationOptional.get().loginId)
+                    .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if (currentMember.isPresent()) {
-            isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
+            isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
         }
 
         return converter.toArticleDetailResponse(article, isLiked);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ArticleBriefViewResponse> findAllByPages(
+            Pageable pageable,
+            Optional<JwtAuthentication> authenticationOptional
+    ) {
+
+        Page<Article> postPage = articleRepository.findAll(pageable);
+
+        if (authenticationOptional.isPresent()) {
+            return postPage.map(p -> converter.toArticleBriefViewResponse(p, false));
+        }
+
+        Member currentMember = memberRepository.findByPrincipal(authenticationOptional.get().loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
+    }
+
+    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
+
+        return converter.toArticleBriefViewResponse(article, isLiked);
+    }
+
+    private void validateWriterOrElseThrow(Article article, String principal) {
+        if (!article.validateWriterByPrincipal(principal)) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
     }
 
     private void saveImagseUrls(Article article, List<String> imageUrls) {
@@ -179,22 +194,4 @@ public class ArticleService {
         }
     }
 
-    private void validateWriterOrElseThrow(Article article, String principal) {
-        if (!article.validateWriterByPrincipal(principal)) {
-            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-        }
-    }
-
-    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article,
-        Member currentMember) {
-        boolean isLiked = isLiked = likeArticleRepository.existsByMemberAndArticle(
-            currentMember, article);
-
-        return converter.toArticleBriefViewResponse(article, isLiked);
-    }
-
-    private ArticleBriefViewResponse makeBriefViewResponse(Article article) {
-
-        return converter.toArticleBriefViewResponse(article, false);
-    }
 }
