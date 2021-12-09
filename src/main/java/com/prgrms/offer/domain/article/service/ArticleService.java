@@ -161,7 +161,7 @@ public class ArticleService {
 
         Page<Article> postPage = articleRepository.findAll(pageable);
 
-        if (authenticationOptional.isPresent()) {
+        if (!authenticationOptional.isPresent()) {
             return postPage.map(p -> converter.toArticleBriefViewResponse(p, false));
         }
 
