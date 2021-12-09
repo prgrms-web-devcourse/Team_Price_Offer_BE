@@ -4,7 +4,12 @@ import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
-import com.prgrms.offer.domain.article.model.dto.*;
+import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
+import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
+import com.prgrms.offer.domain.article.model.dto.ArticleDetailResponse;
+import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.ProductImageUrlsResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
@@ -13,6 +18,10 @@ import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,14 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
+
     private final ArticleRepository articleRepository;
     private final MemberRepository memberRepository;
     private final ProductImageRepository productImageRepository;
@@ -40,14 +45,15 @@ public class ArticleService {
     private final int MAX_IMAGE_SIZE = 3;
 
     @Transactional(readOnly = true)
-    public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable, JwtAuthentication authentication) {
+    public Page<ArticleBriefViewResponse> findAllByPages(Pageable pageable,
+        JwtAuthentication authentication) {
         Page<Article> postPage = articleRepository.findAll(pageable);
 
-        Optional<Member> tmpMember = Optional.empty();
-        if(authentication != null){
-            tmpMember = memberRepository.findByPrincipal(authentication.loginId);
+        if (authentication == null) {
+            return postPage.map(p -> makeBriefViewResponse(p));
         }
-        final Optional<Member> currentMember = tmpMember;
+
+        Member currentMember = memberRepository.findByPrincipal(authentication.loginId).get();
 
         return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
     }
@@ -68,11 +74,12 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request, JwtAuthentication authentication) {
+    public ArticleCreateOrUpdateResponse createOrUpdate(ArticleCreateOrUpdateRequest request,
+        JwtAuthentication authentication) {
         String loginId = authentication.loginId;
 
         Member writer = memberRepository.findByPrincipal(loginId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         Article articleEntity = null;
 
@@ -81,16 +88,16 @@ public class ArticleService {
             articleEntity = articleRepository.save(article);
         } else {  // 수정일 경우
             articleEntity = articleRepository.findById(request.getId())
-                    .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
             validateWriterOrElseThrow(articleEntity, loginId);
 
             articleEntity.updateInfo(
-                    request.getTitle(),
-                    request.getContent(),
-                    request.getCategoryCode(),
-                    request.getTradeArea(),
-                    request.getQuantity()
+                request.getTitle(),
+                request.getContent(),
+                request.getCategoryCode(),
+                request.getTradeArea(),
+                request.getQuantity()
             );
             articleEntity.updateMainImageUrl(request.getImageUrls().get(0));
 
@@ -105,7 +112,7 @@ public class ArticleService {
     @Transactional
     public void updateTradeStatus(Long articleId, int code, String loginId) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         validateWriterOrElseThrow(article, loginId);
 
@@ -136,7 +143,7 @@ public class ArticleService {
     @Transactional
     public void deleteOne(Long articleId, String loginId) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         validateWriterOrElseThrow(article, loginId);
 
@@ -146,43 +153,48 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public ArticleDetailResponse findById(Long articleId, JwtAuthentication authentication) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         boolean isLiked = false;
         Optional<Member> currentMember = Optional.empty();
-        if(authentication != null){
+        if (authentication != null) {
             currentMember = memberRepository.findByPrincipal(authentication.loginId);
         }
 
-        if(currentMember.isPresent()){
+        if (currentMember.isPresent()) {
             isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
         }
 
         return converter.toArticleDetailResponse(article, isLiked);
     }
 
-    private void saveImagseUrls(Article article, List<String> imageUrls){
+    private void saveImagseUrls(Article article, List<String> imageUrls) {
         for (var imageUrl : imageUrls) {
-            if(imageUrl == null || imageUrl.isEmpty()) continue;
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                continue;
+            }
 
             var productImage = new ProductImage(imageUrl, article);
             productImageRepository.save(productImage);
         }
     }
 
-    private void validateWriterOrElseThrow(Article article, String principal){
-        if(!article.validateWriterByPrincipal(principal)){
+    private void validateWriterOrElseThrow(Article article, String principal) {
+        if (!article.validateWriterByPrincipal(principal)) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
     }
 
-    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Optional<Member> currentMember){
-        boolean isLiked = false;
-
-        if(currentMember.isPresent()){
-            isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember.get(), article);
-        }
+    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article,
+        Member currentMember) {
+        boolean isLiked = isLiked = likeArticleRepository.existsByMemberAndArticle(
+            currentMember, article);
 
         return converter.toArticleBriefViewResponse(article, isLiked);
+    }
+
+    private ArticleBriefViewResponse makeBriefViewResponse(Article article) {
+
+        return converter.toArticleBriefViewResponse(article, false);
     }
 }
