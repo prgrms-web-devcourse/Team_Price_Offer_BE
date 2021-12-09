@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(indexes = {
+        @Index(name = "article_idx_writer_id", columnList = "writer_id"),
+        @Index(name = "article_idx_category_code", columnList = "categoryCode")
+})
 public class Article {
 
     @Id
