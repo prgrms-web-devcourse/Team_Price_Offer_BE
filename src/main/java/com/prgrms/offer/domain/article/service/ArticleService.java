@@ -45,6 +45,7 @@ public class ArticleService {
 
     private final String PRODUCT_IMAGE_DIR = "productImage";
     private final int MAX_IMAGE_SIZE = 3;
+    private final int EMPTY_CATEGORY = -1;
 
     public CategoriesResponse findAllCategories() {
         return converter.toCategoriesResponse();
@@ -158,10 +159,16 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleBriefViewResponse> findAllByPages(
             Pageable pageable,
+            Optional<Integer> integerOptional,
             Optional<JwtAuthentication> authenticationOptional
     ) {
 
-        Page<Article> postPage = articleRepository.findAll(pageable);
+        Page<Article> postPage;
+        if(!integerOptional.isPresent()){
+            postPage = articleRepository.findAll(pageable);
+        }else{
+            postPage = articleRepository.findAllByCategoryCode(pageable, integerOptional.get());
+        }
 
         if (!authenticationOptional.isPresent()) {
             return postPage.map(p -> converter.toArticleBriefViewResponse(p, false));
