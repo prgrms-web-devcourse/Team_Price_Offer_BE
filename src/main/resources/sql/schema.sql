@@ -36,3 +36,15 @@ create table product_image (
                                primary key (product_image_id)
 )
 
+-- like_article 테이블
+DROP TABLE IF EXISTS like_article CASCADE;
+
+create table like_article (
+    like_article_id bigint not null,
+    article_id bigint,
+    member_id bigint,
+    primary key (like_article_id)
+)
+
+-- like_article_index 인덱스
+create index like_article_index on like_article (member_id)

@@ -3,6 +3,7 @@ package com.prgrms.offer.domain.article.controller;
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,11 +52,13 @@ public class ArticleController {
     @ApiOperation("게시글 등록/수정")
     @PutMapping()
     public ResponseEntity<ApiResponse> putArticle(
-            @Valid @RequestBody ArticleCreateOrUpdateRequest request
-            //TODO: 인증 추가
+            @Valid @RequestBody ArticleCreateOrUpdateRequest request,
+            @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        ArticleCreateOrUpdateResponse response = articleService.createOrUpdate(request, 1L);
+        validateJwtAuthentication(authentication);
+
+        ArticleCreateOrUpdateResponse response = articleService.createOrUpdate(request, authentication);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -65,11 +69,13 @@ public class ArticleController {
     @PatchMapping(value = "/{articleId}/tradeStatus", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse> updateTradeStatus(
             @PathVariable Long articleId,
-            @Valid @RequestBody TradeStatusUpdateRequest request
-            //TODO: 인증 추가
+            @Valid @RequestBody TradeStatusUpdateRequest request,
+            @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        articleService.updateTradeStatus(articleId, request.getCode(),1L);
+        validateJwtAuthentication(authentication);
+
+        articleService.updateTradeStatus(articleId, request.getCode(), authentication.loginId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS)
@@ -78,8 +84,12 @@ public class ArticleController {
 
     @ApiOperation("게시글 전체 조회")
     @GetMapping()
-    public ResponseEntity<ApiResponse> getAll(Pageable pageable) {
-        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable);
+    public ResponseEntity<ApiResponse> getAll(
+            Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, authentication);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -88,8 +98,12 @@ public class ArticleController {
 
     @ApiOperation("게시글 단건 조회")
     @GetMapping(value = "/{articleId}")
-    public ResponseEntity<ApiResponse> getOne(@PathVariable Long articleId) {
-        ArticleDetailResponse response = articleService.findById(articleId);
+    public ResponseEntity<ApiResponse> getOne(
+            @PathVariable Long articleId,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        ArticleDetailResponse response = articleService.findById(articleId, authentication);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -119,13 +133,23 @@ public class ArticleController {
     @ApiOperation("게시글 삭제")
     @DeleteMapping(value = "/{articleId}")
     public ResponseEntity<ApiResponse> deleteOne(
-            @PathVariable Long articleId
-            //TODO: 인증 필요
+            @PathVariable Long articleId,
+            @AuthenticationPrincipal JwtAuthentication authentication
     ) {
-        articleService.deleteOne(articleId, 1L);
+
+        validateJwtAuthentication(authentication);
+
+        articleService.deleteOne(articleId, authentication.loginId);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS)
         );
     }
+
+    private void validateJwtAuthentication(JwtAuthentication authentication){
+        if(authentication == null){
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+    }
+
 }

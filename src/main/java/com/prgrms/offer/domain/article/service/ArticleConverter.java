@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class ArticleConverter {
-    public ArticleBriefViewResponse toArticleBriefViewResponse(Article article){
+    public ArticleBriefViewResponse toArticleBriefViewResponse(Article article, boolean isLiked){
         return ArticleBriefViewResponse.builder()
                 .articleId(article.getId())
                 .mainImageUrl(article.getMainImageUrl())
@@ -22,6 +22,13 @@ public class ArticleConverter {
                 .tradeArea(article.getTradeArea())
                 .createdDate(article.getCreatedDate())
                 .modifiedDate(article.getModifiedDate())
+                .isLiked(isLiked)
+                .tradeStatus(
+                        new CodeAndName(
+                                TradeStatus.of(article.getTradeStatusCode()).getCode(),
+                                TradeStatus.of(article.getTradeStatusCode()).getName()
+                        )
+                )
                 .build();
     }
 
@@ -64,7 +71,7 @@ public class ArticleConverter {
         );
     }
 
-    public ArticleDetailResponse toArticleDetailResponse(Article article) {
+    public ArticleDetailResponse toArticleDetailResponse(Article article, boolean isLiked) {
         Member writer = article.getWriter();
 
         var articleDto = ArticleDetailResponse.ArticleDto.builder()
@@ -106,7 +113,7 @@ public class ArticleConverter {
                 .createdDate(article.getCreatedDate())
                 .modifiedDate(article.getModifiedDate())
                 .likeCounts(article.getLikeCount())
-                .liked(false) //TODO: 인증 인가 추가, likepost 도메인 구현 후 추가
+                .isLiked(isLiked)
                 .viewCount(article.getViewCount())
                 .build();
 

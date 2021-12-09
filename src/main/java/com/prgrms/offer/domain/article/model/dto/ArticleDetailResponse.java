@@ -44,15 +44,15 @@ public class ArticleDetailResponse {
 
         private String mainImageUrl;
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime modifiedDate;
 
         private int likeCounts;
 
-        private boolean liked;
+        private boolean isLiked;
 
         private int viewCount;
 
