@@ -1,7 +1,7 @@
--- members schema
-DROP TABLE IF EXISTS members CASCADE;
+-- member schema
+DROP TABLE IF EXISTS member CASCADE;
 
-create table members (member_id bigint not null, login_id varchar(255), password varchar(255), primary key (member_id));
+create table member (member_id bigint not null, login_id varchar(255), password varchar(255), primary key (member_id));
 
 -- article schema
 DROP TABLE IF EXISTS article CASCADE;
