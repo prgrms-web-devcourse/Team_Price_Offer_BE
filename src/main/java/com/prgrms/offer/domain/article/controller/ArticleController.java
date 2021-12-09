@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class ArticleController {
     @PostMapping(value = "/imageUrls", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> convertToImageUrls(@ModelAttribute List<MultipartFile> images) throws IOException {
 
-        if(images == null || images.isEmpty()){
+        if (images == null || images.isEmpty()) {
             throw new BusinessException(ResponseMessage.INVALID_IMAGE_EXCEPTION);
         }
 
@@ -86,10 +87,15 @@ public class ArticleController {
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(
             Pageable pageable,
+            @RequestParam(value = "categoryCode", required = false) Integer categoryCode,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, authentication);
+        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(
+                pageable,
+                Optional.ofNullable(categoryCode),
+                Optional.ofNullable(authentication)
+        );
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -103,7 +109,7 @@ public class ArticleController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        ArticleDetailResponse response = articleService.findById(articleId, authentication);
+        ArticleDetailResponse response = articleService.findById(articleId, Optional.ofNullable(authentication));
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -146,8 +152,8 @@ public class ArticleController {
         );
     }
 
-    private void validateJwtAuthentication(JwtAuthentication authentication){
-        if(authentication == null){
+    private void validateJwtAuthentication(JwtAuthentication authentication) { // TODO: JwtAuthentication 로 관련 로직 이동
+        if (authentication == null) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
     }

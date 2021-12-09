@@ -12,6 +12,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 @Slf4j
@@ -55,6 +56,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleAmazonS3Exception(AmazonS3Exception exception) {
         log.info(exception.getMessage() + " from AmazonS3Exception");
         return createApiExceptionResult(ResponseMessage.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * request param, body 등에서 argument 타입이 올바르지 않을 때 발생
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+        log.info(exception.getMessage() + " from MethodArgumentTypeMismatchException");
+        return createApiExceptionResult(ResponseMessage.INVALID_REQUEST_ARGUMENT_TYPE);
     }
 
     private ResponseEntity createApiExceptionResult(HttpStatus httpStatus, String message) {

@@ -12,6 +12,7 @@ public enum ResponseMessage {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 내부적으로 에러가 발생했습니다."),
     PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다."),
     HTTP_REQUEST_METHOD_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 HTTP method 입니다."),
+    INVALID_REQUEST_ARGUMENT_TYPE(HttpStatus.BAD_REQUEST, "Request 인자 값의 타입이 올바르지 않습니다."),
 
     // authentication
     LOGIN_FAIL(HttpStatus.BAD_REQUEST, "email 또는 비밀번호가 일치하지 않습니다."),

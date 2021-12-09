@@ -10,7 +10,10 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(indexes = @Index(name = "like_article_index", columnList = "member_id"))
+@Table(indexes = {
+        @Index(name = "like_article_idx_member_id_article_id", columnList = "member_id, article_id", unique = true),
+        @Index(name = "like_article_idx_member_id", columnList = "member_id")
+})
 public class LikeArticle {
 
     @Id
@@ -26,4 +29,8 @@ public class LikeArticle {
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
+    public LikeArticle(Member member, Article article) {
+        this.member = member;
+        this.article = article;
+    }
 }
