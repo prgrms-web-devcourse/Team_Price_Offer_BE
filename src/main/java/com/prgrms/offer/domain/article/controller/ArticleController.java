@@ -2,6 +2,8 @@ package com.prgrms.offer.domain.article.controller;
 
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.common.page.PageDto;
+import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.*;
@@ -11,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -86,19 +90,21 @@ public class ArticleController {
     @ApiOperation("게시글 전체 조회")
     @GetMapping()
     public ResponseEntity<ApiResponse> getAll(
-            Pageable pageable,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(value = "categoryCode", required = false) Integer categoryCode,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(
+        Page<ArticleBriefViewResponse> pageResponses = articleService.findAllByPages(
                 pageable,
                 Optional.ofNullable(categoryCode),
                 Optional.ofNullable(authentication)
         );
 
+        PageInfo pageInfo = getPageInfo(pageResponses);
+
         return ResponseEntity.ok(
-                ApiResponse.of(ResponseMessage.SUCCESS, response)
+                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo))
         );
     }
 
@@ -156,6 +162,17 @@ public class ArticleController {
         if (authentication == null) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
+    }
+
+    private PageInfo getPageInfo(Page<ArticleBriefViewResponse> pageResponses) {
+        return PageInfo.of(
+                pageResponses.getPageable().getPageNumber(),
+                pageResponses.getTotalPages(),
+                pageResponses.getPageable().getPageSize(),
+                pageResponses.getTotalElements(),
+                pageResponses.getPageable().getPageNumber() + 1 == pageResponses.getTotalPages() ? true : false,
+                pageResponses.getPageable().getPageNumber() == 0 ? true : false
+        );
     }
 
 }
