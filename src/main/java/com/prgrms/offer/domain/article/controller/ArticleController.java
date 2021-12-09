@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -89,7 +90,7 @@ public class ArticleController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, authentication);
+        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, Optional.of(authentication));
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -103,7 +104,7 @@ public class ArticleController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        ArticleDetailResponse response = articleService.findById(articleId, authentication);
+        ArticleDetailResponse response = articleService.findById(articleId, Optional.of(authentication));
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -146,7 +147,7 @@ public class ArticleController {
         );
     }
 
-    private void validateJwtAuthentication(JwtAuthentication authentication){
+    private void validateJwtAuthentication(JwtAuthentication authentication){ // TODO: JwtAuthentication 로 관련 로직 이동
         if(authentication == null){
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
