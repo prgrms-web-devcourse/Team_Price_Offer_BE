@@ -47,4 +47,5 @@ create table like_article (
 )
 
 -- like_article_index 인덱스
-create index like_article_index on like_article (member_id)
+create index like_article_idx_member_id_article_id on like_article (member_id, article_id)
+create index like_article_idx_member_id on like_article (member_id)
