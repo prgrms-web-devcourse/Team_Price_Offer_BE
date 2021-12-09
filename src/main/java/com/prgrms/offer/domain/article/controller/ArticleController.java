@@ -90,7 +90,7 @@ public class ArticleController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, Optional.of(authentication));
+        Page<ArticleBriefViewResponse> response = articleService.findAllByPages(pageable, Optional.ofNullable(authentication));
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -104,7 +104,7 @@ public class ArticleController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        ArticleDetailResponse response = articleService.findById(articleId, Optional.of(authentication));
+        ArticleDetailResponse response = articleService.findById(articleId, Optional.ofNullable(authentication));
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
