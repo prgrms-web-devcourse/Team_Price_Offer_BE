@@ -12,6 +12,8 @@ import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
 import com.prgrms.offer.domain.offer.repository.OfferRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +45,12 @@ public class OfferService {
         Offer offerEntity = offerRepository.save(offer);
 
         return converter.toOfferResponse(offerEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OfferResponse> findAllByArticleId(Pageable pageable, Long articleId) {
+        Page<Offer> offerPages = offerRepository.findAllByArticleId(pageable, articleId);
+
+        return offerPages.map(o -> converter.toOfferResponse(o));
     }
 }
