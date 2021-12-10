@@ -12,6 +12,7 @@ import com.prgrms.offer.domain.article.model.dto.CodeAndNameInfosResponse;
 import com.prgrms.offer.domain.article.model.dto.ProductImageUrlsResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
+import com.prgrms.offer.domain.article.model.value.Category;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
@@ -82,7 +83,7 @@ public class ArticleService {
             articleEntity.updateInfo(
                     request.getTitle(),
                     request.getContent(),
-                    request.getCategoryCode(),
+                    Category.of(request.getCategoryCode()).getCode(),
                     request.getTradeArea(),
                     request.getQuantity()
             );
