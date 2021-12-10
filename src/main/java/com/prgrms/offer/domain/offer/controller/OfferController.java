@@ -1,0 +1,65 @@
+package com.prgrms.offer.domain.offer.controller;
+
+import com.prgrms.offer.common.ApiResponse;
+import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.common.page.PageInfo;
+import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.core.jwt.JwtAuthentication;
+import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
+import com.prgrms.offer.domain.offer.model.dto.OfferCreateRequest;
+import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
+import com.prgrms.offer.domain.offer.service.OfferService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(tags = "가격 제안 관련")
+public class OfferController {
+
+    private final OfferService offerService;
+
+    @ApiOperation("가격 제안하기")
+    @PostMapping(value = "/articles/{articleId}/offers", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse> updateTradeStatus(
+            @PathVariable Long articleId,
+            @Valid @RequestBody OfferCreateRequest request,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        validateJwtAuthentication(authentication);
+
+        OfferResponse response = offerService.offer(request, articleId, authentication);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+
+    private void validateJwtAuthentication(JwtAuthentication authentication) { // TODO: JwtAuthentication 로 관련 로직 이동
+        if (authentication == null) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+    }
+
+    private PageInfo getPageInfo(Page<?> pageResponses) {
+        return PageInfo.of(
+                pageResponses.getPageable().getPageNumber(),
+                pageResponses.getTotalPages(),
+                pageResponses.getPageable().getPageSize(),
+                pageResponses.getTotalElements(),
+                pageResponses.getPageable().getPageNumber() + 1 == pageResponses.getTotalPages() ? true : false,
+                pageResponses.getPageable().getPageNumber() == 0 ? true : false
+        );
+    }
+}
