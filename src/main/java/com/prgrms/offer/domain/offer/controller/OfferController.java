@@ -6,7 +6,6 @@ import com.prgrms.offer.common.page.PageDto;
 import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.offer.model.dto.OfferCreateRequest;
 import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
 import com.prgrms.offer.domain.offer.service.OfferService;
