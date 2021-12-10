@@ -22,7 +22,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Page<Article> findByTitleIgnoreCaseContains(String title, Pageable pageable);
 
-    Page<Article> findAllByCategoryCode(Pageable pageable, int cagecoryCode);
+    Page<Article> findAllByCategoryCode(Pageable pageable, int categoryCode);
 
     Page<Article> findAllByWriterIdAndTradeStatusCode(Pageable pageable, Long writerId, int tradeStatusCode);
 
