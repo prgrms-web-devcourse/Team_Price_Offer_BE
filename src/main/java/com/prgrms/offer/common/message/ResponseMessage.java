@@ -25,6 +25,7 @@ public enum ResponseMessage {
     TRADE_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 거래 상태가 존재하지 않습니다."),
     TRADE_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 거래방식이 존재하지 않습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
+    NOT_SUPPORTING_PARAM_COMBINATION(HttpStatus.BAD_REQUEST, "지원하지 않는 parameter 조합입니다."),
 
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
