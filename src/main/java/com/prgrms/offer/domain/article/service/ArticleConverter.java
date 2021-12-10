@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ArticleConverter {
     public ArticleBriefViewResponse toArticleBriefViewResponse(Article article, boolean isLiked){
         return ArticleBriefViewResponse.builder()
-                .articleId(article.getId())
+                .id(article.getId())
                 .mainImageUrl(article.getMainImageUrl())
                 .title(article.getTitle())
                 .price(article.getPrice())
@@ -32,12 +32,27 @@ public class ArticleConverter {
                 .build();
     }
 
-    public CategoriesResponse toCategoriesResponse() {
-        var response = new CategoriesResponse();
+    public CodeAndNameInfosResponse toCodeAndNameInfosResponse() {
+        var response = new CodeAndNameInfosResponse();
 
         for(var category : Category.getAllCategory()){
-            var categories = new CodeAndName(category.getCode(), category.getName());
-            response.getCategories().add(categories);
+            var codeAndName = new CodeAndName(category.getCode(), category.getName());
+            response.getCategories().add(codeAndName);
+        }
+
+        for(var productStatus : ProductStatus.getAllProductStatus()){
+            var codeAndName = new CodeAndName(productStatus.getCode(), productStatus.getName());
+            response.getProductStatus().add(codeAndName);
+        }
+
+        for(var tradeMethod : TradeMethod.getAllTradeMethod()){
+            var codeAndName = new CodeAndName(tradeMethod.getCode(), tradeMethod.getName());
+            response.getTradeMethod().add(codeAndName);
+        }
+
+        for(var tradeStatus : TradeStatus.getAllTradeStatus()){
+            var codeAndName = new CodeAndName(tradeStatus.getCode(), tradeStatus.getName());
+            response.getTradeStatus().add(codeAndName);
         }
 
         return response;

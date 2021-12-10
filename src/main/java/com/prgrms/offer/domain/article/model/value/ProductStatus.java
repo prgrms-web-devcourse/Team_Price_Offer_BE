@@ -5,7 +5,9 @@ import com.prgrms.offer.core.error.exception.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -30,5 +32,15 @@ public enum ProductStatus {
                 .filter(v -> v.name.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ResponseMessage.PRODUCT_STATUS_NOT_FOUND));
+    }
+
+    public static List<ProductStatus> getAllProductStatus() {
+        final List<ProductStatus> result = new ArrayList<>();
+
+        for(var productStatus : ProductStatus.values()){
+            result.add(productStatus);
+        }
+
+        return result;
     }
 }

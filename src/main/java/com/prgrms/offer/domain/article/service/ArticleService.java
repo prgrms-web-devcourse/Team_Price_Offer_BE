@@ -8,7 +8,7 @@ import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
 import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
 import com.prgrms.offer.domain.article.model.dto.ArticleDetailResponse;
-import com.prgrms.offer.domain.article.model.dto.CategoriesResponse;
+import com.prgrms.offer.domain.article.model.dto.CodeAndNameInfosResponse;
 import com.prgrms.offer.domain.article.model.dto.ProductImageUrlsResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
@@ -46,8 +46,8 @@ public class ArticleService {
     private final String PRODUCT_IMAGE_DIR = "productImage";
     private final int MAX_IMAGE_SIZE = 3;
 
-    public CategoriesResponse findAllCategories() {
-        return converter.toCategoriesResponse();
+    public CodeAndNameInfosResponse getAllCodeAndNameInfos() {
+        return converter.toCodeAndNameInfosResponse();
     }
 
     public List<String> getImageUrls(List<MultipartFile> images) throws IOException {

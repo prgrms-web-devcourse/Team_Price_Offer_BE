@@ -5,7 +5,9 @@ import com.prgrms.offer.core.error.exception.BusinessException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -31,5 +33,15 @@ public enum TradeStatus {
                 .filter(v -> v.name.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ResponseMessage.TRADE_STATUS_NOT_FOUND));
+    }
+
+    public static List<TradeStatus> getAllTradeStatus() {
+        final List<TradeStatus> result = new ArrayList<>();
+
+        for(var tradeStatus : TradeStatus.values()){
+            result.add(tradeStatus);
+        }
+
+        return result;
     }
 }
