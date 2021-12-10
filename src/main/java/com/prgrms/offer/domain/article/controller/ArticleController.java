@@ -132,7 +132,7 @@ public class ArticleController {
         );
     }
 
-    @ApiOperation("카테고리 목록 조회")
+    @ApiOperation("카테고리, 상품상태, 거래방법, 거래상태 목록 조회")
     @GetMapping(value = "/infos")
     public ResponseEntity<ApiResponse> getAllCodeAndNameInfos() {
         CodeAndNameInfosResponse response = articleService.getAllCodeAndNameInfos();
