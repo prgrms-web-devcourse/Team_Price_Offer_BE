@@ -53,4 +53,24 @@ public class OfferService {
 
         return offerPages.map(o -> converter.toOfferResponse(o));
     }
+
+    @Transactional
+    public void adopteOffer(Long offerId, JwtAuthentication authentication) {
+        Offer offer = offerRepository.findById(offerId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
+
+        validateWriterOrElseThrow(offer.getArticle(), authentication.loginId);
+
+        if (offerRepository.existsByArticleAndIsSelected(offer.getArticle(), true)) {
+            throw new BusinessException(ResponseMessage.EXISTS_ALREADY_SELECTED_OFFER);
+        }
+
+        offer.selectOffer();
+    }
+
+    private void validateWriterOrElseThrow(Article article, String principal) {
+        if (!article.validateWriterByPrincipal(principal)) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+    }
 }

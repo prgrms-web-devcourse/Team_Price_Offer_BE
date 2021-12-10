@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(indexes = {
-        @Index(name = "offer_idx_offerer_id_is_Selected", columnList = "offerer_id, isSelected"),
+        @Index(name = "offer_idx_article_id_is_Selected", columnList = "article_id, isSelected"),
         @Index(name = "offer_idx_article_id", columnList = "article_id")
 })
 public class Offer {
@@ -40,4 +40,7 @@ public class Offer {
     @Column
     private LocalDateTime createdDate;
 
+    public void selectOffer() {
+        this.isSelected = true;
+    }
 }

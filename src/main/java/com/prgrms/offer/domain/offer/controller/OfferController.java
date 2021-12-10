@@ -65,6 +65,17 @@ public class OfferController {
         );
     }
 
+    @ApiOperation("가격채택")
+    @PatchMapping(value = "/articles/offers/{offerId}")
+    public ResponseEntity<ApiResponse> adopteOffer(@PathVariable Long offerId, @AuthenticationPrincipal JwtAuthentication authentication) {
+        validateJwtAuthentication(authentication);
+
+        offerService.adopteOffer(offerId, authentication);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS)
+        );
+    }
 
     private void validateJwtAuthentication(JwtAuthentication authentication) { // TODO: JwtAuthentication 로 관련 로직 이동
         if (authentication == null) {
