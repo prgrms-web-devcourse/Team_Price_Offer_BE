@@ -11,7 +11,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum TradeMethod {
     DIRECT("직거래", 2),
-    DELIVERY("택배겨래", 4),
+    DELIVERY("택배거래", 4),
     BOTH("상관없음", 8),
 
     ;
