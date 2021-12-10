@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class ArticleBriefViewResponse {
-    private Long articleId;
+    private Long id;
 
     private String mainImageUrl;
 
