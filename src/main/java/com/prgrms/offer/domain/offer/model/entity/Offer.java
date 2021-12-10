@@ -34,7 +34,7 @@ public class Offer {
     @Column
     private Integer price;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
+    @Column
     private Boolean isSelected;
 
     @Column
