@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class LikeArticleStatusResponse {
-    private final boolean isLiked;
+    private final Boolean isLiked;
 }

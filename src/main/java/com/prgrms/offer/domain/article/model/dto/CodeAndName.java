@@ -1,14 +1,14 @@
 package com.prgrms.offer.domain.article.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class CodeAndName {
-    private int code;
+    private final int code;
 
-    private String name;
+    private final String name;
 }

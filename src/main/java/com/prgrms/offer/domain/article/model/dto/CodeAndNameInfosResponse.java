@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 public class CodeAndNameInfosResponse {
-    private List<CodeAndName> categories = new ArrayList<>();
+    private final List<CodeAndName> categories = new ArrayList<>();
 
-    private List<CodeAndName> productStatus = new ArrayList<>();
+    private final List<CodeAndName> productStatus = new ArrayList<>();
 
-    private List<CodeAndName> tradeMethod = new ArrayList<>();
+    private final List<CodeAndName> tradeMethod = new ArrayList<>();
 
-    private List<CodeAndName> tradeStatus = new ArrayList<>();
+    private final List<CodeAndName> tradeStatus = new ArrayList<>();
 }

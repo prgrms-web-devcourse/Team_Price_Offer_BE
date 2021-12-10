@@ -13,8 +13,8 @@ public class PageInfo {
     private int sizePerPage;
     private int totalElementCount;
 
-    private boolean isLastPage;
-    private boolean isFirstPage;
+    private Boolean isLastPage;
+    private Boolean isFirstPage;
 
     public static PageInfo of(
             int currentPageNumber,

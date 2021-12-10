@@ -127,7 +127,7 @@ public class ArticleConverter {
                 .mainImageUrl(article.getMainImageUrl())
                 .createdDate(article.getCreatedDate())
                 .modifiedDate(article.getModifiedDate())
-                .likeCounts(article.getLikeCount())
+                .likeCount(article.getLikeCount())
                 .isLiked(isLiked)
                 .viewCount(article.getViewCount())
                 .build();

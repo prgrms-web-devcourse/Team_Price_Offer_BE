@@ -4,30 +4,31 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ArticleBriefViewResponse {
-    private Long id;
+    private final Long id;
 
-    private String mainImageUrl;
+    private final String mainImageUrl;
 
-    private String title;
+    private final String title;
 
-    private int price;
+    private final int price;
 
-    private String tradeArea;
+    private final String tradeArea;
 
-    private CodeAndName tradeStatus;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdDate;
+    private final CodeAndName tradeStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime modifiedDate;
+    private final LocalDateTime createdDate;
 
-    private boolean isLiked;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private final LocalDateTime modifiedDate;
+
+    private final Boolean isLiked;
 }
