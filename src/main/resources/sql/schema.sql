@@ -26,6 +26,12 @@ create table article (
                          primary key (article_id)
 )
 
+-- article index
+create index article_idx_writer_id on article (writer_id)
+create index article_idx_category_code on article (category_code)
+create index article_idx_trade_status_code on article (trade_status_code)
+create index article_idx_writer_id_trade_status_code on article (writer_id, trade_status_code)
+
 -- product_image schema
 DROP TABLE IF EXISTS product_image CASCADE;
 
