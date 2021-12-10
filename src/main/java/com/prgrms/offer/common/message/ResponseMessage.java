@@ -37,6 +37,11 @@ public enum ResponseMessage {
     FILE_CONVERTION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일을 전환하는데 실패했습니다."),
     INVALID_IMAGE_EXCEPTION(HttpStatus.BAD_REQUEST, "변환할 이미지가 존재하지 않습니다."),
 
+    // offer
+    EXCEED_OFFER_COUNT(HttpStatus.BAD_REQUEST, "가격제안 횟수를 초과했습니다."),
+    OFFER_NOT_FOUND(HttpStatus.NOT_FOUND, "가격 제안이 존재하지 않습니다."),
+    EXISTS_ALREADY_SELECTED_OFFER(HttpStatus.BAD_REQUEST, "이미 선택된 offer가 존재합니다."),
+
     ;
 
     private final HttpStatus status;

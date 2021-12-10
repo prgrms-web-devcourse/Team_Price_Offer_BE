@@ -164,7 +164,7 @@ public class ArticleController {
         }
     }
 
-    private PageInfo getPageInfo(Page<ArticleBriefViewResponse> pageResponses) {
+    private PageInfo getPageInfo(Page<?> pageResponses) {
         return PageInfo.of(
                 pageResponses.getPageable().getPageNumber(),
                 pageResponses.getTotalPages(),
