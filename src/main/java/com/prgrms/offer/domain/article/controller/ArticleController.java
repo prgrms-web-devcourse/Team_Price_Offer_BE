@@ -92,12 +92,16 @@ public class ArticleController {
     public ResponseEntity<ApiResponse> getAll(
             @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
             @RequestParam(value = "categoryCode", required = false) Integer categoryCode,
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            @RequestParam(value = "tradeStatusCode", required = false) Integer tradeStatusCode,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
         Page<ArticleBriefViewResponse> pageResponses = articleService.findAllByPages(
                 pageable,
                 Optional.ofNullable(categoryCode),
+                Optional.ofNullable(memberId),
+                Optional.ofNullable(tradeStatusCode),
                 Optional.ofNullable(authentication)
         );
 
@@ -170,8 +174,8 @@ public class ArticleController {
                 pageResponses.getTotalPages(),
                 pageResponses.getPageable().getPageSize(),
                 pageResponses.getTotalElements(),
-                pageResponses.getPageable().getPageNumber() + 1 == pageResponses.getTotalPages() ? true : false,
-                pageResponses.getPageable().getPageNumber() == 0 ? true : false
+                pageResponses.isLast(),
+                pageResponses.isFirst()
         );
     }
 
