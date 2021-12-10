@@ -49,3 +49,20 @@ create table like_article (
 -- like_article_index 인덱스
 create index like_article_idx_member_id_article_id on like_article (member_id, article_id)
 create index like_article_idx_member_id on like_article (member_id)
+
+-- offer 테이블
+DROP TABLE IF EXISTS offer CASCADE;
+
+create table offer (
+    offer_id bigint not null,
+    created_date timestamp,
+    is_selected tinyint(1) default 0,
+    price integer,
+    article_id bigint,
+    offerer_id bigint,
+    primary key (offer_id)
+)
+
+-- offer table index
+create index offer_idx_offerer_id_is_Selected on offer (offerer_id, is_selected)
+create index offer_idx_article_id on offer (article_id)
