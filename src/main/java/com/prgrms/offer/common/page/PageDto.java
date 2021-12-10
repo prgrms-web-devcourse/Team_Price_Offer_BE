@@ -7,11 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PageDto<T> {
 
-    private T contents;
+    private T elements;
     private PageInfo pageInfo;
 
-    public static <T> PageDto<T> of(T contents, PageInfo pageInfo) {
-        return new PageDto<>(contents, pageInfo);
+    public static <T> PageDto<T> of(T elements, PageInfo pageInfo) {
+        return new PageDto<>(elements, pageInfo);
     }
 
 }

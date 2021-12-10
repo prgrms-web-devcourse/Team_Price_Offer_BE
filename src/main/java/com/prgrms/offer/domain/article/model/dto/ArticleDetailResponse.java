@@ -50,9 +50,9 @@ public class ArticleDetailResponse {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime modifiedDate;
 
-        private int likeCounts;
+        private int likeCount;
 
-        private boolean isLiked;
+        private Boolean isLiked;
 
         private int viewCount;
 

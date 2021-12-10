@@ -133,9 +133,9 @@ public class ArticleController {
     }
 
     @ApiOperation("카테고리 목록 조회")
-    @GetMapping(value = "/categories")
-    public ResponseEntity<ApiResponse> getAllCategories() {
-        CategoriesResponse response = articleService.findAllCategories();
+    @GetMapping(value = "/infos")
+    public ResponseEntity<ApiResponse> getAllCodeAndNameInfos() {
+        CodeAndNameInfosResponse response = articleService.getAllCodeAndNameInfos();
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
