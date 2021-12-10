@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS offer CASCADE;
 create table offer (
     offer_id bigint not null,
     created_date timestamp,
-    is_selected tinyint(1) default 0,
+    is_selected tinyint(1),
     price integer,
     article_id bigint,
     offerer_id bigint,
