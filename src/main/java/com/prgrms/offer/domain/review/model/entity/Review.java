@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(indexes = {
-        @Index(name = "review_idx_to_member", columnList = "to_member"),
-        @Index(name = "review_idx_article_id", columnList = "article_id")
+        @Index(name = "review_idx_to_member_id", columnList = "to_member_id"),
+        @Index(name = "review_idx_from_member_id_article_id", columnList = "from_member_id, article_id")
 })
 public class Review {
 
@@ -24,11 +24,11 @@ public class Review {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_member", referencedColumnName = "member_id")
+    @JoinColumn(name = "to_member_id", referencedColumnName = "member_id")
     private Member toMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_member", referencedColumnName = "member_id")
+    @JoinColumn(name = "from_member_id", referencedColumnName = "member_id")
     private Member fromMember;
 
     @Column
