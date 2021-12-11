@@ -31,16 +31,16 @@ public class MessageController {
     private final MemberService memberService;
     private final MessageService messageService;
 
-    @PostMapping("/user/{userId}")
+    @PostMapping("/member/{memberId}")
     public ResponseEntity<ApiResponse> sendFirstMessageToOfferer(
-        @PathVariable Long userId,
+        @PathVariable Long memberId,
         @RequestParam(value = "articleId") long articleId,
         @RequestBody MessageRequest messageRequest,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
         validateJwtAuthentication(authentication);
 
-        messageService.sendFirstMessageToOfferer(userId, authentication.loginId, articleId,
+        messageService.sendFirstMessageToOfferer(memberId, authentication.loginId, articleId,
             messageRequest.getContent());
 
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS));
