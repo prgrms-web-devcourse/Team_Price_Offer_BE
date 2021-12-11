@@ -48,8 +48,8 @@ public class ArticleSearchController {
             pageResponses.getTotalPages(),
             pageResponses.getPageable().getPageSize(),
             pageResponses.getTotalElements(),
-            pageResponses.getPageable().getPageNumber() + 1 == pageResponses.getTotalPages() ? true : false,
-            pageResponses.getPageable().getPageNumber() == 0 ? true : false
+            pageResponses.isLast(),
+            pageResponses.isFirst()
         );
     }
 
