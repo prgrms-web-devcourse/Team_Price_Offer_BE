@@ -9,4 +9,5 @@ public class DtoValidationMessage {
     public static final String EMPTY_IMAGE_URL = "image url이 비어있습니다.";
     public static final String INVALID_PASSWORD_LENGTH = "비밀번호는 최소 8자 이상 최대 15자 이하어야 합니다.";
     public static final String INVALID_OFFER_PRICE = "제안 가격이 올바르지 않습니다.";
+    public static final String INVALID_REVIEW_SCORE = "리뷰 점수가 올바르지 않습니다.";
 }
