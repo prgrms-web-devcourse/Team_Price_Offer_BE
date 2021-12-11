@@ -26,15 +26,15 @@ public class MessageRoom {
     private Long messageRoomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "messagePartnerId")
+    @JoinColumn(name = "message_partner_id")
     private Member messagePartner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "articleId")
+    @JoinColumn(name = "article_id")
     private Article article;
 
     private LocalDateTime createdDate;
