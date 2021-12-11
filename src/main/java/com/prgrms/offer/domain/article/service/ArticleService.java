@@ -12,6 +12,7 @@ import com.prgrms.offer.domain.article.model.dto.CodeAndNameInfosResponse;
 import com.prgrms.offer.domain.article.model.dto.ProductImageUrlsResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
+import com.prgrms.offer.domain.article.model.value.Category;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
@@ -82,7 +83,7 @@ public class ArticleService {
             articleEntity.updateInfo(
                     request.getTitle(),
                     request.getContent(),
-                    request.getCategoryCode(),
+                    Category.of(request.getCategoryCode()).getCode(),
                     request.getTradeArea(),
                     request.getQuantity()
             );
@@ -158,15 +159,31 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleBriefViewResponse> findAllByPages(
             Pageable pageable,
-            Optional<Integer> integerOptional,
+            Optional<Integer> categoryCodeOptional,
+            Optional<Long> memberIdOptional,
+            Optional<Integer> tradeStatusCodeOptional,
             Optional<JwtAuthentication> authenticationOptional
     ) {
 
         Page<Article> postPage;
-        if(!integerOptional.isPresent()){
+        if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()){
             postPage = articleRepository.findAll(pageable);
-        }else{
-            postPage = articleRepository.findAllByCategoryCode(pageable, integerOptional.get());
+        }
+        else if(categoryCodeOptional.isPresent() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()){
+            postPage = articleRepository.findAllByCategoryCode(pageable, Category.of(categoryCodeOptional.get()).getCode());
+        }
+        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isPresent()){
+            postPage = articleRepository.findAllByWriterIdAndTradeStatusCode(
+                    pageable,
+                    memberIdOptional.get(),
+                    TradeStatus.of(tradeStatusCodeOptional.get()).getCode()
+            );
+        }
+        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isPresent()){
+            postPage = articleRepository.findAllByTradeStatusCode(pageable, TradeStatus.of(tradeStatusCodeOptional.get()).getCode());
+        }
+        else{
+            throw new BusinessException(ResponseMessage.NOT_SUPPORTING_PARAM_COMBINATION);
         }
 
         if (!authenticationOptional.isPresent()) {
