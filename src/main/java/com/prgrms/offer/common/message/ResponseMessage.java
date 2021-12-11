@@ -13,6 +13,7 @@ public enum ResponseMessage {
     PERMISSION_DENIED(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다."),
     HTTP_REQUEST_METHOD_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 HTTP method 입니다."),
     INVALID_REQUEST_ARGUMENT_TYPE(HttpStatus.BAD_REQUEST, "Request 인자 값의 타입이 올바르지 않습니다."),
+    MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "Request Parameter가 비어있습니다."),
 
     // authentication
     LOGIN_FAIL(HttpStatus.BAD_REQUEST, "email 또는 비밀번호가 일치하지 않습니다."),
@@ -26,6 +27,7 @@ public enum ResponseMessage {
     TRADE_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 거래방식이 존재하지 않습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
     NOT_SUPPORTING_PARAM_COMBINATION(HttpStatus.BAD_REQUEST, "지원하지 않는 parameter 조합입니다."),
+    NOT_COMPLETED_TRADE(HttpStatus.BAD_REQUEST, "거래완료상태가 아닙니다."),
 
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
