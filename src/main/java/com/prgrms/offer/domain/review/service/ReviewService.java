@@ -3,6 +3,7 @@ package com.prgrms.offer.domain.review.service;
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
+import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
@@ -32,6 +33,10 @@ public class ReviewService {
 
         if(!offer.getIsSelected()){
             throw new BusinessException(ResponseMessage.NOT_SELECTED_OFFER);
+        }
+
+        if(!TradeStatus.isCompleted(offer.getArticle().getTradeStatusCode())){
+            throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
         }
 
         Member fromMember = memberRepository.findByPrincipal(authentication.loginId)
