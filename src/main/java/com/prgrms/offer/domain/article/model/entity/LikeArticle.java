@@ -4,6 +4,7 @@ import com.prgrms.offer.domain.member.model.entity.Member;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -29,8 +30,11 @@ public class LikeArticle {
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
+    private LocalDateTime createdDate;
+
     public LikeArticle(Member member, Article article) {
         this.member = member;
         this.article = article;
+        this.createdDate = LocalDateTime.now();
     }
 }
