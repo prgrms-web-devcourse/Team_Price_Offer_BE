@@ -28,6 +28,7 @@ public enum ResponseMessage {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리가 존재하지 않습니다."),
     NOT_SUPPORTING_PARAM_COMBINATION(HttpStatus.BAD_REQUEST, "지원하지 않는 parameter 조합입니다."),
     NOT_COMPLETED_TRADE(HttpStatus.BAD_REQUEST, "거래완료상태가 아닙니다."),
+    ALREADY_SWITCH_TRADESTATUS(HttpStatus.BAD_REQUEST, "거래완료상태에서 거래상태를 변경할 수 없습니다."),
 
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
@@ -35,6 +36,7 @@ public enum ResponseMessage {
 
     // review
     ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 리뷰를 남긴 사용자입니다."),
+    INVALID_REVIEWEE(HttpStatus.BAD_REQUEST, "리뷰 대상이 올바르지 않습니다."),
 
     // s3
     FILE_CONVERTION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일을 전환하는데 실패했습니다."),
