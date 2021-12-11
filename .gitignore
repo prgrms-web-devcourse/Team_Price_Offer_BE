@@ -246,3 +246,4 @@ src/main/resources/*.properties
 *.jpg
 *.jpeg
 
+*.MF
