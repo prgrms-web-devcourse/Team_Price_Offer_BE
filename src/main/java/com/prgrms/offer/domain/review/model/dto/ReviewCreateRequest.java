@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class ReviewCreateRequest {
     @Min(value = -1, message = DtoValidationMessage.INVALID_REVIEW_SCORE)
-    @Max(value = 3, message = DtoValidationMessage.INVALID_REVIEW_SCORE)
+    @Max(value = 2, message = DtoValidationMessage.INVALID_REVIEW_SCORE)
     private int score;
 
     @Size(min = 3, max = 4000, message = DtoValidationMessage.INVALID_CONTENT_LENGTH)
