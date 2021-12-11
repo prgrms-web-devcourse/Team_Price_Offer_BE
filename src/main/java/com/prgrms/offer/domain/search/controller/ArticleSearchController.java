@@ -2,6 +2,8 @@ package com.prgrms.offer.domain.search.controller;
 
 import com.prgrms.offer.common.ApiResponse;
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.common.page.PageDto;
+import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.search.service.ArticleSearchService;
@@ -29,10 +31,25 @@ public class ArticleSearchController {
         @RequestParam(value = "title") @NotBlank String title,
         Pageable pageable,
         @AuthenticationPrincipal JwtAuthentication authentication) {
-        Page<ArticleBriefViewResponse> response = articleSearchService.findByTitle(title, pageable, authentication);
+        Page<ArticleBriefViewResponse> articleBriefViewResponse = articleSearchService.findByTitle(
+            title, pageable, authentication);
+
+        PageInfo pageInfo = getPageInfo(articleBriefViewResponse);
 
         return ResponseEntity.ok(
-            ApiResponse.of(ResponseMessage.SUCCESS, response)
+            ApiResponse.of(ResponseMessage.SUCCESS,
+                PageDto.of(articleBriefViewResponse.getContent(), pageInfo))
+        );
+    }
+
+    private PageInfo getPageInfo(Page<ArticleBriefViewResponse> pageResponses) {
+        return PageInfo.of(
+            pageResponses.getPageable().getPageNumber(),
+            pageResponses.getTotalPages(),
+            pageResponses.getPageable().getPageSize(),
+            pageResponses.getTotalElements(),
+            pageResponses.isLast(),
+            pageResponses.isFirst()
         );
     }
 
