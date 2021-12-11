@@ -27,5 +27,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findAllByWriterIdAndTradeStatusCode(Pageable pageable, Long writerId, int tradeStatusCode);
 
     Page<Article> findAllByTradeStatusCode(Pageable pageable, int tradeStatusCode);
+
+    Page<Article> findAllByWriterId(Pageable pageable, Long writerId);
     
 }

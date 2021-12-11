@@ -182,6 +182,9 @@ public class ArticleService {
         else if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isPresent()){
             postPage = articleRepository.findAllByTradeStatusCode(pageable, TradeStatus.of(tradeStatusCodeOptional.get()).getCode());
         }
+        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isEmpty()){
+            postPage = articleRepository.findAllByWriterId(pageable, memberIdOptional.get());
+        }
         else{
             throw new BusinessException(ResponseMessage.NOT_SUPPORTING_PARAM_COMBINATION);
         }
