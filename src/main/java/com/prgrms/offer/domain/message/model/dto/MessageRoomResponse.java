@@ -21,17 +21,17 @@ public class MessageRoomResponse {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class UserInfo {
 
-        private String userNickName;
-        private String userProfileImageUrl;
+        private String nickName;
+        private String profileImageUrl;
         private String address;
 
         private UserInfo(String userNickName, String userProfileImageUrl, String address) {
-            this.userNickName = userNickName;
-            this.userProfileImageUrl = userProfileImageUrl;
+            this.nickName = userNickName;
+            this.profileImageUrl = userProfileImageUrl;
             this.address = address;
         }
 
-        public static UserInfo nullUserInfo() {
+        public static UserInfo createNullUserInfo() {
             return new UserInfo(null, null, null);
         }
 
@@ -45,6 +45,7 @@ public class MessageRoomResponse {
     public static class MessageInfo {
 
         private String content;
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
