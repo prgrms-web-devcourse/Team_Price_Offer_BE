@@ -20,7 +20,7 @@ public class MessageRoomConverter {
     public MessageRoomResponse toMessageRoomResponse(MessageRoom messageRoom, Message message) {
         Member messagePartner = messageRoom.getMessagePartner();
         UserInfo userInfo = messagePartner != null ? UserInfo.createUserInfo(messagePartner)
-            : UserInfo.nullUserInfo();
+            : UserInfo.createNullUserInfo();
 
         return MessageRoomResponse.builder()
             .userInfo(userInfo)
