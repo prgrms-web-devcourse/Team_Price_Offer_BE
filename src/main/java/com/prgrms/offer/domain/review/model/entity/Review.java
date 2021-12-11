@@ -38,7 +38,7 @@ public class Review {
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column
