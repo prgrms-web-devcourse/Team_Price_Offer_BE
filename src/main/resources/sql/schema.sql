@@ -72,3 +72,41 @@ create table offer (
 -- offer table index
 create index offer_idx_offerer_id_is_Selected on offer (offerer_id, is_selected)
 create index offer_idx_article_id on offer (article_id)
+
+-- review table index
+drop table if exists review CASCADE
+
+create table review (
+    review_id bigint not null,
+    content TEXT,
+    created_date timestamp,
+    score integer,
+    article_id bigint,
+    reviewee_id bigint,
+    reviewer_id bigint,
+    primary key (review_id)
+)
+
+-- review table index
+create index review_idx_reviewee_id on review (reviewee_id)
+create index review_idx_reviewer_id_article_id on review (reviewer_id, article_id)
+
+-- FK 설정
+-- 1. review 테이블
+ALTER TABLE review ADD FOREIGN KEY (article_id) REFERENCES article(article_id);
+ALTER TABLE review ADD FOREIGN KEY (from_member_id) REFERENCES member(member_id);
+ALTER TABLE review ADD FOREIGN KEY (to_member_id) REFERENCES member(member_id);
+
+-- 2. article 테이블
+ALTER TABLE article ADD FOREIGN KEY (writer_id) REFERENCES member(member_id);
+
+-- 3. like_article 테이블
+ALTER TABLE like_article ADD FOREIGN KEY (article_id) REFERENCES article(article_id);
+ALTER TABLE like_article ADD FOREIGN KEY (member_id) REFERENCES member(member_id);
+
+-- 4. offer 테이블
+ALTER TABLE offer ADD FOREIGN KEY (offerer_id) REFERENCES member(member_id);
+ALTER TABLE offer ADD FOREIGN KEY (article_id) REFERENCES article(article_id);
+
+-- 5. product_image 테이블
+ALTER TABLE product_image ADD FOREIGN KEY (article_id) REFERENCES article(article_id);

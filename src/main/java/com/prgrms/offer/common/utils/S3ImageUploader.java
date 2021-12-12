@@ -16,7 +16,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,7 +58,7 @@ public class S3ImageUploader {
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"), Locale.KOREA);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmSS");
 
         String originFileName = file.getOriginalFilename();

@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.article.model.entity;
 
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.core.error.exception.BusinessException;
+import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import lombok.*;
 
@@ -82,6 +83,10 @@ public class Article {
     }
 
     public void updateTradeStatusCode(int tradeStatusCode) {
+        if(TradeStatus.isCompleted(this.tradeStatusCode)){
+            throw new BusinessException(ResponseMessage.ALREADY_SWITCH_TRADESTATUS);
+        }
+
         this.tradeStatusCode = tradeStatusCode;
         modifiedDate = LocalDateTime.now();
     }
@@ -113,6 +118,10 @@ public class Article {
 
     public boolean validateWriterByPrincipal(String principal){
         return this.writer.getPrincipal().equals(principal) ? true : false;
+    }
+
+    public boolean validateWriterByWriterId(Long writerId){
+        return this.writer.getId().longValue() == writerId.longValue();
     }
 
 }

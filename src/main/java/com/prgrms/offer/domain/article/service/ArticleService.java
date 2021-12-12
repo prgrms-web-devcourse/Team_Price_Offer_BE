@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +52,7 @@ public class ArticleService {
         return converter.toCodeAndNameInfosResponse();
     }
 
-    public List<String> getImageUrls(List<MultipartFile> images) throws IOException {
+    public List<String> uploadImage(List<MultipartFile> images) throws IOException {
         List<String> imageUrls = new ArrayList<>();
 
         for (var image : images) {
@@ -182,6 +183,9 @@ public class ArticleService {
         else if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isPresent()){
             postPage = articleRepository.findAllByTradeStatusCode(pageable, TradeStatus.of(tradeStatusCodeOptional.get()).getCode());
         }
+        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isEmpty()){
+            postPage = articleRepository.findAllByWriterId(pageable, memberIdOptional.get());
+        }
         else{
             throw new BusinessException(ResponseMessage.NOT_SUPPORTING_PARAM_COMBINATION);
         }
@@ -196,7 +200,8 @@ public class ArticleService {
         return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
     }
 
-    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Member currentMember) {
+    @Transactional(propagation = Propagation.MANDATORY)
+    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Member currentMember) {
         boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
 
         return converter.toArticleBriefViewResponse(article, isLiked);
@@ -208,7 +213,8 @@ public class ArticleService {
         }
     }
 
-    private void saveImagseUrls(Article article, List<String> imageUrls) {
+    @Transactional(propagation = Propagation.MANDATORY)
+    void saveImagseUrls(Article article, List<String> imageUrls) {
         for (var imageUrl : imageUrls) {
             if (imageUrl == null || imageUrl.isEmpty()) {
                 continue;

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -65,6 +66,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
         log.info(exception.getMessage() + " from MethodArgumentTypeMismatchException");
         return createApiExceptionResult(ResponseMessage.INVALID_REQUEST_ARGUMENT_TYPE);
+    }
+
+    /**
+     * URI에서 필수로 요구되는 param이 비어있을 경우 발생
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse> handleMMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+        log.info(exception.getMessage() + " from MissingServletRequestParameterException");
+        return createApiExceptionResult(ResponseMessage.MISSING_PARAMETER);
     }
 
     private ResponseEntity createApiExceptionResult(HttpStatus httpStatus, String message) {

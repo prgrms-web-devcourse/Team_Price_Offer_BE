@@ -44,4 +44,8 @@ public enum TradeStatus {
 
         return result;
     }
+
+    public static boolean isCompleted(int code){
+        return COMPLETED.getCode() == code;
+    }
 }
