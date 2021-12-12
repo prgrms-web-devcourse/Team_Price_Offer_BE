@@ -62,14 +62,14 @@ public class LikeArticleController {
         }
     }
 
-    private PageInfo getPageInfo(Page<ArticleBriefViewResponse> pageResponses) {
+    private PageInfo getPageInfo(Page<?> pageResponses) {
         return PageInfo.of(
                 pageResponses.getPageable().getPageNumber(),
                 pageResponses.getTotalPages(),
                 pageResponses.getPageable().getPageSize(),
                 pageResponses.getTotalElements(),
-                pageResponses.getPageable().getPageNumber() + 1 == pageResponses.getTotalPages() ? true : false,
-                pageResponses.getPageable().getPageNumber() == 0 ? true : false
+                pageResponses.isLast(),
+                pageResponses.isFirst()
         );
     }
 }
