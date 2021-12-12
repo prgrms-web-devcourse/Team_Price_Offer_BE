@@ -44,7 +44,7 @@ public class ArticleController {
             throw new BusinessException(ResponseMessage.INVALID_IMAGE_EXCEPTION);
         }
 
-        List<String> imageUrls = articleService.getImageUrls(images);
+        List<String> imageUrls = articleService.uploadImage(images);
 
         Map response = new HashMap<String, List<String>>();
         response.put("imageUrls", imageUrls);
