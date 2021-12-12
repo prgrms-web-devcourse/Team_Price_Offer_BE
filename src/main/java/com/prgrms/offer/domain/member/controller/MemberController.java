@@ -77,4 +77,5 @@ public class MemberController {
         MemberResponse response = memberService.getProfile(authentication);
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
     }
+
 }
