@@ -29,14 +29,14 @@ public class ReviewController {
     @PostMapping(value = "/reviews/offers/{offerId}")
     public ResponseEntity<ApiResponse> createReviewToBuyer(
             @PathVariable(required = true) Long offerId,
-            @RequestParam(value = "toMemberId", required = true) Long memberId,
+            @RequestParam(value = "revieweeId", required = true) Long revieweeId,
             @Valid @RequestBody ReviewCreateRequest request,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
         validateJwtAuthentication(authentication);
 
-        ReviewCreateResponse response = reviewService.createReviewToBuyer(offerId, memberId, request, authentication);
+        ReviewCreateResponse response = reviewService.createReviewToBuyer(offerId, revieweeId, request, authentication);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
@@ -47,14 +47,14 @@ public class ReviewController {
     @PostMapping(value = "/reviews")
     public ResponseEntity<ApiResponse> createReviewToSeller(
             @RequestParam(value = "articleId", required = true) Long articleId,
-            @RequestParam(value = "toMemberId", required = true) Long memberId,
+            @RequestParam(value = "revieweeId", required = true) Long revieweeId,
             @Valid @RequestBody ReviewCreateRequest request,
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
         validateJwtAuthentication(authentication);
 
-        ReviewCreateResponse response = reviewService.createReviewToSeller(articleId, memberId, request, authentication);
+        ReviewCreateResponse response = reviewService.createReviewToSeller(articleId, revieweeId, request, authentication);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)

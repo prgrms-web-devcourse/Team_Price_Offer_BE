@@ -30,7 +30,7 @@ public class ReviewService {
     private final ReviewConverter converter;
 
     @Transactional
-    public ReviewCreateResponse createReviewToBuyer(Long offerId, Long toMemberId, ReviewCreateRequest request, JwtAuthentication authentication){
+    public ReviewCreateResponse createReviewToBuyer(Long offerId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication){
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
 
@@ -42,36 +42,36 @@ public class ReviewService {
             throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
         }
 
-        Member fromMember = memberRepository.findByPrincipal(authentication.loginId)
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if(fromMember.getId().longValue() == toMemberId.longValue()){
+        if(reviewer.getId().longValue() == revieweeId.longValue()){
             throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
         }
 
-        if(reviewRepository.existsByFromMemberAndArticle(fromMember, offer.getArticle())){
+        if(reviewRepository.existsByReviewerAndArticle(reviewer, offer.getArticle())){
             throw new BusinessException(ResponseMessage.ALREADY_REVIEWED);
         }
 
-        Member toMember = memberRepository.findById(toMemberId)
+        Member reviewee = memberRepository.findById(revieweeId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if(toMember.getId().longValue() == fromMember.getId().longValue()){
+        if(reviewee.getId().longValue() == reviewer.getId().longValue()){
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
 
-        Review review = converter.toEntity(toMember, fromMember, offer.getArticle(), request.getScore(), request.getContent());
+        Review review = converter.toEntity(reviewee, reviewer, offer.getArticle(), request.getScore(), request.getContent());
         Review reviewEntity = reviewRepository.save(review);
 
         return converter.toReviewCreateResponse(reviewEntity);
     }
 
     @Transactional
-    public ReviewCreateResponse createReviewToSeller(Long articleId, Long toMemberId, ReviewCreateRequest request, JwtAuthentication authentication) {
+    public ReviewCreateResponse createReviewToSeller(Long articleId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
-        if(!article.validateWriterByWriterId(toMemberId)){
+        if(!article.validateWriterByWriterId(revieweeId)){
             throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
         }
 
@@ -79,21 +79,21 @@ public class ReviewService {
             throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
         }
 
-        Member fromMember = memberRepository.findByPrincipal(authentication.loginId)
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if(fromMember.getId().longValue() == toMemberId.longValue()){
+        if(reviewer.getId().longValue() == revieweeId.longValue()){
             throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
         }
 
-        if(reviewRepository.existsByFromMemberAndArticle(fromMember, article)){
+        if(reviewRepository.existsByReviewerAndArticle(reviewer, article)){
             throw new BusinessException(ResponseMessage.ALREADY_REVIEWED);
         }
 
-        Member toMember = memberRepository.findById(toMemberId)
+        Member reviewee = memberRepository.findById(revieweeId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Review review = converter.toEntity(toMember, fromMember, article, request.getScore(), request.getContent());
+        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent());
         Review reviewEntity = reviewRepository.save(review);
 
         return converter.toReviewCreateResponse(reviewEntity);

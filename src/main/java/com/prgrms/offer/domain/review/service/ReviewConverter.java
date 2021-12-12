@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 
 @Component
 public class ReviewConverter {
-    public Review toEntity(Member toMember, Member fromMember, Article article, int score, String content) {
+    public Review toEntity(Member reviewee, Member reviewer, Article article, int score, String content) {
         return Review.builder()
-                .toMember(toMember)
-                .fromMember(fromMember)
+                .reviewee(reviewee)
+                .reviewer(reviewer)
                 .article(article)
                 .score(score)
                 .content(content)

@@ -9,5 +9,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Override
     <S extends Review> S save(S entity);
 
-    boolean existsByFromMemberAndArticle(Member fromMember, Article article);
+    boolean existsByReviewerAndArticle(Member reviewer, Article article);
 }
