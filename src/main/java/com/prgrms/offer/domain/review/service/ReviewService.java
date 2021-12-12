@@ -56,10 +56,6 @@ public class ReviewService {
         Member reviewee = memberRepository.findById(revieweeId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if(reviewee.getId().longValue() == reviewer.getId().longValue()){
-            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-        }
-
         Review review = converter.toEntity(reviewee, reviewer, offer.getArticle(), request.getScore(), request.getContent());
         Review reviewEntity = reviewRepository.save(review);
 
