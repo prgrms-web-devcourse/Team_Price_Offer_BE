@@ -20,7 +20,7 @@ public class OfferConverter {
                 .build();
     }
 
-    public OfferResponse toOfferResponse(Offer offer) {
+    public OfferResponse toOfferResponse(Offer offer, Integer offerCountOfCurrentMember) {
         var offerer = offer.getOfferer();
 
         var response = OfferResponse.OfferDto.builder()
@@ -36,6 +36,6 @@ public class OfferConverter {
                 .isSelected(offer.getIsSelected())
                 .build();
 
-        return new OfferResponse(response);
+        return new OfferResponse(response, offerCountOfCurrentMember);
     }
 }

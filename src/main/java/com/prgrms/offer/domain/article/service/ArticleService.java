@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.prgrms.offer.domain.offer.model.entity.Offer;
+import com.prgrms.offer.domain.offer.repository.OfferRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,7 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final ProductImageRepository productImageRepository;
     private final LikeArticleRepository likeArticleRepository;
+    private final OfferRepository offerRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -198,6 +201,25 @@ public class ArticleService {
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         return postPage.map(p -> makeBriefViewResponseWithLikeInfo(p, currentMember));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ArticleBriefViewResponse> findAllBoughtProducts(Pageable pageable, JwtAuthentication authentication) {
+        Member member = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        Page<Offer> offerPage = offerRepository.findAllByOffererAndIsSelected(pageable, member, true);
+
+        return offerPage.map(o -> extractArticleBriefViewResponseFromOfferEntityWithLikeInfo(o, member));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ArticleBriefViewResponse extractArticleBriefViewResponseFromOfferEntityWithLikeInfo(Offer offer, Member member) {
+        Article article = offer.getArticle();
+
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(member, article);
+
+        return converter.toArticleBriefViewResponse(article, isLiked);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

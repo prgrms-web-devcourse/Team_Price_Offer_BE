@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.offer.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +11,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OfferResponse {
     private final OfferDto offer;
+
+    private final Integer offerCountOfCurrentMember;
 
     @Getter
     @Builder
