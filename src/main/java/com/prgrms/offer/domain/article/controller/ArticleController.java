@@ -121,7 +121,7 @@ public class ArticleController {
 
         validateJwtAuthentication(authentication);
 
-        Page<ArticleBriefViewResponse> pageResponses = articleService.findAlBuiedProducts(pageable, authentication);
+        Page<ArticleBriefViewResponse> pageResponses = articleService.findAllBuiedProducts(pageable, authentication);
 
         PageInfo pageInfo = getPageInfo(pageResponses);
 

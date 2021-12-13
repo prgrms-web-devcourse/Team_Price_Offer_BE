@@ -204,7 +204,7 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleBriefViewResponse> findAlBuiedProducts(Pageable pageable, JwtAuthentication authentication) {
+    public Page<ArticleBriefViewResponse> findAllBuiedProducts(Pageable pageable, JwtAuthentication authentication) {
         Member member = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
