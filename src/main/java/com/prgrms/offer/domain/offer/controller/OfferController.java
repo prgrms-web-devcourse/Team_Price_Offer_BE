@@ -52,15 +52,21 @@ public class OfferController {
     @GetMapping(value = "/articles/{articleId}/offers")
     public ResponseEntity<ApiResponse> getAllByArticleId(
             @PathVariable Long articleId,
-            @PageableDefault(sort = "price", direction = Sort.Direction.DESC, size = 20) Pageable pageable
+            @PageableDefault(sort = "price", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
         Page<OfferResponse> pageResponses = offerService.findAllByArticleId(pageable, articleId);
 
+        int offerCountOfCurrentMember = 0;
+        if(authentication != null) {
+            offerCountOfCurrentMember = offerService.findOfferCountOfCurrentMember(authentication, articleId);
+        }
+
         PageInfo pageInfo = getPageInfo(pageResponses);
 
         return ResponseEntity.ok(
-                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo))
+                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo, offerCountOfCurrentMember))
         );
     }
 

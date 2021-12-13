@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class OfferService {
@@ -34,7 +36,8 @@ public class OfferService {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        if ((int) offerRepository.countByOffererIdAndArticleId(offerer.getId(), articleId).longValue() >= MAX_AVAIL_OFFER_COUNT) {
+        int offerCountOfCurrentMember = (int) offerRepository.countByOffererIdAndArticleId(offerer.getId(), articleId).longValue();
+        if (offerCountOfCurrentMember >= MAX_AVAIL_OFFER_COUNT) {
             throw new BusinessException(ResponseMessage.EXCEED_OFFER_COUNT);
         }
 
@@ -44,14 +47,14 @@ public class OfferService {
         Offer offer = converter.toEntity(article, offerer, request.getPrice());
         Offer offerEntity = offerRepository.save(offer);
 
-        return converter.toOfferResponse(offerEntity);
+        return converter.toOfferResponse(offerEntity, offerCountOfCurrentMember + 1);
     }
 
     @Transactional(readOnly = true)
     public Page<OfferResponse> findAllByArticleId(Pageable pageable, Long articleId) {
         Page<Offer> offerPages = offerRepository.findAllByArticleId(pageable, articleId);
 
-        return offerPages.map(o -> converter.toOfferResponse(o));
+        return offerPages.map(o -> converter.toOfferResponse(o, null));
     }
 
     @Transactional
@@ -72,5 +75,15 @@ public class OfferService {
         if (!article.validateWriterByPrincipal(principal)) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public int findOfferCountOfCurrentMember(JwtAuthentication authentication, Long articleId) {
+        Member currentMember = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        final int offerCountOfCurrentMember = (int) offerRepository.countByOffererIdAndArticleId(currentMember.getId(), articleId).longValue();
+
+        return offerCountOfCurrentMember;
     }
 }
