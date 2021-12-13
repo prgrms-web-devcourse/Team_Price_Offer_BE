@@ -42,5 +42,8 @@ public class Review {
     private String content;
 
     @Column
+    private Boolean isRevieweeBuyer;
+
+    @Column
     private LocalDateTime createdDate;
 }
