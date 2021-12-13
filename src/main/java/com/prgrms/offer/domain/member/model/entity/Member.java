@@ -30,13 +30,14 @@ public class Member {
     @Builder.Default
     private int offerLevel = 1;
 
+    private int score;
 
     protected Member() {
     }
 
     @Builder
     public Member(String principal, String password, String nickname, String address, String profileImageUrl, int offerLevel
-    , String provider, String providerId) {
+    , int score, String provider, String providerId) {
         this.principal = principal;
         this.password = password;
         this.nickname = nickname;
@@ -45,11 +46,20 @@ public class Member {
         this.offerLevel = offerLevel;
         this.provider = provider;
         this.providerId = providerId;
+        this.score = score;
     }
 
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
         if (!passwordEncoder.matches(credentials, password))
             throw new IllegalArgumentException("Bad credential");
+    }
+
+    public void increaseScore(int score) {
+        this.score += score;
+    }
+
+    public void decreaseScore(int score) {
+        this.score -= score;
     }
 
     public void changeNickname(String nickname) {
