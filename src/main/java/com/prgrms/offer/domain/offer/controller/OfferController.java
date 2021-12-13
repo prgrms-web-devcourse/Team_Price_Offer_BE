@@ -58,10 +58,7 @@ public class OfferController {
 
         Page<OfferResponse> pageResponses = offerService.findAllByArticleId(pageable, articleId);
 
-        int offerCountOfCurrentMember = 0;
-        if(authentication != null) {
-            offerCountOfCurrentMember = offerService.findOfferCountOfCurrentMember(authentication, articleId);
-        }
+        int offerCountOfCurrentMember = offerService.findOfferCountOfCurrentMember(authentication, articleId);
 
         PageInfo pageInfo = getPageInfo(pageResponses);
 

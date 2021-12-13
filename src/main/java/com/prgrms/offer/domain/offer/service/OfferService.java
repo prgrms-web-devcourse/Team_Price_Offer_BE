@@ -79,6 +79,10 @@ public class OfferService {
 
     @Transactional(readOnly = true)
     public int findOfferCountOfCurrentMember(JwtAuthentication authentication, Long articleId) {
+        if(authentication == null) {
+            return 0;
+        }
+
         Member currentMember = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
