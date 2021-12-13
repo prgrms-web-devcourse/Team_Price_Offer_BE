@@ -33,6 +33,7 @@ public enum ResponseMessage {
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 사용자를 찾을 수 없습니다."),
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "해당 사용자가 이미 존재합니다."),
+    SCORE_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 Score입니다."),
 
     // review
     ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 리뷰를 남긴 사용자입니다."),
