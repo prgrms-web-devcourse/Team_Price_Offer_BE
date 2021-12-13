@@ -95,7 +95,7 @@ public class ArticleConverter {
                         ArticleDetailResponse.AuthorDetail.builder()
                         .id(writer.getId())
                         .email(writer.getAddress())
-                        .appleLevel(writer.getOfferLevel())
+                        .offerLevel(writer.getOfferLevel())
                         .nickname(writer.getNickname())
                         .profileImageUrl(writer.getProfileImageUrl())
                         .address(writer.getAddress())
