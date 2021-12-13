@@ -112,6 +112,24 @@ public class ArticleController {
         );
     }
 
+    @ApiOperation("마이페이지에서 내가 구매한 모든 게시글 조회")
+    @GetMapping(value = "/buy")
+    public ResponseEntity<ApiResponse> getAllInMyPage(
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        validateJwtAuthentication(authentication);
+
+        Page<ArticleBriefViewResponse> pageResponses = articleService.findAlBuiedProducts(pageable, authentication);
+
+        PageInfo pageInfo = getPageInfo(pageResponses);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo))
+        );
+    }
+
     @ApiOperation("게시글 단건 조회")
     @GetMapping(value = "/{articleId}")
     public ResponseEntity<ApiResponse> getOne(
