@@ -59,6 +59,14 @@ public class Member {
         this.score += score.getValue();
     }
 
+    public void increaseOfferLevel() {
+        this.offerLevel++;
+    }
+
+    public void decreaseOfferLevel() {
+        this.offerLevel--;
+    }
+
     public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
