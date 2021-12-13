@@ -98,7 +98,7 @@ public class Member {
                 ", nickname='" + nickname + '\'' +
                 ", address='" + address + '\'' +
                 ", profileImageUrl='" + profileImageUrl + '\'' +
-                ", appleLevel=" + offerLevel +
+                ", offerLevel=" + offerLevel +
                 '}';
     }
 }

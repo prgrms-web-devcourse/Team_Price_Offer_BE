@@ -28,7 +28,7 @@ public class MemberConverter {
                 .nickname(member.getNickname())
                 .offerLevel(member.getOfferLevel())
                 .address(member.getAddress())
-                .profileImage(member.getProfileImageUrl())
+                .profileImageUrl(member.getProfileImageUrl())
                 .build();
         return new MemberResponse(memberDto);
     }
