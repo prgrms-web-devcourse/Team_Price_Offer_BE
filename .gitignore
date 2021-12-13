@@ -247,3 +247,5 @@ src/main/resources/*.properties
 *.jpeg
 
 *.MF
+
+database/
