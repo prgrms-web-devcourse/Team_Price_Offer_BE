@@ -1,5 +1,6 @@
 package com.prgrms.offer.domain.member.model.entity;
 
+import com.prgrms.offer.domain.member.model.value.Score;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,31 +26,45 @@ public class Member {
     private String nickname;
     private String address;
 
-    private String profileImage;
+    private String profileImageUrl;
 
     @Builder.Default
-    private int appleLevel = 1;
+    private int offerLevel = 1;
 
+    private int score;
 
     protected Member() {
     }
 
     @Builder
-    public Member(String principal, String password, String nickname, String address, String profileImage, int appleLevel
-    , String provider, String providerId) {
+    public Member(String principal, String password, String nickname, String address, String profileImageUrl, int offerLevel
+    , int score, String provider, String providerId) {
         this.principal = principal;
         this.password = password;
         this.nickname = nickname;
         this.address = address;
-        this.profileImage = profileImage;
-        this.appleLevel = appleLevel;
+        this.profileImageUrl = profileImageUrl;
+        this.offerLevel = offerLevel;
         this.provider = provider;
         this.providerId = providerId;
+        this.score = score;
     }
 
     public void checkPassword(PasswordEncoder passwordEncoder, String credentials) {
         if (!passwordEncoder.matches(credentials, password))
             throw new IllegalArgumentException("Bad credential");
+    }
+
+    public void evaluateScore(Score score) {
+        this.score += score.getValue();
+    }
+
+    public void increaseOfferLevel() {
+        this.offerLevel++;
+    }
+
+    public void decreaseOfferLevel() {
+        this.offerLevel--;
     }
 
     public void changeNickname(String nickname) {
@@ -60,8 +75,8 @@ public class Member {
         this.address = address;
     }
 
-    public void changeProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public void changeProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     @Override
@@ -87,8 +102,8 @@ public class Member {
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", address='" + address + '\'' +
-                ", profileImage='" + profileImage + '\'' +
-                ", appleLevel=" + appleLevel +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", offerLevel=" + offerLevel +
                 '}';
     }
 }

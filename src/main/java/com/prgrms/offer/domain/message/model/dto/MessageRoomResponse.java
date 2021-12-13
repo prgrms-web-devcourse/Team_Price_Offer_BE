@@ -36,7 +36,7 @@ public class MessageRoomResponse {
         }
 
         public static UserInfo createUserInfo(Member member){
-            return new UserInfo(member.getNickname(), member.getProfileImage(), member.getAddress());
+            return new UserInfo(member.getNickname(), member.getProfileImageUrl(), member.getAddress());
         }
     }
 
