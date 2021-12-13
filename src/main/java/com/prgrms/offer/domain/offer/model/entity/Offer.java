@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Offer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "offer_id")
     private Long id;
 

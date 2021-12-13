@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messageId;
 
     @ManyToOne(fetch = FetchType.LAZY)

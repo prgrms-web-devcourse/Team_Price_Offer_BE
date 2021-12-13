@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class LikeArticle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_article_id")
     private Long id;
 
