@@ -1,5 +1,6 @@
 package com.prgrms.offer.domain.member.model.entity;
 
+import com.prgrms.offer.domain.member.model.value.Score;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,12 +55,8 @@ public class Member {
             throw new IllegalArgumentException("Bad credential");
     }
 
-    public void increaseScore(int score) {
-        this.score += score;
-    }
-
-    public void decreaseScore(int score) {
-        this.score -= score;
+    public void evaluateScore(Score score) {
+        this.score += score.getValue();
     }
 
     public void changeNickname(String nickname) {
