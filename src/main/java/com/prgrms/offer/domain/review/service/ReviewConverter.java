@@ -35,7 +35,7 @@ public class ReviewConverter {
                 .id(review.getId())
                 .reviewer(
                         new ReviewResponse.ReviewerDto(
-                                reviewer.getId(), reviewer.getProfileImage(), reviewer.getNickname(), reviewer.getAppleLevel()
+                                reviewer.getId(), reviewer.getProfileImageUrl(), reviewer.getNickname(), reviewer.getOfferLevel()
                         )
                 )
                 .score(review.getScore())
