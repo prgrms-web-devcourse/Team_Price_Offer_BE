@@ -14,6 +14,7 @@ import com.prgrms.offer.domain.review.model.dto.ReviewCreateRequest;
 import com.prgrms.offer.domain.review.model.dto.ReviewCreateResponse;
 import com.prgrms.offer.domain.review.model.dto.ReviewResponse;
 import com.prgrms.offer.domain.review.model.entity.Review;
+import com.prgrms.offer.domain.review.model.value.OfferLevel;
 import com.prgrms.offer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -117,7 +118,9 @@ public class ReviewService {
 
     @Transactional(propagation = Propagation.MANDATORY)
     void updateOfferScore(Member reviewee, int curScore) {
-        //TODO: 오퍼레벨 계산
+        int score = reviewee.evaluateScore(curScore);
+        OfferLevel offerLevel = OfferLevel.calculateOfferLevel(score);
+        reviewee.chageOfferLevel(offerLevel.getLevel());
     }
 
     private boolean getRevieweeRoleIsBuyerOrElseThrow(String role) {
