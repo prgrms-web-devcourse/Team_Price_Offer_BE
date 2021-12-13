@@ -217,8 +217,6 @@ public class ArticleService {
     ArticleBriefViewResponse extractArticleBriefViewResponseFromOfferEntityWithLikeInfo(Offer offer, Member member) {
         Article article = offer.getArticle();
 
-        // TODO: article tradestatus 상태가 완료인지 확인하기
-
         boolean isLiked = likeArticleRepository.existsByMemberAndArticle(member, article);
 
         return converter.toArticleBriefViewResponse(article, isLiked);
