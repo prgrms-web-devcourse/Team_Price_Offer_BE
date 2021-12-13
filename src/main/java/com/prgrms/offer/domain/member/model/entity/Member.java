@@ -25,24 +25,24 @@ public class Member {
     private String nickname;
     private String address;
 
-    private String profileImage;
+    private String profileImageUrl;
 
     @Builder.Default
-    private int appleLevel = 1;
+    private int offerLevel = 1;
 
 
     protected Member() {
     }
 
     @Builder
-    public Member(String principal, String password, String nickname, String address, String profileImage, int appleLevel
+    public Member(String principal, String password, String nickname, String address, String profileImageUrl, int offerLevel
     , String provider, String providerId) {
         this.principal = principal;
         this.password = password;
         this.nickname = nickname;
         this.address = address;
-        this.profileImage = profileImage;
-        this.appleLevel = appleLevel;
+        this.profileImageUrl = profileImageUrl;
+        this.offerLevel = offerLevel;
         this.provider = provider;
         this.providerId = providerId;
     }
@@ -60,8 +60,8 @@ public class Member {
         this.address = address;
     }
 
-    public void changeProfileImage(String profileImage) {
-        this.profileImage = profileImage;
+    public void changeProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     @Override
@@ -87,8 +87,8 @@ public class Member {
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", address='" + address + '\'' +
-                ", profileImage='" + profileImage + '\'' +
-                ", appleLevel=" + appleLevel +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", appleLevel=" + offerLevel +
                 '}';
     }
 }

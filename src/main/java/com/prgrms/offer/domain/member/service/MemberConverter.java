@@ -26,9 +26,9 @@ public class MemberConverter {
                 .email(member.getPrincipal())
                 .token(token)
                 .nickname(member.getNickname())
-                .appleLevel(member.getAppleLevel())
+                .offerLevel(member.getOfferLevel())
                 .address(member.getAddress())
-                .profileImage(member.getProfileImage())
+                .profileImage(member.getProfileImageUrl())
                 .build();
         return new MemberResponse(memberDto);
     }

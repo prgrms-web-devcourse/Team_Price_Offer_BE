@@ -12,12 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class MemberService {
                 .nickname(request.getNickname())
                 .principal(request.getEmail())
                 .address(request.getAddress())
-                .appleLevel(1)
+                .offerLevel(1)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
@@ -94,13 +92,13 @@ public class MemberService {
                     }
 
                     String nickname = (String) properties.get("nickname");
-                    String profileImage = (String) properties.get("profile_image");
+                    String profileImageUrl = (String) properties.get("profile_image");
                     return memberRepository.save(
                             Member.builder()
                                     .principal(providerId)
                                     .nickname(nickname)
-                                    .appleLevel(1)
-                                    .profileImage(profileImage)
+                                    .offerLevel(1)
+                                    .profileImageUrl(profileImageUrl)
                                     .provider(registrationId)
                                     .providerId(providerId)
                                     .build());
@@ -127,7 +125,7 @@ public class MemberService {
 
         findMember.changeNickname(request.getNickname());
         findMember.changeAddress(request.getAddress());
-        findMember.changeProfileImage(request.getProfileImageUrl());
+        findMember.changeProfileImageUrl(request.getProfileImageUrl());
 
         return memberConverter.toMemberResponse(findMember, authentication.token);
     }

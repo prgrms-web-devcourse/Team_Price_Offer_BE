@@ -13,17 +13,17 @@ public class MemberResponse {
         private final Long id;
         private final String token;
         private final String email;
-        private final int appleLevel;
+        private final int offerLevel;
         private final String nickname;
         private final String profileImage;
         private final String address;
 
         @Builder
-        public MemberDto(Long id, String token, String email, int appleLevel, String nickname, String profileImage, String address) {
+        public MemberDto(Long id, String token, String email, int offerLevel, String nickname, String profileImage, String address) {
             this.id = id;
             this.token = token;
             this.email = email;
-            this.appleLevel = appleLevel;
+            this.offerLevel = offerLevel;
             this.nickname = nickname;
             this.profileImage = profileImage;
             this.address = address;
@@ -35,7 +35,7 @@ public class MemberResponse {
                     "id=" + id +
                     ", token='" + token + '\'' +
                     ", email='" + email + '\'' +
-                    ", appleLevel=" + appleLevel +
+                    ", appleLevel=" + offerLevel +
                     ", nickname='" + nickname + '\'' +
                     ", profileImage='" + profileImage + '\'' +
                     ", address='" + address + '\'' +
