@@ -6,6 +6,7 @@ import com.prgrms.offer.common.page.PageDto;
 import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
+import com.prgrms.offer.domain.offer.model.dto.OfferBriefResponse;
 import com.prgrms.offer.domain.offer.model.dto.OfferCreateRequest;
 import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
 import com.prgrms.offer.domain.offer.service.OfferService;
@@ -56,7 +57,7 @@ public class OfferController {
             @AuthenticationPrincipal JwtAuthentication authentication
     ) {
 
-        Page<OfferResponse> pageResponses = offerService.findAllByArticleId(pageable, articleId);
+        Page<OfferBriefResponse> pageResponses = offerService.findAllByArticleId(pageable, articleId);
 
         int offerCountOfCurrentMember = offerService.findOfferCountOfCurrentMember(authentication, articleId);
 

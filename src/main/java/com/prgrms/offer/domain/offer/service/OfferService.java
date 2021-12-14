@@ -7,6 +7,7 @@ import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+import com.prgrms.offer.domain.offer.model.dto.OfferBriefResponse;
 import com.prgrms.offer.domain.offer.model.dto.OfferCreateRequest;
 import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
@@ -51,10 +52,10 @@ public class OfferService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OfferResponse> findAllByArticleId(Pageable pageable, Long articleId) {
+    public Page<OfferBriefResponse> findAllByArticleId(Pageable pageable, Long articleId) {
         Page<Offer> offerPages = offerRepository.findAllByArticleId(pageable, articleId);
 
-        return offerPages.map(o -> converter.toOfferResponse(o, null));
+        return offerPages.map(o -> converter.toOfferOfferBriefResponse(o));
     }
 
     @Transactional

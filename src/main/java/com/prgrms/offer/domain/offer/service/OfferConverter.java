@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.offer.service;
 
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.offer.model.dto.OfferBriefResponse;
 import com.prgrms.offer.domain.offer.model.dto.OfferResponse;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
 import org.springframework.stereotype.Component;
@@ -37,5 +38,22 @@ public class OfferConverter {
                 .build();
 
         return new OfferResponse(response, offerCountOfCurrentMember);
+    }
+
+    public OfferBriefResponse toOfferOfferBriefResponse(Offer offer) {
+        var offerer = offer.getOfferer();
+
+        return OfferBriefResponse.builder()
+                .id(offer.getId())
+                .offerer(
+                        new OfferResponse.OffererDto(
+                                offerer.getId(), offerer.getNickname(), offerer.getAddress()
+                        )
+                )
+                .articleId(offer.getArticle().getId())
+                .price(offer.getPrice())
+                .createdDate(offer.getCreatedDate())
+                .isSelected(offer.getIsSelected())
+                .build();
     }
 }
