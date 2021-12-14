@@ -7,7 +7,6 @@ import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.member.service.MemberService;
-import com.prgrms.offer.domain.message.model.dto.MessageContentAndRoomInfo;
 import com.prgrms.offer.domain.message.model.dto.MessageContentResponse;
 import com.prgrms.offer.domain.message.model.dto.MessageRequest;
 import com.prgrms.offer.domain.message.model.dto.MessageRoomInfoResponse;

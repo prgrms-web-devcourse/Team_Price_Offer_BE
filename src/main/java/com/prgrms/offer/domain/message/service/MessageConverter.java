@@ -2,7 +2,6 @@ package com.prgrms.offer.domain.message.service;
 
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.member.model.entity.Member;
-import com.prgrms.offer.domain.message.model.dto.MessageContentAndRoomInfo;
 import com.prgrms.offer.domain.message.model.dto.MessageContentResponse;
 import com.prgrms.offer.domain.message.model.dto.MessageRoomInfoResponse;
 import com.prgrms.offer.domain.message.model.dto.OutgoingMessageResponse;
