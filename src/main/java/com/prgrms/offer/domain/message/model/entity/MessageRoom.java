@@ -2,10 +2,17 @@ package com.prgrms.offer.domain.message.model.entity;
 
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.member.model.entity.Member;
+import com.prgrms.offer.domain.offer.model.entity.Offer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import javax.persistence.*;
-
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +40,18 @@ public class MessageRoom {
     @JoinColumn(name = "article_id")
     private Article article;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "offer_id")
+    private Offer offer;
+
     private LocalDateTime createdDate;
 
-    public MessageRoom(Member member, Member messagePartner, Article article) {
+    public MessageRoom(Member member, Member messagePartner, Article article, Offer offer) {
         this.member = member;
         this.messagePartner = messagePartner;
         this.article = article;
         createdDate = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        this.offer = offer;
     }
 
 }
