@@ -115,6 +115,12 @@ public class ArticleConverter {
                                 TradeStatus.of(article.getTradeStatusCode()).getName()
                         )
                 )
+                .productStatus(
+                        new CodeAndName(
+                                ProductStatus.of(article.getProductStatusCode()).getCode(),
+                                ProductStatus.of(article.getProductStatusCode()).getName()
+                        )
+                )
                 .tradeArea(article.getTradeArea())
                 .tradeMethod(
                         new CodeAndName(

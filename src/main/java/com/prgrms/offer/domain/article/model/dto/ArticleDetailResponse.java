@@ -33,6 +33,8 @@ public class ArticleDetailResponse {
 
         private CodeAndName tradeStatus;
 
+        private CodeAndName productStatus;
+
         private String tradeArea;
 
         private CodeAndName tradeMethod;
