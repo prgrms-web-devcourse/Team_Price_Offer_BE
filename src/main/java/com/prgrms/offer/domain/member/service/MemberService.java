@@ -117,6 +117,7 @@ public class MemberService {
         return memberRepository.findByProviderAndProviderId(provider, providerId);
     }
 
+    @Transactional(readOnly = true)
     public boolean isDuplicateEmail(String email) {
         Optional<Member> optionalMember = memberRepository.findByPrincipal(email);
         return optionalMember.isPresent();
@@ -138,6 +139,7 @@ public class MemberService {
         return memberConverter.toMemberResponse(findMember, authentication.token);
     }
 
+    @Transactional(readOnly = true)
     public MemberResponse getProfile(JwtAuthentication authentication) {
         Member findMember = memberRepository.findByPrincipal(authentication.loginId).orElseThrow(() -> {
             throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
@@ -145,6 +147,7 @@ public class MemberService {
         return memberConverter.toMemberResponse(findMember, authentication.token);
     }
 
+    @Transactional(readOnly = true)
     public MemberProfile getOthersProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
@@ -154,6 +157,7 @@ public class MemberService {
         return memberConverter.toMemberProfile(member, sellingArticleCount, reviewCount);
     }
 
+    @Transactional(readOnly = true)
     public MyProfile getMyProfile(JwtAuthentication authentication) {
         Member member = memberRepository.findByPrincipal(authentication.loginId).orElseThrow(() -> {
             throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
