@@ -1,6 +1,7 @@
 package com.prgrms.offer.domain.article.repository;
 
 import com.prgrms.offer.domain.article.model.entity.Article;
+import com.prgrms.offer.domain.member.model.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +30,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findAllByTradeStatusCode(Pageable pageable, int tradeStatusCode);
 
     Page<Article> findAllByWriterId(Pageable pageable, Long writerId);
-    
+
+    long countArticlesByWriter(Member member);
 }

@@ -6,6 +6,7 @@ import com.prgrms.offer.domain.review.model.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Override
@@ -14,4 +15,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     boolean existsByReviewerAndArticle(Member reviewer, Article article);
 
     Page<Review> findAllByRevieweeIdAndIsRevieweeBuyer(Pageable pageable, Long revieweeId, boolean isRevieweeBuyer);
+
+    @Query("select count(r) from Review r where r.reviewee = :member or r.reviewer = :member")
+    long countReviewsByRevieweeOrReviewer(Member member);
+
 }
