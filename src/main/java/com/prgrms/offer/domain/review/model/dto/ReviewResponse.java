@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.review.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ public class ReviewResponse {
 
     private final String content;
 
-    private final Boolean isAvailWriteReviewFromCurrentMember;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final Boolean isWritingAvailableFromCurrentMember;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private final LocalDateTime createdDate;

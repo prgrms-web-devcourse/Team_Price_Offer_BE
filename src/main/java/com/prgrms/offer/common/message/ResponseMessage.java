@@ -39,6 +39,7 @@ public enum ResponseMessage {
     ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 리뷰를 남긴 사용자입니다."),
     INVALID_REVIEWEE(HttpStatus.BAD_REQUEST, "리뷰 대상이 올바르지 않습니다."),
     INVALID_ROLE(HttpStatus.BAD_REQUEST, "상대방의 역할이 올바르지 않습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "거래후기가 존재하지 않습니다."),
 
     // s3
     FILE_CONVERTION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일을 전환하는데 실패했습니다."),

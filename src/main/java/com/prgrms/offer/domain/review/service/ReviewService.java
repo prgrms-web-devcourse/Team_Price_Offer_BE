@@ -97,9 +97,9 @@ public class ReviewService {
         Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        boolean isAvailWriteReviewFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        boolean isWritingAvailableFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
 
-        return converter.toReviewResponse(review, isAvailWriteReviewFromCurrentMember);
+        return converter.toReviewResponse(review, isWritingAvailableFromCurrentMember);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -107,6 +107,20 @@ public class ReviewService {
         int score = reviewee.evaluateScore(curScore);
         OfferLevel offerLevel = OfferLevel.calculateOfferLevel(score);
         reviewee.chageOfferLevel(offerLevel.getLevel());
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewResponse findByArticleIdAndReviewerAuth(Long articleId, JwtAuthentication authentication) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        Review review = reviewRepository.findByReviewerAndArticle(reviewer, article)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.REVIEW_NOT_FOUND));
+
+        return converter.toReviewResponse(review, null);
     }
 
     private boolean getRevieweeRoleIsBuyerOrElseThrow(String role) {
