@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,10 +74,11 @@ public class ReviewController {
     public ResponseEntity<ApiResponse> getAll(
             @RequestParam(value = "memberId", required = true) Long memberId,
             @RequestParam(value = "role", required = true) String role,
-            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication
     ){
 
-        Page<ReviewResponse> pageResponses = reviewService.findAllByRole(pageable, memberId, role);
+        Page<ReviewResponse> pageResponses = reviewService.findAllByRole(pageable, memberId, role, Optional.ofNullable(authentication));
 
         PageInfo pageInfo = getPageInfo(pageResponses);
 

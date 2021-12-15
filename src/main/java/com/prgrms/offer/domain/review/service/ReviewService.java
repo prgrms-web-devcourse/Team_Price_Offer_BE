@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -107,13 +109,27 @@ public class ReviewService {
         return converter.toReviewCreateResponse(reviewEntity);
     }
 
-    @Transactional(readOnly = true)
-    public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role) {
+    @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
+    public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
         boolean isRevieweeBuyer = getRevieweeRoleIsBuyerOrElseThrow(role);
 
         Page<Review> reviewPage = reviewRepository.findAllByRevieweeIdAndIsRevieweeBuyer(pageable, memberId, isRevieweeBuyer);
 
-        return reviewPage.map(r -> converter.toReviewResponse(r));
+        if(authenticationOptional.isEmpty()) { // 로그인 안한 경우
+            return reviewPage.map(r -> converter.toReviewResponse(r, false));
+        }
+
+        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get()));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication) {
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        boolean isAvailWriteReviewFromCurrentMember = reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+
+        return converter.toReviewResponse(review, isAvailWriteReviewFromCurrentMember);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
