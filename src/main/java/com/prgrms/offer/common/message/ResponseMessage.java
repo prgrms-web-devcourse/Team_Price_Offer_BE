@@ -49,7 +49,7 @@ public enum ResponseMessage {
     EXCEED_OFFER_COUNT(HttpStatus.BAD_REQUEST, "가격제안 횟수를 초과했습니다."),
     OFFER_NOT_FOUND(HttpStatus.NOT_FOUND, "가격 제안이 존재하지 않습니다."),
     EXISTS_ALREADY_SELECTED_OFFER(HttpStatus.BAD_REQUEST, "이미 선택된 offer가 존재합니다."),
-    NOT_SELECTED_OFFER(HttpStatus.BAD_REQUEST, "선택된 Offer가 아닙니다."),
+    NOT_SELECTED_OFFER(HttpStatus.BAD_REQUEST, "선택된 Offer가 없습니다."),
 
     // message
     MESSAGE_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "나가기한 대화방이거나 없는 대화방입니다. 가격 제안자에게 쪽지를 전송하려면 [게시글]>[가격제안]의 [편지 버튼]을 누르세요."),
