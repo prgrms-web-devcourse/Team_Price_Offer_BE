@@ -78,4 +78,18 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
     }
 
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<ApiResponse> getOthersProfile(@PathVariable Long memberId) {
+        MemberProfile response = memberService.getOthersProfile(memberId);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
+
+    @GetMapping("/members/mypage")
+    public ResponseEntity<ApiResponse> getMyProfile(@AuthenticationPrincipal JwtAuthentication authentication) {
+        if (authentication == null) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+        MyProfile response = memberService.getMyProfile(authentication);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
 }

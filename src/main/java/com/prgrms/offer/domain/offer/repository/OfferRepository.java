@@ -22,4 +22,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     boolean existsByArticleAndIsSelected(Article article, boolean isSelected);
 
     Optional<Offer> findByArticleAndIsSelected(Article article, boolean isSelected);
+
+    long countOffersByOfferer(Member member);
 }
