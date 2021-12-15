@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Override
     <S extends Review> S save(S entity);
@@ -14,4 +16,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     boolean existsByReviewerAndArticle(Member reviewer, Article article);
 
     Page<Review> findAllByRevieweeIdAndIsRevieweeBuyer(Pageable pageable, Long revieweeId, boolean isRevieweeBuyer);
+
+    Optional<Review> findByReviewerAndArticle(Member reviewer, Article article);
 }

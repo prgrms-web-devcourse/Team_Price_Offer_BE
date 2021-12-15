@@ -57,7 +57,7 @@ public class ReviewController {
             @RequestParam(value = "memberId", required = true) Long memberId,
             @RequestParam(value = "role", required = true) String role,
             @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable
-    ){
+    ) {
 
         Page<ReviewResponse> pageResponses = reviewService.findAllByRole(pageable, memberId, role, Optional.ofNullable(authentication));
 
@@ -65,6 +65,22 @@ public class ReviewController {
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo))
+        );
+    }
+
+    @ApiOperation("내가 남긴 후기 단건 조회")
+    @GetMapping(value = "/reviews/me")
+    public ResponseEntity<ApiResponse> getOne(
+            @AuthenticationPrincipal JwtAuthentication authentication,
+            @RequestParam(value = "articleId", required = true) Long articleId
+    ) {
+
+        validateJwtAuthentication(authentication);
+
+        ReviewResponse response = reviewService.findByArticleIdAndReviewerAuth(articleId, authentication);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
         );
     }
 

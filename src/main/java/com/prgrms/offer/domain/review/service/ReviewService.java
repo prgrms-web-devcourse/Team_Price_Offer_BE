@@ -109,6 +109,20 @@ public class ReviewService {
         reviewee.chageOfferLevel(offerLevel.getLevel());
     }
 
+    @Transactional(readOnly = true)
+    public ReviewResponse findByArticleIdAndReviewerAuth(Long articleId, JwtAuthentication authentication) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        Review review = reviewRepository.findByReviewerAndArticle(reviewer, article)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.REVIEW_NOT_FOUND));
+
+        return converter.toReviewResponse(review, null);
+    }
+
     private boolean getRevieweeRoleIsBuyerOrElseThrow(String role) {
         if (role.equals(BUYER)) {
             return true;

@@ -27,7 +27,7 @@ public class ReviewConverter {
         return new ReviewCreateResponse(reviewEntity.getId(), reviewEntity.getCreatedDate());
     }
 
-    public ReviewResponse toReviewResponse(Review review, boolean isAvailWriteReviewFromCurrentMember) {
+    public ReviewResponse toReviewResponse(Review review, Boolean isAvailWriteReviewFromCurrentMember) {
         Article article = review.getArticle();
         Member reviewer = review.getReviewer();
 
