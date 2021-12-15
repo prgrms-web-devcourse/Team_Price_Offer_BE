@@ -145,7 +145,7 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
         long sellingArticleCount = articleRepository.countArticlesByWriter(member);
-        long reviewCount = reviewRepository.countReviewsByRevieweeOrReviewer(member);
+        long reviewCount = reviewRepository.countReviewsByReviewee(member);
 
         return memberConverter.toMemberProfile(member, sellingArticleCount, reviewCount);
     }

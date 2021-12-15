@@ -16,7 +16,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findAllByRevieweeIdAndIsRevieweeBuyer(Pageable pageable, Long revieweeId, boolean isRevieweeBuyer);
 
-    @Query("select count(r) from Review r where r.reviewee = :member or r.reviewer = :member")
-    long countReviewsByRevieweeOrReviewer(Member member);
+    long countReviewsByReviewee(Member member);
 
 }
