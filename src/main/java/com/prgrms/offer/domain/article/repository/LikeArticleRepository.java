@@ -13,4 +13,6 @@ public interface LikeArticleRepository extends JpaRepository<LikeArticle, Long> 
     void deleteByMemberIdAndArticleId(Long memberId, Long articleId);
 
     Page<LikeArticle> findByMember(Member member, Pageable pageable);
+
+    long countLikeArticlesByMember(Member member);
 }

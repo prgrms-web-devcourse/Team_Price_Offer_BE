@@ -6,9 +6,11 @@ import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.core.jwt.JwtAuthenticationToken;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
+import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.member.model.dto.*;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+import com.prgrms.offer.domain.offer.repository.OfferRepository;
 import com.prgrms.offer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ public class MemberService {
     private final S3ImageUploader s3ImageUploader;
     private final ArticleRepository articleRepository;
     private final ReviewRepository reviewRepository;
+    private final OfferRepository offerRepository;
+    private final LikeArticleRepository likeArticleRepository;
 
     @Transactional(readOnly = true)
     public Member login(String principal, String credentials) {
@@ -113,6 +117,7 @@ public class MemberService {
         return memberRepository.findByProviderAndProviderId(provider, providerId);
     }
 
+    @Transactional(readOnly = true)
     public boolean isDuplicateEmail(String email) {
         Optional<Member> optionalMember = memberRepository.findByPrincipal(email);
         return optionalMember.isPresent();
@@ -134,6 +139,7 @@ public class MemberService {
         return memberConverter.toMemberResponse(findMember, authentication.token);
     }
 
+    @Transactional(readOnly = true)
     public MemberResponse getProfile(JwtAuthentication authentication) {
         Member findMember = memberRepository.findByPrincipal(authentication.loginId).orElseThrow(() -> {
             throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
@@ -141,6 +147,7 @@ public class MemberService {
         return memberConverter.toMemberResponse(findMember, authentication.token);
     }
 
+    @Transactional(readOnly = true)
     public MemberProfile getOthersProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
@@ -148,5 +155,19 @@ public class MemberService {
         long reviewCount = reviewRepository.countReviewsByReviewee(member);
 
         return memberConverter.toMemberProfile(member, sellingArticleCount, reviewCount);
+    }
+
+    @Transactional(readOnly = true)
+    public MyProfile getMyProfile(JwtAuthentication authentication) {
+        Member member = memberRepository.findByPrincipal(authentication.loginId).orElseThrow(() -> {
+            throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
+        });
+
+        long sellingArticleCount = articleRepository.countArticlesByWriter(member);
+        long reviewCount = reviewRepository.countReviewsByReviewee(member);
+        long likeArticleCount = likeArticleRepository.countLikeArticlesByMember(member);
+        long offerCount = offerRepository.countOffersByOfferer(member);
+
+        return memberConverter.toMyProfile(member, sellingArticleCount, likeArticleCount, offerCount, reviewCount);
     }
 }
