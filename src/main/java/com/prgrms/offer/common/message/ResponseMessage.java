@@ -43,6 +43,7 @@ public enum ResponseMessage {
     // s3
     FILE_CONVERTION_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 파일을 전환하는데 실패했습니다."),
     INVALID_IMAGE_EXCEPTION(HttpStatus.BAD_REQUEST, "변환할 이미지가 존재하지 않습니다."),
+    FILE_SIZE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "파일 사이즈는 최대 5MB 이하여야 합니다."),
 
     // offer
     EXCEED_OFFER_COUNT(HttpStatus.BAD_REQUEST, "가격제안 횟수를 초과했습니다."),
