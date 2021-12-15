@@ -50,52 +50,13 @@ public class ReviewController {
         );
     }
 
-    /*
-    @ApiOperation("판매자가 구매자에게 거래후기 남기기")  //deprecated
-    @PostMapping(value = "/reviews/offers/{offerId}")
-    public ResponseEntity<ApiResponse> createReviewToBuyer(
-            @PathVariable(required = true) Long offerId,
-            @RequestParam(value = "revieweeId", required = true) Long revieweeId,
-            @Valid @RequestBody ReviewCreateRequest request,
-            @AuthenticationPrincipal JwtAuthentication authentication
-    ) {
-
-        validateJwtAuthentication(authentication);
-
-        ReviewCreateResponse response = reviewService.createReviewToBuyer(offerId, revieweeId, request, authentication);
-
-        return ResponseEntity.ok(
-                ApiResponse.of(ResponseMessage.SUCCESS, response)
-        );
-    }
-
-    @ApiOperation("구매자가 판매자에게 거래후기 남기기")  //deprecated
-    @PostMapping(value = "/reviews")
-    public ResponseEntity<ApiResponse> createReviewToSeller(
-            @RequestParam(value = "articleId", required = true) Long articleId,
-            @RequestParam(value = "revieweeId", required = true) Long revieweeId,
-            @Valid @RequestBody ReviewCreateRequest request,
-            @AuthenticationPrincipal JwtAuthentication authentication
-    ) {
-
-        validateJwtAuthentication(authentication);
-
-        ReviewCreateResponse response = reviewService.createReviewToSeller(articleId, revieweeId, request, authentication);
-
-        return ResponseEntity.ok(
-                ApiResponse.of(ResponseMessage.SUCCESS, response)
-        );
-    }
-
-     */
-
     @ApiOperation("특정 사용자가 받은 리뷰 모두 조회(구매자로서 또는 판매자로서)")
     @GetMapping(value = "/reviews")
     public ResponseEntity<ApiResponse> getAll(
+            @AuthenticationPrincipal JwtAuthentication authentication,
             @RequestParam(value = "memberId", required = true) Long memberId,
             @RequestParam(value = "role", required = true) String role,
-            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
-            @AuthenticationPrincipal JwtAuthentication authentication
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable
     ){
 
         Page<ReviewResponse> pageResponses = reviewService.findAllByRole(pageable, memberId, role, Optional.ofNullable(authentication));
