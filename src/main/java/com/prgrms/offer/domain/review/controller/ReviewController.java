@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -77,7 +78,10 @@ public class ReviewController {
 
         validateJwtAuthentication(authentication);
 
-        ReviewResponse response = reviewService.findByArticleIdAndReviewerAuth(articleId, authentication);
+        ReviewResponse result = reviewService.findByArticleIdAndReviewerAuth(articleId, authentication);
+
+        var response = new HashMap<String, ReviewResponse>();
+        response.put("review", result);
 
         return ResponseEntity.ok(
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
