@@ -40,6 +40,56 @@ public class ReviewService {
     private final String SELLER = "seller";
 
     @Transactional
+    public ReviewCreateResponse createReview(Long articleId, ReviewCreateRequest request, JwtAuthentication authentication) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
+
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        if (reviewRepository.existsByReviewerAndArticle(reviewer, article)) {
+            throw new BusinessException(ResponseMessage.ALREADY_REVIEWED);
+        }
+
+        Offer offer = offerRepository.findByArticleAndIsSelected(article, true)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
+
+        if (!offer.getIsSelected()) {
+            throw new BusinessException(ResponseMessage.NOT_SELECTED_OFFER);
+        }
+
+        if (!TradeStatus.isCompleted(offer.getArticle().getTradeStatusCode())) {
+            throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
+        }
+
+        boolean isRevieweeBuyer = article.validateWriterByPrincipal(authentication.loginId);
+
+        return isRevieweeBuyer ?
+                writeReviewFromSellerAndGetResponse(reviewer, offer.getOfferer(), article, request) :
+                writeReviewFromBuyerAndGetResponse(reviewer, article.getWriter(), article, request);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ReviewCreateResponse writeReviewFromSellerAndGetResponse(Member reviewer, Member reviewee, Article article, ReviewCreateRequest request) {
+        updateOfferScore(reviewee, request.getScore());
+
+        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), true);
+        Review reviewEntity = reviewRepository.save(review);
+
+        return converter.toReviewCreateResponse(reviewEntity);
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ReviewCreateResponse writeReviewFromBuyerAndGetResponse(Member reviewer, Member reviewee, Article article, ReviewCreateRequest request) {
+        updateOfferScore(reviewee, request.getScore());
+
+        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), false);
+        Review reviewEntity = reviewRepository.save(review);
+
+        return converter.toReviewCreateResponse(reviewEntity);
+    }
+/*
+    @Transactional
     public ReviewCreateResponse createReviewToBuyer(Long offerId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication) {
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
@@ -102,12 +152,14 @@ public class ReviewService {
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         updateOfferScore(reviewee, request.getScore());
-        
+
         Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), false);
         Review reviewEntity = reviewRepository.save(review);
 
         return converter.toReviewCreateResponse(reviewEntity);
     }
+    
+ */
 
     @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
     public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
@@ -115,7 +167,7 @@ public class ReviewService {
 
         Page<Review> reviewPage = reviewRepository.findAllByRevieweeIdAndIsRevieweeBuyer(pageable, memberId, isRevieweeBuyer);
 
-        if(authenticationOptional.isEmpty()) { // 로그인 안한 경우
+        if (authenticationOptional.isEmpty()) { // 로그인 안한 경우
             return reviewPage.map(r -> converter.toReviewResponse(r, false));
         }
 
