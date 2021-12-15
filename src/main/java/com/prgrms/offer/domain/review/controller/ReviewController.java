@@ -33,7 +33,25 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @ApiOperation("판매자가 구매자에게 거래후기 남기기")
+    @ApiOperation("리뷰 남기기 통합")
+    @PostMapping(value = "/reviews")
+    public ResponseEntity<ApiResponse> createReview(
+            @RequestParam(value = "articleId", required = true) Long articleId,
+            @Valid @RequestBody ReviewCreateRequest request,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        validateJwtAuthentication(authentication);
+
+        ReviewCreateResponse response = reviewService.createReview(articleId, request, authentication);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, response)
+        );
+    }
+
+    /*
+    @ApiOperation("판매자가 구매자에게 거래후기 남기기")  //deprecated
     @PostMapping(value = "/reviews/offers/{offerId}")
     public ResponseEntity<ApiResponse> createReviewToBuyer(
             @PathVariable(required = true) Long offerId,
@@ -51,7 +69,7 @@ public class ReviewController {
         );
     }
 
-    @ApiOperation("구매자가 판매자에게 거래후기 남기기")
+    @ApiOperation("구매자가 판매자에게 거래후기 남기기")  //deprecated
     @PostMapping(value = "/reviews")
     public ResponseEntity<ApiResponse> createReviewToSeller(
             @RequestParam(value = "articleId", required = true) Long articleId,
@@ -68,6 +86,8 @@ public class ReviewController {
                 ApiResponse.of(ResponseMessage.SUCCESS, response)
         );
     }
+
+     */
 
     @ApiOperation("특정 사용자가 받은 리뷰 모두 조회(구매자로서 또는 판매자로서)")
     @GetMapping(value = "/reviews")
