@@ -83,4 +83,10 @@ public class MemberController {
         MemberProfile response = memberService.getOthersProfile(memberId);
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
     }
+
+    @GetMapping("/members/mypage")
+    public ResponseEntity<ApiResponse> getMyProfile(@AuthenticationPrincipal JwtAuthentication authentication) {
+        MyProfile response = memberService.getMyProfile(authentication);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
 }
