@@ -65,29 +65,20 @@ public class ReviewService {
         boolean isRevieweeBuyer = article.validateWriterByPrincipal(authentication.loginId);
 
         return isRevieweeBuyer ?
-                writeReviewFromSellerAndGetResponse(reviewer, offer.getOfferer(), article, request) :
-                writeReviewFromBuyerAndGetResponse(reviewer, article.getWriter(), article, request);
+                writeReviewAndGetResponse(reviewer, offer.getOfferer(), article, request, true) :
+                writeReviewAndGetResponse(reviewer, article.getWriter(), article, request, false);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ReviewCreateResponse writeReviewFromSellerAndGetResponse(Member reviewer, Member reviewee, Article article, ReviewCreateRequest request) {
+    ReviewCreateResponse writeReviewAndGetResponse(Member reviewer, Member reviewee, Article article, ReviewCreateRequest request, boolean isRevieweeBuyer) {
         updateOfferScore(reviewee, request.getScore());
 
-        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), true);
+        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), isRevieweeBuyer);
         Review reviewEntity = reviewRepository.save(review);
 
         return converter.toReviewCreateResponse(reviewEntity);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
-    ReviewCreateResponse writeReviewFromBuyerAndGetResponse(Member reviewer, Member reviewee, Article article, ReviewCreateRequest request) {
-        updateOfferScore(reviewee, request.getScore());
-
-        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), false);
-        Review reviewEntity = reviewRepository.save(review);
-
-        return converter.toReviewCreateResponse(reviewEntity);
-    }
 /*
     @Transactional
     public ReviewCreateResponse createReviewToBuyer(Long offerId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication) {
@@ -158,7 +149,7 @@ public class ReviewService {
 
         return converter.toReviewCreateResponse(reviewEntity);
     }
-    
+
  */
 
     @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
