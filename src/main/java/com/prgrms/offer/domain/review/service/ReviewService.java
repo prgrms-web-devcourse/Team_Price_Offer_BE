@@ -79,79 +79,6 @@ public class ReviewService {
         return converter.toReviewCreateResponse(reviewEntity);
     }
 
-/*
-    @Transactional
-    public ReviewCreateResponse createReviewToBuyer(Long offerId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication) {
-        Offer offer = offerRepository.findById(offerId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
-
-        if (!offer.getIsSelected()) {
-            throw new BusinessException(ResponseMessage.NOT_SELECTED_OFFER);
-        }
-
-        if (!TradeStatus.isCompleted(offer.getArticle().getTradeStatusCode())) {
-            throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
-        }
-
-        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        if (reviewer.getId().longValue() == revieweeId.longValue()) {
-            throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
-        }
-
-        if (reviewRepository.existsByReviewerAndArticle(reviewer, offer.getArticle())) {
-            throw new BusinessException(ResponseMessage.ALREADY_REVIEWED);
-        }
-
-        Member reviewee = memberRepository.findById(revieweeId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        updateOfferScore(reviewee, request.getScore());
-
-        Review review = converter.toEntity(reviewee, reviewer, offer.getArticle(), request.getScore(), request.getContent(), true);
-        Review reviewEntity = reviewRepository.save(review);
-
-        return converter.toReviewCreateResponse(reviewEntity);
-    }
-
-    @Transactional
-    public ReviewCreateResponse createReviewToSeller(Long articleId, Long revieweeId, ReviewCreateRequest request, JwtAuthentication authentication) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
-
-        if (!article.validateWriterByWriterId(revieweeId)) {
-            throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
-        }
-
-        if (!TradeStatus.isCompleted(article.getTradeStatusCode())) {
-            throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
-        }
-
-        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        if (reviewer.getId().longValue() == revieweeId.longValue()) {
-            throw new BusinessException(ResponseMessage.INVALID_REVIEWEE);
-        }
-
-        if (reviewRepository.existsByReviewerAndArticle(reviewer, article)) {
-            throw new BusinessException(ResponseMessage.ALREADY_REVIEWED);
-        }
-
-        Member reviewee = memberRepository.findById(revieweeId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        updateOfferScore(reviewee, request.getScore());
-
-        Review review = converter.toEntity(reviewee, reviewer, article, request.getScore(), request.getContent(), false);
-        Review reviewEntity = reviewRepository.save(review);
-
-        return converter.toReviewCreateResponse(reviewEntity);
-    }
-
- */
-
     @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
     public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
         boolean isRevieweeBuyer = getRevieweeRoleIsBuyerOrElseThrow(role);
@@ -162,13 +89,11 @@ public class ReviewService {
             return reviewPage.map(r -> converter.toReviewResponse(r, false));
         }
 
-        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get(), isRevieweeBuyer));
+        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get()));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication, boolean isRevieweeBuyer) {
-        isRevieweeBuyer = !isRevieweeBuyer;
-
+    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication) {
         Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
