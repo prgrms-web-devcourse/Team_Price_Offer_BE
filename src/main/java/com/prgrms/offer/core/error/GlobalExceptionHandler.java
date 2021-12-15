@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 @Slf4j
@@ -69,12 +70,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * URI에서 필수로 요구되는 param이 비어있을 경우 발생
+     * 파일 용량 초과시 발생
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse> handleMMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+    public ResponseEntity<ApiResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
         log.info(exception.getMessage() + " from MissingServletRequestParameterException");
         return createApiExceptionResult(ResponseMessage.MISSING_PARAMETER);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse> handleFileSizeLimitExceededException(MaxUploadSizeExceededException exception) {
+        log.info(exception.getMessage() + " from FileSizeLimitExceededException");
+        return createApiExceptionResult(ResponseMessage.FILE_SIZE_LIMIT_EXCEEDED);
     }
 
     private ResponseEntity createApiExceptionResult(HttpStatus httpStatus, String message) {

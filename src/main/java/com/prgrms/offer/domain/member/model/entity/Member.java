@@ -55,16 +55,12 @@ public class Member {
             throw new IllegalArgumentException("Bad credential");
     }
 
-    public void evaluateScore(Score score) {
-        this.score += score.getValue();
+    public int evaluateScore(int score) {
+        return this.score += Score.of(score).getValue();
     }
 
-    public void increaseOfferLevel() {
-        this.offerLevel++;
-    }
-
-    public void decreaseOfferLevel() {
-        this.offerLevel--;
+    public void chageOfferLevel(int offerLevel) {
+        this.offerLevel = offerLevel;
     }
 
     public void changeNickname(String nickname) {

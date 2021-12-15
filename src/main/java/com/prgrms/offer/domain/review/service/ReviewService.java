@@ -14,6 +14,7 @@ import com.prgrms.offer.domain.review.model.dto.ReviewCreateRequest;
 import com.prgrms.offer.domain.review.model.dto.ReviewCreateResponse;
 import com.prgrms.offer.domain.review.model.dto.ReviewResponse;
 import com.prgrms.offer.domain.review.model.entity.Review;
+import com.prgrms.offer.domain.review.model.value.OfferLevel;
 import com.prgrms.offer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -106,18 +109,34 @@ public class ReviewService {
         return converter.toReviewCreateResponse(reviewEntity);
     }
 
-    @Transactional(readOnly = true)
-    public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role) {
+    @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
+    public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
         boolean isRevieweeBuyer = getRevieweeRoleIsBuyerOrElseThrow(role);
 
         Page<Review> reviewPage = reviewRepository.findAllByRevieweeIdAndIsRevieweeBuyer(pageable, memberId, isRevieweeBuyer);
 
-        return reviewPage.map(r -> converter.toReviewResponse(r));
+        if(authenticationOptional.isEmpty()) { // 로그인 안한 경우
+            return reviewPage.map(r -> converter.toReviewResponse(r, false));
+        }
+
+        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get()));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication) {
+        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        boolean isAvailWriteReviewFromCurrentMember = reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+
+        return converter.toReviewResponse(review, isAvailWriteReviewFromCurrentMember);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
     void updateOfferScore(Member reviewee, int curScore) {
-        //TODO: 오퍼레벨 계산
+        int score = reviewee.evaluateScore(curScore);
+        OfferLevel offerLevel = OfferLevel.calculateOfferLevel(score);
+        reviewee.chageOfferLevel(offerLevel.getLevel());
     }
 
     private boolean getRevieweeRoleIsBuyerOrElseThrow(String role) {

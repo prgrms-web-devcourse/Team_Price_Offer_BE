@@ -67,7 +67,7 @@ public class ArticleDetailResponse {
 
         private String email;
 
-        private int appleLevel;
+        private int offerLevel;
 
         private String nickname;
 
