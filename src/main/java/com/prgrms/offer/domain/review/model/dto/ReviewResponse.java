@@ -24,7 +24,7 @@ public class ReviewResponse {
     private final String content;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private final Boolean isAvailWriteReviewFromCurrentMember;
+    private final Boolean isWritingAvailableFromCurrentMember;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private final LocalDateTime createdDate;

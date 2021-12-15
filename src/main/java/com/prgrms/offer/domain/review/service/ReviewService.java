@@ -97,9 +97,9 @@ public class ReviewService {
         Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        boolean isAvailWriteReviewFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        boolean isWritingAvailableFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
 
-        return converter.toReviewResponse(review, isAvailWriteReviewFromCurrentMember);
+        return converter.toReviewResponse(review, isWritingAvailableFromCurrentMember);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
