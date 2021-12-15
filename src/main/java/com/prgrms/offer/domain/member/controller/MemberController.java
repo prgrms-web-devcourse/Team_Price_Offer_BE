@@ -78,4 +78,9 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
     }
 
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<ApiResponse> getOthersProfile(@PathVariable Long memberId) {
+        MemberProfile response = memberService.getOthersProfile(memberId);
+        return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, response));
+    }
 }

@@ -5,9 +5,11 @@ import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.core.jwt.JwtAuthenticationToken;
+import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.member.model.dto.*;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+import com.prgrms.offer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +37,8 @@ public class MemberService {
     private final MemberConverter memberConverter;
     private final AuthenticationManager authenticationManager;
     private final S3ImageUploader s3ImageUploader;
+    private final ArticleRepository articleRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
     public Member login(String principal, String credentials) {
@@ -135,5 +139,14 @@ public class MemberService {
             throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
         });
         return memberConverter.toMemberResponse(findMember, authentication.token);
+    }
+
+    public MemberProfile getOthersProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+        long sellingArticleCount = articleRepository.countArticlesByWriter(member);
+        long reviewCount = reviewRepository.countReviewsByReviewee(member);
+
+        return memberConverter.toMemberProfile(member, sellingArticleCount, reviewCount);
     }
 }
