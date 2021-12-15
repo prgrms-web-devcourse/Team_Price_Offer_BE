@@ -43,5 +43,7 @@ public class OfferResponse {
         private final String nickname;
 
         private final String address;
+
+        private final int offerLevel;
     }
 }
