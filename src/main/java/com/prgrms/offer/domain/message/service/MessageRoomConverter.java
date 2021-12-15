@@ -26,6 +26,7 @@ public class MessageRoomConverter {
             .userInfo(userInfo)
             .productImageUrl(messageRoom.getArticle().getMainImageUrl())
             .message(new MessageInfo(message.getContent(), message.getCreatedDate()))
+            .messageRoomId(messageRoom.getMessageRoomId())
             .build();
     }
 
