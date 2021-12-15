@@ -92,10 +92,10 @@ public class ReviewController {
     @ApiOperation("특정 사용자가 받은 리뷰 모두 조회(구매자로서 또는 판매자로서)")
     @GetMapping(value = "/reviews")
     public ResponseEntity<ApiResponse> getAll(
+            @AuthenticationPrincipal JwtAuthentication authentication,
             @RequestParam(value = "memberId", required = true) Long memberId,
             @RequestParam(value = "role", required = true) String role,
-            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
-            @AuthenticationPrincipal JwtAuthentication authentication
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable
     ){
 
         Page<ReviewResponse> pageResponses = reviewService.findAllByRole(pageable, memberId, role, Optional.ofNullable(authentication));

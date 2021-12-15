@@ -162,15 +162,17 @@ public class ReviewService {
             return reviewPage.map(r -> converter.toReviewResponse(r, false));
         }
 
-        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get()));
+        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get(), isRevieweeBuyer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication) {
+    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication, boolean isRevieweeBuyer) {
+        isRevieweeBuyer = !isRevieweeBuyer;
+
         Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        boolean isAvailWriteReviewFromCurrentMember = reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        boolean isAvailWriteReviewFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
 
         return converter.toReviewResponse(review, isAvailWriteReviewFromCurrentMember);
     }
