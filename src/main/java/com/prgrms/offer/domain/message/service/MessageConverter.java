@@ -58,8 +58,6 @@ public class MessageConverter {
 
         messageContentResponseList.sort(messageContentResponseComparator);
 
-        messageContentResponseList.forEach(e -> System.out.println(e.getMessageId()));
-
         final Page<MessageContentResponse> page = new PageImpl<>(
             messageContentResponseList, pageable,
             messageContentResponseList.size());
