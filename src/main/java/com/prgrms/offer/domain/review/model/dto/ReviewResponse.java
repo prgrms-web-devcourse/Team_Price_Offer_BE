@@ -1,6 +1,5 @@
 package com.prgrms.offer.domain.review.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -31,7 +30,6 @@ public class ReviewResponse {
 
     @Getter
     @RequiredArgsConstructor
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class ReviewerDto {
         private final Long id;
 
@@ -44,7 +42,6 @@ public class ReviewResponse {
 
     @Getter
     @RequiredArgsConstructor
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class ArticleBriefDto {
         private final Long id;
 

@@ -1,6 +1,5 @@
 package com.prgrms.offer.domain.article.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,7 +60,7 @@ public class ArticleDetailResponse {
 
     @Builder
     @AllArgsConstructor
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    @Getter
     public static class AuthorDetail{
         private Long id;
 
