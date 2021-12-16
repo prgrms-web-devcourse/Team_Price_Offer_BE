@@ -2,6 +2,8 @@ package com.prgrms.offer.domain.article.model.entity;
 
 import com.prgrms.offer.domain.member.model.entity.Member;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +28,8 @@ public class LikeArticle {
     @JoinColumn(name = "member_id", referencedColumnName = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
