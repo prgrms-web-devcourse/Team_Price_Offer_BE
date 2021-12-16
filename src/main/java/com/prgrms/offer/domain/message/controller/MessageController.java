@@ -13,8 +13,8 @@ import com.prgrms.offer.domain.message.model.dto.MessageRoomInfoResponse;
 import com.prgrms.offer.domain.message.model.dto.MessageRoomResponse;
 import com.prgrms.offer.domain.message.model.dto.OutgoingMessageResponse;
 import com.prgrms.offer.domain.message.service.MessageService;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +41,7 @@ public class MessageController {
         @PathVariable Long memberId,
         @RequestParam(value = "articleId") long articleId,
         @PathVariable @Min(1) long offerId,
-        @RequestBody MessageRequest messageRequest,
+        @RequestBody @Valid MessageRequest messageRequest,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
         validateJwtAuthentication(authentication);
@@ -75,7 +75,7 @@ public class MessageController {
     @PostMapping("/messageRoom/{messageRoomId}")
     public ResponseEntity<ApiResponse> sendMessage(
         @PathVariable @Min(1) long messageRoomId,
-        @RequestBody @NotNull MessageRequest messageRequest,
+        @RequestBody @Valid MessageRequest messageRequest,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
         validateJwtAuthentication(authentication);
@@ -92,7 +92,8 @@ public class MessageController {
     public ResponseEntity<ApiResponse> getMessageRoomContents(
         @PathVariable @Min(1) long messageRoomId,
         Pageable pageable,
-        @AuthenticationPrincipal JwtAuthentication authentication) {
+        @AuthenticationPrincipal JwtAuthentication authentication)
+        throws CloneNotSupportedException {
 
         validateJwtAuthentication(authentication);
 
@@ -103,10 +104,10 @@ public class MessageController {
 
         return ResponseEntity.ok(
             ApiResponse.of(
-                ResponseMessage.SUCCESS,
-                PageDto.of(
-                    messageContentResponsePage.getContent(), pageInfo
-                )
+                ResponseMessage.SUCCESS, messageContentResponsePage
+//                PageDto.of(
+//                    messageContentResponsePage.getContent(), pageInfo
+//                )
             )
         );
 
@@ -121,7 +122,6 @@ public class MessageController {
 
         MessageRoomInfoResponse messageRoomInfoResponse
             = messageService.getMessageRoomInfo(messageRoomId, authentication.loginId);
-
 
         return ResponseEntity.ok(ApiResponse.of(ResponseMessage.SUCCESS, messageRoomInfoResponse));
     }

@@ -9,11 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MessageContentResponse {
 
+    private long messageId;
+
     private String content;
 
     private Boolean isSendMessage;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
 
 }

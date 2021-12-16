@@ -13,5 +13,5 @@ public interface MessageRepository extends Repository<Message, Long> {
 
     Message findTop1ByMessageRoomOrderByCreatedDateDesc(MessageRoom messageRoom);
 
-    List<Message> findByMessageRoom(MessageRoom messageRoom, Pageable pageable);
+    List<Message> findByMessageRoomOrderByMessageIdDesc(MessageRoom messageRoom, Pageable pageable);
 }

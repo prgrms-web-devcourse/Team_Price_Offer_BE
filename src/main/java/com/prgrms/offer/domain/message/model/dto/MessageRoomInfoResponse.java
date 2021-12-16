@@ -21,11 +21,15 @@ public class MessageRoomInfoResponse  {
         private String title;
         private int price;
         private int offerPrice;
+        private String productImageUrl;
 
-        public static MessageRoomInfoResponse.ArticleInfo createArticleInfo(Article article,
-            Offer offer) {
-            return new MessageRoomInfoResponse.ArticleInfo(article.getTitle(), article.getPrice(),
-                offer.getPrice());
+        public static MessageRoomInfoResponse.ArticleInfo createArticleInfo(Article article, Offer offer) {
+            return new MessageRoomInfoResponse.ArticleInfo(
+                article.getTitle(),
+                article.getPrice(),
+                offer.getPrice(),
+                article.getMainImageUrl()
+            );
         }
 
     }
