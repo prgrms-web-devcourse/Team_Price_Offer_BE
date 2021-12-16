@@ -28,7 +28,7 @@ public class OfferConverter {
                 .id(offer.getId())
                 .offerer(
                         new OfferResponse.OffererDto(
-                                offerer.getId(), offerer.getNickname(), offerer.getAddress()
+                                offerer.getId(), offerer.getNickname(), offerer.getAddress(), offerer.getOfferLevel()
                         )
                 )
                 .articleId(offer.getArticle().getId())
@@ -47,7 +47,7 @@ public class OfferConverter {
                 .id(offer.getId())
                 .offerer(
                         new OfferResponse.OffererDto(
-                                offerer.getId(), offerer.getNickname(), offerer.getAddress()
+                                offerer.getId(), offerer.getNickname(), offerer.getAddress(), offerer.getOfferLevel()
                         )
                 )
                 .articleId(offer.getArticle().getId())
