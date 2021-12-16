@@ -247,4 +247,13 @@ public class ArticleService {
         }
     }
 
+    public Page<ArticleBriefViewResponse> getLikeArticlesWithTradeStatusCode(
+            Pageable pageable, JwtAuthentication authentication, Integer tradeStatusCode) {
+        Member member = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        return articleRepository
+                .findLikedArticleFromMemberWithStatusCode(member.getId(), tradeStatusCode, pageable)
+                .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
+    }
 }

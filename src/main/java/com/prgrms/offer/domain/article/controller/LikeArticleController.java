@@ -45,31 +45,10 @@ public class LikeArticleController {
         );
     }
 
-    @GetMapping("/like-articles")
-    public ResponseEntity<ApiResponse> getLikeArticles(
-            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
-            @AuthenticationPrincipal JwtAuthentication authentication) {
-        Page<ArticleBriefViewResponse> responses = likeArticleService.getLikeArticles(pageable, authentication);
-        PageInfo pageInfo = getPageInfo(responses);
-        return ResponseEntity.ok(
-                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(responses.getContent(), pageInfo))
-        );
-    }
-
     private void validateJwtAuthentication(JwtAuthentication authentication){ // TODO: JwtAuthentication 로 관련 로직 이동
         if(authentication == null){
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
         }
     }
 
-    private PageInfo getPageInfo(Page<?> pageResponses) {
-        return PageInfo.of(
-                pageResponses.getPageable().getPageNumber(),
-                pageResponses.getTotalPages(),
-                pageResponses.getPageable().getPageSize(),
-                pageResponses.getTotalElements(),
-                pageResponses.isLast(),
-                pageResponses.isFirst()
-        );
-    }
 }

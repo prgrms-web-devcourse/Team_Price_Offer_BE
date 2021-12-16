@@ -17,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class LikeArticleService {
@@ -53,13 +51,4 @@ public class LikeArticleService {
         return converter.toLikeArticleStatusResponse(true);
     }
 
-    public Page<ArticleBriefViewResponse> getLikeArticles(Pageable pageable, JwtAuthentication authentication) {
-        Member member = memberRepository.findByPrincipal(authentication.loginId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        Page<LikeArticle> likeArticles = likeArticleRepository.findByMember(member, pageable);
-        return likeArticles.map(
-                p -> articleConverter.toArticleBriefViewResponse(p.getArticle(), true
-                ));
-    }
 }
