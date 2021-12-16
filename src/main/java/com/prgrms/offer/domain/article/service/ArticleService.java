@@ -45,6 +45,7 @@ public class ArticleService {
 
     private final String PRODUCT_IMAGE_DIR = "productImage";
     private final int MAX_IMAGE_SIZE = 3;
+    private final String NO_IMG = "no-Img";
 
     public CodeAndNameInfosResponse getAllCodeAndNameInfos() {
         return converter.toCodeAndNameInfosResponse();
@@ -86,7 +87,12 @@ public class ArticleService {
                     request.getTradeArea(),
                     request.getQuantity()
             );
-            articleEntity.updateMainImageUrl(request.getImageUrls().get(0));
+
+            var firstImgUrl = request.getImageUrls().get(0);
+            articleEntity.updateMainImageUrl(
+                    firstImgUrl.equals(NO_IMG) || firstImgUrl == null || firstImgUrl.isEmpty() ?
+                            null : request.getImageUrls().get(0)
+            );
 
             productImageRepository.deleteAllByArticle(articleEntity);
         }
@@ -133,6 +139,8 @@ public class ArticleService {
                 .orElseThrow(() -> new BusinessException(ResponseMessage.ARTICLE_NOT_FOUND));
 
         validateWriterOrElseThrow(article, loginId);
+
+        //productImageRepository.deleteAllByArticle(article); //TODO: 이미지 먼저 삭제 -> 아티클 삭제 : DB옵션으로 빼기
 
         articleRepository.delete(article);
     }
@@ -250,7 +258,7 @@ public class ArticleService {
     @Transactional(propagation = Propagation.MANDATORY)
     void saveImagseUrls(Article article, List<String> imageUrls) {
         for (var imageUrl : imageUrls) {
-            if (imageUrl == null || imageUrl.isEmpty()) {
+            if (imageUrl.equals(NO_IMG) || imageUrl == null || imageUrl.isEmpty()) {
                 continue;
             }
 
