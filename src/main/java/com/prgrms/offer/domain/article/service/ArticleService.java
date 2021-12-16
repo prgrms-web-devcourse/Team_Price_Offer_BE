@@ -4,12 +4,7 @@ import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
-import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateRequest;
-import com.prgrms.offer.domain.article.model.dto.ArticleCreateOrUpdateResponse;
-import com.prgrms.offer.domain.article.model.dto.ArticleDetailResponse;
-import com.prgrms.offer.domain.article.model.dto.CodeAndNameInfosResponse;
-import com.prgrms.offer.domain.article.model.dto.ProductImageUrlsResponse;
+import com.prgrms.offer.domain.article.model.dto.*;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.entity.ProductImage;
 import com.prgrms.offer.domain.article.model.value.Category;
@@ -229,6 +224,23 @@ public class ArticleService {
         return converter.toArticleBriefViewResponse(article, isLiked);
     }
 
+    @Transactional(readOnly = true)
+    public Page<ArticleWithOfferBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
+        Member offerer = memberRepository.findByPrincipal(authentication.loginId)
+                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        Page<Offer> offerPage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+
+        return offerPage.map(o -> makeBriefViewResponseWithLikeInfoAndOfferInfo(o, offerer));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    ArticleWithOfferBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Offer offer, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, offer.getArticle());
+
+        return converter.toArticleWithOfferBriefViewResponse(offer.getArticle(), isLiked, offer);
+    }
+
     private void validateWriterOrElseThrow(Article article, String principal) {
         if (!article.validateWriterByPrincipal(principal)) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
@@ -246,5 +258,4 @@ public class ArticleService {
             productImageRepository.save(productImage);
         }
     }
-
 }
