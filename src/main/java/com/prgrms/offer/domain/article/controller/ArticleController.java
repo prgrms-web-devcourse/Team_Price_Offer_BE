@@ -199,6 +199,19 @@ public class ArticleController {
         );
     }
 
+    @GetMapping("/like-articles")
+    public ResponseEntity<ApiResponse> getLikeArticles(
+            @RequestParam Integer tradeStatusCode,
+            @PageableDefault(sort = "created_date", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication) {
+
+        Page<ArticleBriefViewResponse> responses = articleService.getLikeArticlesWithTradeStatusCode(pageable, authentication, tradeStatusCode);
+        PageInfo pageInfo = getPageInfo(responses);
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(responses.getContent(), pageInfo))
+        );
+    }
+
     private void validateJwtAuthentication(JwtAuthentication authentication) { // TODO: JwtAuthentication 로 관련 로직 이동
         if (authentication == null) {
             throw new BusinessException(ResponseMessage.PERMISSION_DENIED);

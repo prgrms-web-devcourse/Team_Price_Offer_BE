@@ -5,6 +5,7 @@ import com.prgrms.offer.domain.member.model.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -32,4 +33,11 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findAllByWriterId(Pageable pageable, Long writerId);
 
     long countArticlesByWriter(Member member);
+
+    @Query(value = "select * from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
+            "and trade_status_code = ?2",
+            countQuery = "select count(*) from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
+                    "and trade_status_code = ?2",
+            nativeQuery = true)
+    Page<Article> findLikedArticleFromMemberWithStatusCode(long memberId, int tradeStatusCode, Pageable pageable);
 }
