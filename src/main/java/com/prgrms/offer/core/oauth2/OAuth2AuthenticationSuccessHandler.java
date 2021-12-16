@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,17 +47,11 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
         Member member = processUserOAuth2UserJoin(principal, registrationId);
         String token = generateToken(member);
 
-        MemberResponse memberResponse = memberConverter.toMemberResponse(member, token);
+        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth/kakao")
+                .queryParam("token", token)
+                .build().toUriString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.OK.value());
-        response.setCharacterEncoding("utf-8");
-
-        response.getWriter()
-                .write(
-                        objectMapper.writeValueAsString(ApiResponse.of(ResponseMessage.SUCCESS, memberResponse))
-                );
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
     }
 

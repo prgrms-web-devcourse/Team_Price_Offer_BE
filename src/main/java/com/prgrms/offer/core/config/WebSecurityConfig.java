@@ -7,6 +7,7 @@ import com.prgrms.offer.core.oauth2.HttpCookieOAuth2AuthorizationRequestReposito
 import com.prgrms.offer.core.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.prgrms.offer.domain.member.service.MemberConverter;
 import com.prgrms.offer.domain.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,17 +34,13 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 @Slf4j
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final static String BASE_URI = "/api/v1";
 
     private final JwtConfigure jwtConfigure;
     private final OAuth2AuthorizedClientRepository authorizedClientRepository;
-
-    public WebSecurityConfig(JwtConfigure jwtConfigure, OAuth2AuthorizedClientRepository authorizedClientRepository) {
-        this.jwtConfigure = jwtConfigure;
-        this.authorizedClientRepository = authorizedClientRepository;
-    }
 
     @Bean
     public Jwt jwt() {
