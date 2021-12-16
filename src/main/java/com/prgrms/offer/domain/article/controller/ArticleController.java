@@ -144,6 +144,25 @@ public class ArticleController {
         );
     }
 
+    @ApiOperation("마이페이지에서 내가 제안한 모든 게시글 조회")
+    @GetMapping(value = "/offers")
+    public ResponseEntity<ApiResponse> getAllByOffersInMyPage(
+            @RequestParam(value = "tradeStatusCode", required = true) int tradeStatusCode,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            @AuthenticationPrincipal JwtAuthentication authentication
+    ) {
+
+        validateJwtAuthentication(authentication);
+
+        Page<ArticleWithOfferBriefViewResponse> pageResponses = articleService.findAllByMyOffers(pageable, tradeStatusCode, authentication);
+
+        PageInfo pageInfo = getPageInfo(pageResponses);
+
+        return ResponseEntity.ok(
+                ApiResponse.of(ResponseMessage.SUCCESS, PageDto.of(pageResponses.getContent(), pageInfo))
+        );
+    }
+
     @ApiOperation("단건 게시글의 이미지 전체 조회")
     @GetMapping(value = "/{articleId}/imageUrls")
     public ResponseEntity<ApiResponse> getAllImageUrls(@PathVariable Long articleId) {

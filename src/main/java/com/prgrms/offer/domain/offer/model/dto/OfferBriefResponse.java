@@ -1,6 +1,5 @@
 package com.prgrms.offer.domain.offer.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +24,8 @@ public class OfferBriefResponse {
 
     private final Boolean isSelected;
 
+    @Getter
     @RequiredArgsConstructor
-    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class OffererDto{
         private final Long id;
 
