@@ -148,14 +148,13 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,Pageable pageable) {
+    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,Pageable pageable)
+        throws CloneNotSupportedException {
 
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
-        Offer offer = myMessageRoom.getOffer();
-
-        List<Message> messageList = messageRepository.findByMessageRoom(myMessageRoom, pageable);
+        List<Message> messageList = messageRepository.findByMessageRoomOrderByMessageIdDesc(myMessageRoom, pageable);
 
         return messageConverter.toMessageContentResponsePage(messageList, pageable);
     }
