@@ -104,13 +104,12 @@ public class MessageController {
 
         return ResponseEntity.ok(
             ApiResponse.of(
-                ResponseMessage.SUCCESS, messageContentResponsePage
-//                PageDto.of(
-//                    messageContentResponsePage.getContent(), pageInfo
-//                )
+                ResponseMessage.SUCCESS,
+                PageDto.of(
+                    messageContentResponsePage.getContent(), pageInfo
+                )
             )
         );
-
     }
 
     @GetMapping("/messageRoom/{messageRoomId}/messageRoomInfo")
