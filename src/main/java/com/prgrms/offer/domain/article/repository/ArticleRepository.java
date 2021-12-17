@@ -48,9 +48,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             nativeQuery = true)
     Page<Article> findLikedCompletedArticleByMember(long memberId, Pageable pageable);
 
-    @Query("select distinct a from Article a where a.writer.id = :writerId and a.tradeStatusCode <> 8")
+    @Query("select a from Article a where a.writer.id = :writerId and a.tradeStatusCode <> 8")
     Page<Article> findAllByWriterIdAndTradeInProgress(Pageable pageable, Long writerId);
 
-    @Query("select distinct a from Article a where a.tradeStatusCode <> 8")
+    @Query("select a from Article a where a.tradeStatusCode <> 8")
     Page<Article> findAllByTradeInProgress(Pageable pageable);
 }
