@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class OfferBriefResponse {
     private final Long id;
 
-    private final OfferResponse.OffererDto offerer;
+    private final OffererResponse offerer;
 
     private final Long articleId;
 
@@ -23,14 +23,4 @@ public class OfferBriefResponse {
     private final LocalDateTime createdDate;
 
     private final Boolean isSelected;
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class OffererDto{
-        private final Long id;
-
-        private final String nickname;
-
-        private final String address;
-    }
 }
