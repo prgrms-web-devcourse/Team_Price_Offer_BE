@@ -272,8 +272,14 @@ public class ArticleService {
         Member member = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        return articleRepository
-                .findLikedArticleFromMemberWithStatusCode(member.getId(), tradeStatusCode, pageable)
-                .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
+        if (tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
+            return articleRepository
+                    .findLikedSellingArticleByMember(member.getId(), pageable)
+                    .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
+        } else {
+            return articleRepository
+                    .findLikedSellingArticleByMember(member.getId(), pageable)
+                    .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
+        }
     }
 }
