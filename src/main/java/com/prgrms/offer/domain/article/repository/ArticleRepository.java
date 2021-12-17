@@ -35,9 +35,16 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     long countArticlesByWriter(Member member);
 
     @Query(value = "select * from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
-            "and trade_status_code = ?2",
+            "and (trade_status_code = 2 or trade_status_code 4)",
             countQuery = "select count(*) from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
-                    "and trade_status_code = ?2",
+                    "and (trade_status_code = 2 or trade_status_code 4)",
             nativeQuery = true)
-    Page<Article> findLikedArticleFromMemberWithStatusCode(long memberId, int tradeStatusCode, Pageable pageable);
+    Page<Article> findLikedSellingArticleByMember(long memberId, Pageable pageable);
+
+    @Query(value = "select * from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
+            "and trade_status_code = 8",
+            countQuery = "select count(*) from article where article_id in (select like_article.article_id from like_article where member_id = ?1)" +
+                    "and trade_status_code = 8",
+            nativeQuery = true)
+    Page<Article> findLikedCompletedArticleByMember(long memberId, Pageable pageable);
 }
