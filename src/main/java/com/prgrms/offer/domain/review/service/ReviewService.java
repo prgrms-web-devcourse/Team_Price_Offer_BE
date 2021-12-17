@@ -55,6 +55,12 @@ public class ReviewService {
 
         boolean isRevieweeBuyer = article.validateWriterByWriterId(reviewer.getId());
 
+        if(!isRevieweeBuyer){
+            if(offer.getOfferer().getId().longValue() != reviewer.getId().longValue()){
+                throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+            }
+        }
+
         return isRevieweeBuyer ?
                 writeReviewAndGetResponse(reviewer, offer.getOfferer(), article, request, true) :
                 writeReviewAndGetResponse(reviewer, article.getWriter(), article, request, false);
