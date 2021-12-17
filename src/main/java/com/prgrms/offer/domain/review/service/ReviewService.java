@@ -52,15 +52,7 @@ public class ReviewService {
         }
 
         Offer offer = offerRepository.findByArticleAndIsSelected(article, true)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.OFFER_NOT_FOUND));
-
-        if (!offer.getIsSelected()) {
-            throw new BusinessException(ResponseMessage.NOT_SELECTED_OFFER);
-        }
-
-        if (!TradeStatus.isCompleted(offer.getArticle().getTradeStatusCode())) {
-            throw new BusinessException(ResponseMessage.NOT_COMPLETED_TRADE);
-        }
+                .orElseThrow(() -> new BusinessException(ResponseMessage.NOT_SELECTED_OFFER));
 
         boolean isRevieweeBuyer = article.validateWriterByPrincipal(authentication.loginId);
 

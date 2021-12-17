@@ -16,17 +16,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /**
-     * validation 실패 시, 예외처리
+     * body의 validation 실패 시, 예외처리
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> handleMethodValidException(MethodArgumentNotValidException exception){
+    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception){
         log.info(exception.getAllErrors().get(0).getDefaultMessage() + " from MethodArgumentNotValidException");
         return createApiExceptionResult(HttpStatus.BAD_REQUEST, exception.getAllErrors().get(0).getDefaultMessage());
+    }
+
+    /**
+     * path요소의 validation 실패 시, 예외처리
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException exception){
+        log.info(exception.getMessage() + " from ConstraintViolationException");
+        return createApiExceptionResult(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     /**
@@ -69,15 +80,15 @@ public class GlobalExceptionHandler {
         return createApiExceptionResult(ResponseMessage.INVALID_REQUEST_ARGUMENT_TYPE);
     }
 
-    /**
-     * 파일 용량 초과시 발생
-     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
         log.info(exception.getMessage() + " from MissingServletRequestParameterException");
         return createApiExceptionResult(ResponseMessage.MISSING_PARAMETER);
     }
 
+    /**
+     * 파일 용량 초과시 발생
+     */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiResponse> handleFileSizeLimitExceededException(MaxUploadSizeExceededException exception) {
         log.info(exception.getMessage() + " from FileSizeLimitExceededException");
