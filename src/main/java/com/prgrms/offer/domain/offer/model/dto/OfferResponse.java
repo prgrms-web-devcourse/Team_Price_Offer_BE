@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OfferResponse {
     private final OfferDto offer;
 
