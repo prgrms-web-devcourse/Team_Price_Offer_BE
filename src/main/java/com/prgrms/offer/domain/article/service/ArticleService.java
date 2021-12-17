@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import com.prgrms.offer.domain.offer.model.entity.Offer;
 import com.prgrms.offer.domain.offer.repository.OfferRepository;
+import com.prgrms.offer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ public class ArticleService {
     private final ProductImageRepository productImageRepository;
     private final LikeArticleRepository likeArticleRepository;
     private final OfferRepository offerRepository;
+    private final ReviewRepository reviewRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -140,7 +142,7 @@ public class ArticleService {
 
         validateWriterOrElseThrow(article, loginId);
 
-        //productImageRepository.deleteAllByArticle(article); //TODO: 이미지 먼저 삭제 -> 아티클 삭제 : DB옵션으로 빼기
+        doOnDeleteSetNull(article);
 
         articleRepository.delete(article);
     }
@@ -293,5 +295,13 @@ public class ArticleService {
                     .findLikedSellingArticleByMember(member.getId(), pageable)
                     .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
         }
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    void doOnDeleteSetNull(Article article) {
+        productImageRepository.doOnDeleteSetNullFromArticle(article);
+        likeArticleRepository.doOnDeleteSetNullFromArticle(article);
+        offerRepository.doOnDeleteSetNullFromArticle(article);
+        reviewRepository.doOnDeleteSetNullFromArticle(article);
     }
 }
