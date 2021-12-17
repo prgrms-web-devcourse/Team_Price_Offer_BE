@@ -20,8 +20,7 @@ public class ProductImage {
 
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", referencedColumnName = "article_id")
     private Article article;
 
