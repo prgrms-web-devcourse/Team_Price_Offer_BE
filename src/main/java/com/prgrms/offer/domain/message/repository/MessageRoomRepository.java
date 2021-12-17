@@ -20,8 +20,8 @@ public interface MessageRoomRepository extends Repository<MessageRoom, Long> {
 
     Optional<MessageRoom> findById(long messageRoomId);
 
-    Optional<MessageRoom> findByMember(Member member);
-
     Optional<MessageRoom> findByMemberAndOffer(Member messagePartner, Offer offer);
+
+    Long countMessageRoomByMember(Member me);
 
 }

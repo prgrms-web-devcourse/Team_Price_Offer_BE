@@ -33,6 +33,7 @@ public class MessageRoomConverter {
     public Page<MessageRoomResponse> toMessageRoomResponsePage(
         List<MessageRoom> messageRoomList,
         List<Message> messageList,
+        long numMessageRoom,
         Pageable pageable) {
 
         List<MessageRoomResponse> messageRoomResponseList = new ArrayList<>();
@@ -46,9 +47,8 @@ public class MessageRoomConverter {
             );
         }
 
-        final int start = (int)pageable.getOffset();
-        final int end = Math.min((start + pageable.getPageSize()), messageRoomResponseList.size());
-        final Page<MessageRoomResponse> page = new PageImpl<>(messageRoomResponseList.subList(start, end), pageable, messageRoomResponseList.size());
+        final Page<MessageRoomResponse> page = new PageImpl<>(
+            messageRoomResponseList, pageable, numMessageRoom);
 
         return page;
     }

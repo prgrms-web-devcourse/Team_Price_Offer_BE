@@ -94,8 +94,10 @@ public class MessageService {
             messageRoom -> messageRepository.findTop1ByMessageRoomOrderByCreatedDateDesc(
                 messageRoom)).collect(Collectors.toList());
 
+        long numMessageRoom = messageRoomRepository.countMessageRoomByMember(me);
+
         Page<MessageRoomResponse> messageRoomResponsePage =
-            messageRoomConverter.toMessageRoomResponsePage(messageRoomList, messageList, pageable);
+            messageRoomConverter.toMessageRoomResponsePage(messageRoomList, messageList, numMessageRoom, pageable);
 
         return messageRoomResponsePage;
     }
@@ -155,8 +157,9 @@ public class MessageService {
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
         List<Message> messageList = messageRepository.findByMessageRoomOrderByMessageIdDesc(myMessageRoom, pageable);
+        long numMessage = messageRepository.countAllByMessageRoom(myMessageRoom);
 
-        return messageConverter.toMessageContentResponsePage(messageList, pageable);
+        return messageConverter.toMessageContentResponsePage(messageList, numMessage, pageable);
     }
 
     @Transactional(readOnly = true)

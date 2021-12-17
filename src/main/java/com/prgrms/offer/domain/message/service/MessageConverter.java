@@ -39,7 +39,7 @@ public class MessageConverter {
 
 
     public Page<MessageContentResponse> toMessageContentResponsePage(
-        List<Message> messageList, Pageable pageable) {
+        List<Message> messageList, long numMessage, Pageable pageable) {
 
         List<MessageContentResponse> messageContentResponseList =
             messageList.stream().map(e -> new MessageContentResponse(
@@ -51,16 +51,10 @@ public class MessageConverter {
                 )
                 .collect(Collectors.toList());
 
-        final int start = (int) pageable.getOffset();
-
-        final int end = Math.min((start + pageable.getPageSize()),
-            messageContentResponseList.size());
-
         messageContentResponseList.sort(messageContentResponseComparator);
 
-        final Page<MessageContentResponse> page = new PageImpl<>(
-            messageContentResponseList, pageable,
-            messageContentResponseList.size());
+        final Page<MessageContentResponse> page =
+            new PageImpl<>(messageContentResponseList, pageable, numMessage);
 
         return page;
     }
