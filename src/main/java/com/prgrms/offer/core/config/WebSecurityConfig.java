@@ -1,8 +1,5 @@
 package com.prgrms.offer.core.config;
-import com.prgrms.offer.core.jwt.Jwt;
-import com.prgrms.offer.core.jwt.JwtAuthenticationFilter;
-import com.prgrms.offer.core.jwt.JwtAuthenticationProvider;
-import com.prgrms.offer.core.jwt.JwtConfigure;
+import com.prgrms.offer.core.jwt.*;
 import com.prgrms.offer.core.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.prgrms.offer.core.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.prgrms.offer.domain.member.service.MemberConverter;
@@ -41,6 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtConfigure jwtConfigure;
     private final OAuth2AuthorizedClientRepository authorizedClientRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public Jwt jwt() {
@@ -117,24 +115,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, BASE_URI+"/members/{\\d+}/profiles/articles/likes").permitAll()
+                .antMatchers(HttpMethod.GET, BASE_URI + "/members/{\\d+}/profiles/articles/likes").permitAll()
                 .antMatchers(HttpMethod.POST,
-                        BASE_URI+"/reviews/**",
-                        BASE_URI+"/articles/**").permitAll()
+                        BASE_URI + "/reviews/**",
+                        BASE_URI + "/articles/**").permitAll()
                 .antMatchers(HttpMethod.PATCH,
-                        BASE_URI+"/members/me",
-                        BASE_URI+"/articles/**").permitAll()
-                .antMatchers(BASE_URI+"/messages/**").permitAll()
+                        BASE_URI + "/members/me",
+                        BASE_URI + "/articles/**").permitAll()
+                .antMatchers(BASE_URI + "/messages/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
-                 // formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
+                // formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
                 .formLogin().disable()
                 .csrf().disable()
                 .headers().disable()
                 .httpBasic().disable()
                 .rememberMe().disable()
                 .logout().disable()
-                 // Session 사용하지 않음
+                // Session 사용하지 않음
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -146,8 +144,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(getApplicationContext().getBean(OAuth2AuthenticationSuccessHandler.class))
                 .authorizedClientRepository(authorizedClientRepository)
                 .and()
-                 // 예외처리 핸들러
+                // 예외처리 핸들러
                 .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
                 // 커스텀 JwtFilter 추가
