@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException exception){
-        log.info(exception.getMessage() + " from handleConstraintViolationException");
+        log.info(exception.getMessage() + " from ConstraintViolationException");
         return createApiExceptionResult(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
