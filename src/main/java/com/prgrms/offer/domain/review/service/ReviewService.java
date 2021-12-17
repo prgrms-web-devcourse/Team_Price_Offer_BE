@@ -55,7 +55,7 @@ public class ReviewService {
 
         boolean isRevieweeBuyer = article.validateWriterByWriterId(reviewer.getId());
 
-        if(!isRevieweeBuyer){
+        if(!isRevieweeBuyer){  // 리뷰어가 판매자가 아닐 경우 제안자가 맞는지 검증 -> TODO: offer 엔티티로 로직 이동
             if(offer.getOfferer().getId().longValue() != reviewer.getId().longValue()){
                 throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
             }
