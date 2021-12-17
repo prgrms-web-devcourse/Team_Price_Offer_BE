@@ -6,6 +6,7 @@ import com.prgrms.offer.domain.offer.model.entity.Offer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
@@ -31,4 +32,8 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
     @Query("select o from Offer o where o.offerer = :offerer and o.article.tradeStatusCode <> 8")
     Page<Offer> findAllByOffererAndTradeInProgress(Member offerer, Pageable pageable);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Offer o SET o.article = NULL WHERE o.article = :article")
+    void doOnDeleteSetNullFromArticle(Article article);
 }

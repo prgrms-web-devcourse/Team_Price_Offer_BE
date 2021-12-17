@@ -6,6 +6,8 @@ import com.prgrms.offer.domain.review.model.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -20,4 +22,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByReviewerAndArticle(Member reviewer, Article article);
 
     long countReviewsByReviewee(Member member);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Review r SET r.article = NULL WHERE r.article = :article")
+    void doOnDeleteSetNullFromArticle(Article article);
 }
