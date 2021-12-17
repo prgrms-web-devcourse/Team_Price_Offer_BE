@@ -173,26 +173,34 @@ public class ArticleService {
     ) {
 
         Page<Article> postPage;
-        if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()){
+        if (categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()) {
             postPage = articleRepository.findAll(pageable);
         }
-        else if(categoryCodeOptional.isPresent() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()){
+        else if (categoryCodeOptional.isPresent() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isEmpty()) {
             postPage = articleRepository.findAllByCategoryCode(pageable, Category.of(categoryCodeOptional.get()).getCode());
         }
-        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isPresent()){
-            postPage = articleRepository.findAllByWriterIdAndTradeStatusCode(
-                    pageable,
-                    memberIdOptional.get(),
-                    TradeStatus.of(tradeStatusCodeOptional.get()).getCode()
-            );
+        else if (categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isPresent()) {
+            if (TradeStatus.of(tradeStatusCodeOptional.get()).getCode() == TradeStatus.COMPLETED.getCode()) { // 판매 완료만 가져오기
+                postPage = articleRepository.findAllByWriterIdAndTradeStatusCode(
+                        pageable,
+                        memberIdOptional.get(),
+                        TradeStatus.of(tradeStatusCodeOptional.get()).getCode()
+                );
+            } else {  // 예약중 또는 판매중만 가져오기
+                postPage = articleRepository.findAllByWriterIdAndTradeInProgress(pageable, memberIdOptional.get());
+            }
         }
-        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isPresent()){
-            postPage = articleRepository.findAllByTradeStatusCode(pageable, TradeStatus.of(tradeStatusCodeOptional.get()).getCode());
+        else if (categoryCodeOptional.isEmpty() && memberIdOptional.isEmpty() && tradeStatusCodeOptional.isPresent()) {
+            if (TradeStatus.of(tradeStatusCodeOptional.get()).getCode() == TradeStatus.COMPLETED.getCode()) { // 판매 완료만 가져오기
+                postPage = articleRepository.findAllByTradeStatusCode(pageable, TradeStatus.of(tradeStatusCodeOptional.get()).getCode());
+            } else {  // 예약중 또는 판매중만 가져오기
+                postPage = articleRepository.findAllByTradeInProgress(pageable);
+            }
         }
-        else if(categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isEmpty()){
+        else if (categoryCodeOptional.isEmpty() && memberIdOptional.isPresent() && tradeStatusCodeOptional.isEmpty()) {
             postPage = articleRepository.findAllByWriterId(pageable, memberIdOptional.get());
         }
-        else{
+        else {
             throw new BusinessException(ResponseMessage.NOT_SUPPORTING_PARAM_COMBINATION);
         }
 
@@ -237,8 +245,12 @@ public class ArticleService {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Page<Offer> offerPage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
-
+        Page<Offer> offerPage;
+        if(tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
+            offerPage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+        }else{
+            offerPage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
+        }
         return offerPage.map(o -> makeBriefViewResponseWithLikeInfoAndOfferInfo(o, offerer));
     }
 

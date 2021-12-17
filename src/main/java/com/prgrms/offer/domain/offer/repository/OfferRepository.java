@@ -28,4 +28,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
     @Query("select distinct o from Offer o where o.offerer = :offerer and o.article.tradeStatusCode = :tradeStatusCode")
     Page<Offer> findAllByOffererAndTradeStatusCode(Member offerer, int tradeStatusCode, Pageable pageable);
+
+    @Query("select distinct o from Offer o where o.offerer = :offerer and o.article.tradeStatusCode <> 8")
+    Page<Offer> findAllByOffererAndTradeInProgress(Member offerer, Pageable pageable);
 }
