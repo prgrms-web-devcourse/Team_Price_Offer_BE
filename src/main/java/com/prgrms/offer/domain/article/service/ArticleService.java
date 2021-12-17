@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.prgrms.offer.domain.message.repository.MessageRoomRepository;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
 import com.prgrms.offer.domain.offer.repository.OfferRepository;
 import com.prgrms.offer.domain.review.repository.ReviewRepository;
@@ -41,6 +42,7 @@ public class ArticleService {
     private final LikeArticleRepository likeArticleRepository;
     private final OfferRepository offerRepository;
     private final ReviewRepository reviewRepository;
+    private final MessageRoomRepository messageRoomRepository;
     private final ArticleConverter converter;
 
     private final S3ImageUploader s3ImageUploader;
@@ -303,5 +305,6 @@ public class ArticleService {
         likeArticleRepository.doOnDeleteSetNullFromArticle(article);
         offerRepository.doOnDeleteSetNullFromArticle(article);
         reviewRepository.doOnDeleteSetNullFromArticle(article);
+        messageRoomRepository.doOnDeleteSetNullFromArticle(article);
     }
 }
