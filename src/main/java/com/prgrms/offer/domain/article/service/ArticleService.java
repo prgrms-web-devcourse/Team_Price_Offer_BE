@@ -290,7 +290,7 @@ public class ArticleService {
 
         if (tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
             return articleRepository
-                    .findLikedSellingArticleByMember(member.getId(), pageable)
+                    .findLikedCompletedArticleByMember(member.getId(), pageable)
                     .map(p -> makeBriefViewResponseWithLikeInfo(p, member));
         } else {
             return articleRepository
