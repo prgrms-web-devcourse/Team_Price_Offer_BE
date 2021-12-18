@@ -1,5 +1,7 @@
 package com.prgrms.offer.domain.search.service;
 
+import static com.prgrms.offer.common.page.CollectionToPage.toPage;
+
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
@@ -8,9 +10,14 @@ import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.service.ArticleConverter;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
+import com.prgrms.offer.domain.search.model.dto.SearchFilterRequest;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +34,7 @@ public class ArticleSearchService {
     public Page<ArticleBriefViewResponse> findByTitle(
         String title,
         Pageable pageable,
-        JwtAuthentication authentication) {
+        @AuthenticationPrincipal JwtAuthentication authentication) {
 
         if (authentication == null) {
             Page<ArticleBriefViewResponse> articleBriefViewResponses = articleRepository.findByTitleIgnoreCaseContains(
@@ -45,7 +52,33 @@ public class ArticleSearchService {
         return titles;
     }
 
-    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article, Member currentMember) {
+    public Page<ArticleBriefViewResponse> findByFilter(
+        SearchFilterRequest searchFilterRequest,
+        Pageable pageable,
+        Optional<JwtAuthentication> authentication) {
+
+        List<Article> articleList = articleRepository.findByFilter(
+            searchFilterRequest, pageable);
+
+        long numContents = articleRepository.countAllByFilter(searchFilterRequest);
+
+        if (authentication.isEmpty()) {
+            return (Page<ArticleBriefViewResponse>) toPage(articleList.stream().map(
+                article -> articleConverter.toArticleBriefViewResponse(article, false)).collect(
+                Collectors.toList()), pageable, numContents);
+        }
+
+        JwtAuthentication jwtAuthentication = authentication.get();
+
+        Member currentMember = memberRepository.findByPrincipal(jwtAuthentication.loginId).get();
+
+        return (Page<ArticleBriefViewResponse>) toPage(articleList.stream().map(
+                article -> makeBriefViewResponseWithLikeInfo(article, currentMember))
+            .collect(Collectors.toList()), pageable, numContents);
+    }
+
+    private ArticleBriefViewResponse makeBriefViewResponseWithLikeInfo(Article article,
+        Member currentMember) {
         boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
 
         return articleConverter.toArticleBriefViewResponse(article, isLiked);

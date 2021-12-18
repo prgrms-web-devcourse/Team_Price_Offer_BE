@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface ArticleRepository extends JpaRepository<Article, Long> {
+public interface ArticleRepository extends JpaRepository<Article, Long>, CustomizedArticleRepository {
     @Override
     Optional<Article> findById(Long aLong);
 
