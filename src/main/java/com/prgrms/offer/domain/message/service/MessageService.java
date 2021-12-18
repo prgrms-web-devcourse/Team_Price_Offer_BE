@@ -83,7 +83,7 @@ public class MessageService {
     }
 
     // 쪽지함 가져오기
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<MessageRoomResponse> getMessageBox(String loginId, Pageable pageable) {
         Member me = memberRepository.findByPrincipal(loginId).get();
 
