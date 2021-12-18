@@ -19,7 +19,6 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
 
     @Override
     public List<Article> findByFilter(SearchFilterRequest searchFilterRequest, Pageable pageable) {
-        System.out.println(searchFilterRequest.toString());
 
         return jpaQueryFactory.selectFrom(article)
             .where(containsIgnoreTitle(searchFilterRequest.getTitle()),
