@@ -52,7 +52,7 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
             if (maxPrice != null) {
                 return article.price.between(minPrice, maxPrice);
             }
-            return article.price.goe(maxPrice);
+            return article.price.goe(minPrice);
         }
 
         if (maxPrice != null) {
