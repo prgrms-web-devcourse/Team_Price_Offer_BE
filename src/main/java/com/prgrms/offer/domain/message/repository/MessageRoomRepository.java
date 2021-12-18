@@ -7,6 +7,8 @@ import com.prgrms.offer.domain.offer.model.entity.Offer;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
 public interface MessageRoomRepository extends Repository<MessageRoom, Long> {
@@ -24,4 +26,7 @@ public interface MessageRoomRepository extends Repository<MessageRoom, Long> {
 
     Long countMessageRoomByMember(Member me);
 
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE MessageRoom mr SET mr.article = NULL WHERE mr.article = :article")
+    void doOnDeleteSetNullFromArticle(Article article);
 }
