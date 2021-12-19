@@ -2,6 +2,8 @@ package com.prgrms.offer.domain.search.service;
 
 import static com.prgrms.offer.common.page.CollectionToPage.toPage;
 
+import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.article.model.entity.Article;
@@ -17,7 +19,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,9 +37,9 @@ public class ArticleSearchService {
     public Page<ArticleBriefViewResponse> findByTitle(
         String title,
         Pageable pageable,
-        @AuthenticationPrincipal JwtAuthentication authentication) {
+        Optional<JwtAuthentication> authentication) {
 
-        if (authentication == null) {
+        if (authentication.isEmpty()) {
             Page<ArticleBriefViewResponse> articleBriefViewResponses = articleRepository.findByTitleIgnoreCaseContainsAndTradeStatusCodeIn(
                 title, tradeStatusCodeArray , pageable).map(
                 article -> articleConverter.toArticleBriefViewResponse(article, false)
@@ -46,7 +47,8 @@ public class ArticleSearchService {
             return articleBriefViewResponses;
         }
 
-        Member currentMember = memberRepository.findByPrincipal(authentication.loginId).get();
+        Member currentMember = memberRepository.findByPrincipal(authentication.get().loginId)
+            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         Page<ArticleBriefViewResponse> titles = articleRepository.findByTitleIgnoreCaseContainsAndTradeStatusCodeIn(
             title, tradeStatusCodeArray, pageable).map(
@@ -60,10 +62,10 @@ public class ArticleSearchService {
         Pageable pageable,
         Optional<JwtAuthentication> authentication) {
 
-        List<Article> articleList = articleRepository.findByFilter(
-            searchFilterRequest, pageable);
+        List<Article> articleList = articleRepository.findByTradeStatusCodeInAndFilter(
+            tradeStatusCodeArray, searchFilterRequest, pageable);
 
-        long numContents = articleRepository.countAllByFilter(searchFilterRequest);
+        long numContents = articleRepository.countAllByTradeStatusCodeInAndFilter(tradeStatusCodeArray, searchFilterRequest);
 
         if (authentication.isEmpty()) {
             return (Page<ArticleBriefViewResponse>) toPage(articleList.stream().map(
@@ -73,7 +75,8 @@ public class ArticleSearchService {
 
         JwtAuthentication jwtAuthentication = authentication.get();
 
-        Member currentMember = memberRepository.findByPrincipal(jwtAuthentication.loginId).get();
+        Member currentMember = memberRepository.findByPrincipal(jwtAuthentication.loginId)
+            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
         return (Page<ArticleBriefViewResponse>) toPage(articleList.stream().map(
                 article -> makeBriefViewResponseWithLikeInfo(article, currentMember))
