@@ -18,7 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +37,19 @@ public class OfferService {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        int offerCountOfCurrentMember = (int) offerRepository.countByOffererIdAndArticleId(offerer.getId(), articleId).longValue();
+        List<Offer> offers = offerRepository.findAllByOffererIdAndArticleId(offerer.getId(), articleId);
+        int offerCountOfCurrentMember = offers.size();
+
         if (offerCountOfCurrentMember >= MAX_AVAIL_OFFER_COUNT) {
             throw new BusinessException(ResponseMessage.EXCEED_OFFER_COUNT);
+        }
+
+        if(offerCountOfCurrentMember == 1){
+            Offer prevOffer = offers.get(0);
+
+            if(prevOffer.getPrice().intValue() == request.getPrice()){
+                throw new BusinessException(ResponseMessage.ALREADY_EXIST_SAME_PRICE_OFFER);
+            }
         }
 
         Article article = articleRepository.findById(articleId)
