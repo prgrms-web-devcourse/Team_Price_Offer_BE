@@ -7,7 +7,6 @@ import com.prgrms.offer.domain.article.model.value.ProductStatus;
 import com.prgrms.offer.domain.article.model.value.TradeMethod;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.member.model.entity.Member;
-import com.prgrms.offer.domain.offer.model.entity.Offer;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -140,29 +139,5 @@ public class ArticleConverter {
                 .build();
 
         return new ArticleDetailResponse(articleDto);
-    }
-
-    public ArticleWithOfferBriefViewResponse toArticleWithOfferBriefViewResponse(Article article, boolean isLiked, Offer offer) {
-        return ArticleWithOfferBriefViewResponse.builder()
-                .id(article.getId())
-                .mainImageUrl(article.getMainImageUrl())
-                .title(article.getTitle())
-                .price(article.getPrice())
-                .tradeArea(article.getTradeArea())
-                .createdDate(article.getCreatedDate())
-                .modifiedDate(article.getModifiedDate())
-                .isLiked(isLiked)
-                .tradeStatus(
-                        new CodeAndName(
-                                TradeStatus.of(article.getTradeStatusCode()).getCode(),
-                                TradeStatus.of(article.getTradeStatusCode()).getName()
-                        )
-                )
-                .offer(
-                        new ArticleWithOfferBriefViewResponse.OfferDto(
-                                offer.getPrice(), offer.getIsSelected(), offer.getCreatedDate()
-                        )
-                )
-                .build();
     }
 }

@@ -28,11 +28,11 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
     long countOffersByOfferer(Member member);
 
-    @Query("select o from Offer o where o.offerer = :offerer and o.article.tradeStatusCode = :tradeStatusCode")
-    Page<Offer> findAllByOffererAndTradeStatusCode(Member offerer, int tradeStatusCode, Pageable pageable);
+    @Query("select distinct o.article from Offer o where o.offerer = :offerer and o.article.tradeStatusCode = :tradeStatusCode")
+    Page<Article> findAllByOffererAndTradeStatusCode(Member offerer, int tradeStatusCode, Pageable pageable);
 
-    @Query("select o from Offer o where o.offerer = :offerer and o.article.tradeStatusCode <> 8")
-    Page<Offer> findAllByOffererAndTradeInProgress(Member offerer, Pageable pageable);
+    @Query("select distinct o.article from Offer o where o.offerer = :offerer and o.article.tradeStatusCode <> 8")
+    Page<Article> findAllByOffererAndTradeInProgress(Member offerer, Pageable pageable);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Offer o SET o.article = NULL WHERE o.article = :article")

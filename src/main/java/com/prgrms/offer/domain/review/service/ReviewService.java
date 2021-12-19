@@ -96,10 +96,12 @@ public class ReviewService {
 
     @Transactional(propagation = Propagation.MANDATORY)
     ReviewResponse createReviewResponseForLoginMember(Review review, Member reviewer, boolean isSameAsCurrentMemberAndMyPageMember) {
-        boolean isWritingAvailableFromCurrentMember = false;
+        Boolean isWritingAvailableFromCurrentMember = false;
 
         if(isSameAsCurrentMemberAndMyPageMember) {
             isWritingAvailableFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        }else{
+            isWritingAvailableFromCurrentMember = null;
         }
 
         return converter.toReviewResponse(review, isWritingAvailableFromCurrentMember);
