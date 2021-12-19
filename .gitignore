@@ -249,3 +249,5 @@ src/main/resources/*.properties
 *.MF
 
 database/
+
+src/main/generated/

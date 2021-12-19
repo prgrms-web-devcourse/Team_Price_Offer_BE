@@ -77,24 +77,30 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)  //memberId 랑 authenticationOptional 가 같은 사용자임(현재 프로필 대상)
-    public Page<ReviewResponse> findAllByRole(Pageable pageable, Long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
+    public Page<ReviewResponse> findAllByRole(Pageable pageable, long memberId, String role, Optional<JwtAuthentication> authenticationOptional) {
         boolean isRevieweeBuyer = getRevieweeRoleIsBuyerOrElseThrow(role);
 
         Page<Review> reviewPage = reviewRepository.findAllByRevieweeIdAndIsRevieweeBuyer(pageable, memberId, isRevieweeBuyer);
 
-        if (authenticationOptional.isEmpty()) { // 로그인 안한 경우
-            return reviewPage.map(r -> converter.toReviewResponse(r, false));
+        if (authenticationOptional.isPresent()) { // 로그인 한 경우
+            Member currentMember = memberRepository.findByPrincipal(authenticationOptional.get().loginId)
+                    .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+            boolean isSameAsCurrentMemberAndMyPageMember = currentMember.getId().longValue() == memberId;
+
+            return reviewPage.map(r -> createReviewResponseForLoginMember(r, currentMember, isSameAsCurrentMemberAndMyPageMember));
         }
 
-        return reviewPage.map(r -> createReviewResponseForLoginMember(r, authenticationOptional.get()));
+        return reviewPage.map(r -> converter.toReviewResponse(r, false));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ReviewResponse createReviewResponseForLoginMember(Review review, JwtAuthentication authentication) {
-        Member reviewer = memberRepository.findByPrincipal(authentication.loginId)
-                .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+    ReviewResponse createReviewResponseForLoginMember(Review review, Member reviewer, boolean isSameAsCurrentMemberAndMyPageMember) {
+        boolean isWritingAvailableFromCurrentMember = false;
 
-        boolean isWritingAvailableFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        if(isSameAsCurrentMemberAndMyPageMember) {
+            isWritingAvailableFromCurrentMember = !reviewRepository.existsByReviewerAndArticle(reviewer, review.getArticle());
+        }
 
         return converter.toReviewResponse(review, isWritingAvailableFromCurrentMember);
     }
