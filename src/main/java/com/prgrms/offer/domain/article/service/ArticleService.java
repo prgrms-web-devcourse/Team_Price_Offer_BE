@@ -245,24 +245,24 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleWithOfferBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
+    public Page<ArticleBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Page<Offer> offerPage;
+        Page<Article> articlePage;
         if(tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
-            offerPage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+            articlePage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
         }else{
-            offerPage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
+            articlePage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
         }
-        return offerPage.map(o -> makeBriefViewResponseWithLikeInfoAndOfferInfo(o, offerer));
+        return articlePage.map(a -> makeBriefViewResponseWithLikeInfoAndOfferInfo(a, offerer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ArticleWithOfferBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Offer offer, Member currentMember) {
-        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, offer.getArticle());
+    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Article article, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
 
-        return converter.toArticleWithOfferBriefViewResponse(offer.getArticle(), isLiked, offer);
+        return converter.toArticleBriefViewResponse(article, isLiked);
     }
 
     private void validateWriterOrElseThrow(Article article, String principal) {
