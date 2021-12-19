@@ -30,6 +30,8 @@ public class ArticleSearchService {
     private final LikeArticleRepository likeArticleRepository;
     private final MemberRepository memberRepository;
 
+    private final Integer[] tradeStatusCodeArray = {2, 4};
+
     @Transactional(readOnly = true)
     public Page<ArticleBriefViewResponse> findByTitle(
         String title,
@@ -37,16 +39,17 @@ public class ArticleSearchService {
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
         if (authentication == null) {
-            Page<ArticleBriefViewResponse> articleBriefViewResponses = articleRepository.findByTitleIgnoreCaseContains(
-                title, pageable).map(
+            Page<ArticleBriefViewResponse> articleBriefViewResponses = articleRepository.findByTitleIgnoreCaseContainsAndTradeStatusCodeIn(
+                title, tradeStatusCodeArray , pageable).map(
                 article -> articleConverter.toArticleBriefViewResponse(article, false)
             );
             return articleBriefViewResponses;
         }
 
         Member currentMember = memberRepository.findByPrincipal(authentication.loginId).get();
-        Page<ArticleBriefViewResponse> titles = articleRepository.findByTitleIgnoreCaseContains(
-            title, pageable).map(
+
+        Page<ArticleBriefViewResponse> titles = articleRepository.findByTitleIgnoreCaseContainsAndTradeStatusCodeIn(
+            title, tradeStatusCodeArray, pageable).map(
             article -> makeBriefViewResponseWithLikeInfo(article, currentMember)
         );
         return titles;
