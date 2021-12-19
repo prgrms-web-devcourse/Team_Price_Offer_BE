@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OfferRepository extends JpaRepository<Offer, Long> {
@@ -36,4 +37,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Offer o SET o.article = NULL WHERE o.article = :article")
     void doOnDeleteSetNullFromArticle(Article article);
+
+    List<Offer> findAllByOffererIdAndArticleId(Long offererId, Long articleId);
 }
