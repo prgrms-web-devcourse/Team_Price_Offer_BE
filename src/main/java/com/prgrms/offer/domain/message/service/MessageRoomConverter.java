@@ -7,6 +7,7 @@ import com.prgrms.offer.domain.message.model.dto.MessageRoomResponse.UserInfo;
 import com.prgrms.offer.domain.message.model.entity.Message;
 import com.prgrms.offer.domain.message.model.entity.MessageRoom;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageRoomConverter {
+
+    private final MessageRoomResponseComparator messageRoomComparator = new MessageRoomResponseComparator();
 
     public MessageRoomResponse toMessageRoomResponse(MessageRoom messageRoom, Message message) {
         Member messagePartner = messageRoom.getMessagePartner();
@@ -47,10 +50,22 @@ public class MessageRoomConverter {
             );
         }
 
+        messageRoomResponseList.sort(messageRoomComparator);
+
         final Page<MessageRoomResponse> page = new PageImpl<>(
             messageRoomResponseList, pageable, numMessageRoom);
 
         return page;
+    }
+
+    class MessageRoomResponseComparator implements Comparator<MessageRoomResponse> {
+
+        // 최신 쪽지 내역이 있는 messageRoom 내림차순 정렬
+        @Override
+        public int compare(MessageRoomResponse o1, MessageRoomResponse o2) {
+            return o1.getMessage().getCreatedDate().isAfter(o2.getMessage().getCreatedDate()) ? -1
+                : 1;
+        }
     }
 
 }

@@ -22,7 +22,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Customi
     @Override
     boolean existsById(Long aLong);
 
-    Page<Article> findByTitleIgnoreCaseContains(String title, Pageable pageable);
+    Page<Article> findByTitleIgnoreCaseContainsAndTradeStatusCodeIn(String title, Integer[] tradeStatusCodeArray, Pageable pageable);
 
     Page<Article> findAllByCategoryCode(Pageable pageable, int categoryCode);
 
