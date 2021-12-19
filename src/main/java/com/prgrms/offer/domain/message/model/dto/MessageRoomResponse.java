@@ -42,6 +42,7 @@ public class MessageRoomResponse {
         }
     }
 
+    @Getter
     @AllArgsConstructor
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class MessageInfo {
