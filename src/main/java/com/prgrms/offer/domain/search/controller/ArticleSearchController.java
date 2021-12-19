@@ -35,7 +35,7 @@ public class ArticleSearchController {
         Pageable pageable,
         @AuthenticationPrincipal JwtAuthentication authentication) {
         Page<ArticleBriefViewResponse> articleBriefViewResponse = articleSearchService.findByTitle(
-            title, pageable, authentication);
+            title, pageable, Optional.ofNullable(authentication));
 
         PageInfo pageInfo = getPageInfo(articleBriefViewResponse);
 
