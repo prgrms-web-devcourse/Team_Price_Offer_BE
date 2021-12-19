@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomizedArticleRepository {
 
-    List<Article> findByFilter(SearchFilterRequest searchFilterRequest, Pageable pageable);
+    List<Article> findByTradeStatusCodeInAndFilter(Integer[] tradeStatusCodeArray, SearchFilterRequest searchFilterRequest, Pageable pageable);
 
-    Long countAllByFilter(SearchFilterRequest searchFilterRequest);
+    Long countAllByTradeStatusCodeInAndFilter(Integer[] tradeStatusCodeArray, SearchFilterRequest searchFilterRequest);
 }
