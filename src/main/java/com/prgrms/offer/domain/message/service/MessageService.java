@@ -87,8 +87,7 @@ public class MessageService {
     public Page<MessageRoomResponse> getMessageBox(String loginId, Pageable pageable) {
         Member me = memberRepository.findByPrincipal(loginId).get();
 
-        List<MessageRoom> messageRoomList = messageRoomRepository.findByMemberIdOrderByCreatedDateDesc(
-            me.getId(), pageable);
+        List<MessageRoom> messageRoomList = messageRoomRepository.findByMemberId(me.getId(), pageable);
 
         List<Message> messageList = messageRoomList.stream().map(
             messageRoom -> messageRepository.findTop1ByMessageRoomOrderByCreatedDateDesc(

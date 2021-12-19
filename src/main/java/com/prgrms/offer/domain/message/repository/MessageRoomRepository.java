@@ -13,7 +13,7 @@ import org.springframework.data.repository.Repository;
 
 public interface MessageRoomRepository extends Repository<MessageRoom, Long> {
 
-    List<MessageRoom> findByMemberIdOrderByCreatedDateDesc(Long userId, Pageable pageable);
+    List<MessageRoom> findByMemberId(Long userId, Pageable pageable);
 
     MessageRoom save(MessageRoom messageRoom);
 
