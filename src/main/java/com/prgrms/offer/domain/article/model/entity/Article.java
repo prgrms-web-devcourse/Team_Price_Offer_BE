@@ -73,12 +73,13 @@ public class Article {
     @Column
     private LocalDateTime modifiedDate;
 
-    public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity) {
+    public void updateInfo(String title, String content, int categoryCode, String tradeArea, int quantity, int price) {
         this.title = title;
         this.content = content;
         this.categoryCode = categoryCode;
         this.tradeArea = tradeArea;
         this.quantity = quantity;
+        this.price = price;
         modifiedDate = LocalDateTime.now();
     }
 
