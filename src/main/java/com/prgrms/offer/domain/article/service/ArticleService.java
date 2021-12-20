@@ -90,7 +90,8 @@ public class ArticleService {
                     request.getContent(),
                     Category.of(request.getCategoryCode()).getCode(),
                     request.getTradeArea(),
-                    request.getQuantity()
+                    request.getQuantity(),
+                    request.getPrice()
             );
 
             var firstImgUrl = request.getImageUrls().get(0);
