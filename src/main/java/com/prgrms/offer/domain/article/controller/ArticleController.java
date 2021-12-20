@@ -7,6 +7,7 @@ import com.prgrms.offer.common.page.PageInfo;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.*;
+import com.prgrms.offer.domain.article.repository.TemporalArticle;
 import com.prgrms.offer.domain.article.service.ArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

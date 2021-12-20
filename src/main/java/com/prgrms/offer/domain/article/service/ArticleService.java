@@ -12,6 +12,7 @@ import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
+import com.prgrms.offer.domain.article.repository.TemporalArticle;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
 
@@ -249,20 +250,21 @@ public class ArticleService {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Page<Article> articlePage;
+        Page<TemporalArticle> articlePage;
         if(tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
-            articlePage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
         }else{
-            articlePage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
         }
-        return articlePage.map(a -> makeBriefViewResponseWithLikeInfoAndOfferInfo(a, offerer));
+
+        return articlePage.map(ta -> makeBriefViewResponseWithLikeInfoFromTemporalArticle(ta, offerer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Article article, Member currentMember) {
-        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
+    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoFromTemporalArticle(TemporalArticle temporalArticle, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticleId(currentMember, temporalArticle.getId());
 
-        return converter.toArticleBriefViewResponse(article, isLiked);
+        return converter.toArticleBriefViewResponse(temporalArticle, isLiked);
     }
 
     private void validateWriterOrElseThrow(Article article, String principal) {

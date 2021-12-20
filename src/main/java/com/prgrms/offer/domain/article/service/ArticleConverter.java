@@ -6,6 +6,7 @@ import com.prgrms.offer.domain.article.model.value.Category;
 import com.prgrms.offer.domain.article.model.value.ProductStatus;
 import com.prgrms.offer.domain.article.model.value.TradeMethod;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
+import com.prgrms.offer.domain.article.repository.TemporalArticle;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,25 @@ public class ArticleConverter {
                         new CodeAndName(
                                 TradeStatus.of(article.getTradeStatusCode()).getCode(),
                                 TradeStatus.of(article.getTradeStatusCode()).getName()
+                        )
+                )
+                .build();
+    }
+
+    public ArticleBriefViewResponse toArticleBriefViewResponse(TemporalArticle temporalArticle, boolean isLiked){
+        return ArticleBriefViewResponse.builder()
+                .id(temporalArticle.getId())
+                .mainImageUrl(temporalArticle.getMainImageUrl())
+                .title(temporalArticle.getTitle())
+                .price(temporalArticle.getPrice())
+                .tradeArea(temporalArticle.getTradeArea())
+                .createdDate(temporalArticle.getCreatedDate())
+                .modifiedDate(temporalArticle.getModifiedDate())
+                .isLiked(isLiked)
+                .tradeStatus(
+                        new CodeAndName(
+                                TradeStatus.of(temporalArticle.getTradeStatusCode()).getCode(),
+                                TradeStatus.of(temporalArticle.getTradeStatusCode()).getName()
                         )
                 )
                 .build();
