@@ -12,6 +12,7 @@ import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
+import com.prgrms.offer.domain.article.model.dto.TemporalArticle;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
 
@@ -245,17 +246,19 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
+    public Page<TemporalArticle> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Page<Article> articlePage;
+        Page<TemporalArticle> articlePage;
         if(tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
-            articlePage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
         }else{
-            articlePage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
         }
-        return articlePage.map(a -> makeBriefViewResponseWithLikeInfoAndOfferInfo(a, offerer));
+
+        return articlePage;
+        //return articlePage.map(a -> makeBriefViewResponseWithLikeInfoAndOfferInfo(a, offerer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)

@@ -53,4 +53,18 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Customi
 
     @Query("select a from Article a where a.tradeStatusCode <> 8")
     Page<Article> findAllByTradeInProgress(Pageable pageable);
+
+    @Query("select " +
+            "new com.prgrms.offer.domain.article.repository.TemporalArticle(max(o.article.id), max(o.article.mainImageUrl), max(o.article.title), max(o.article.price), max(o.article.tradeArea), max(o.article.tradeStatusCode), a.createdDate, max(o.article.modifiedDate)) " +
+            "from Article a join Offer o on a.id = o.article.id " +
+            "where o.offerer = :offerer and o.article.tradeStatusCode = :tradeStatusCode " +
+            "group by a.createdDate")
+    Page<TemporalArticle> findAllByOffererAndTradeStatusCode(Member offerer, int tradeStatusCode, Pageable pageable);
+
+    @Query("select " +
+            "new com.prgrms.offer.domain.article.repository.TemporalArticle(max(o.article.id), max(o.article.mainImageUrl), max(o.article.title), max(o.article.price), max(o.article.tradeArea), max(o.article.tradeStatusCode), a.createdDate, max(o.article.modifiedDate)) " +
+            "from Article a join Offer o on a.id = o.article.id " +
+            "where o.offerer = :offerer and o.article.tradeStatusCode <> 8 " +
+            "group by a.createdDate")
+    Page<TemporalArticle> findAllByOffererAndTradeInProgress(Member offerer, Pageable pageable);
 }
