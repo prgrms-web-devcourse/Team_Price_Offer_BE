@@ -26,12 +26,16 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+## key file
+**/*.p12
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+
 
 ### VS Code ###
 .vscode/
