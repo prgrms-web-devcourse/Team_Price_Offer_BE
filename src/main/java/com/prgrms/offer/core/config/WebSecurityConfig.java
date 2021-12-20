@@ -151,6 +151,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 커스텀 JwtFilter 추가
                 .addFilterAfter(jwtAuthenticationFilter(), SecurityContextPersistenceFilter.class)
+                .requiresChannel()
+                .anyRequest().requiresSecure()
         ;
     }
 
