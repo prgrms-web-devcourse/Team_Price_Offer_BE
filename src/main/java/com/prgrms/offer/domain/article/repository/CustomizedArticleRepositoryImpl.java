@@ -34,6 +34,8 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
                 eqCategory(searchFilterRequest.getCategory()),
                 eqTradeMethod(searchFilterRequest.getTradeMethod()),
                 priceInRange(searchFilterRequest.getMinPrice(), searchFilterRequest.getMaxPrice()))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
             .fetch();
     }
 
@@ -44,7 +46,8 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
         return jpaQueryFactory.selectFrom(article)
             .where(onSellingOrBooked(),
                 containsIgnoreTitle(searchFilterRequest.getTitle()),
-                eqCategory(searchFilterRequest.getCategory())).fetchCount();
+                eqCategory(searchFilterRequest.getCategory()))
+            .fetchCount();
     }
 
     private BooleanExpression onSellingOrBooked() {
@@ -76,4 +79,5 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
         }
         return null;
     }
+
 }
