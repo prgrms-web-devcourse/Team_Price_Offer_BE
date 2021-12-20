@@ -9,10 +9,13 @@ import com.prgrms.offer.domain.article.model.dto.ArticleBriefViewResponse;
 import com.prgrms.offer.domain.search.model.dto.SearchFilterRequest;
 import com.prgrms.offer.domain.search.service.ArticleSearchService;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +35,7 @@ public class ArticleSearchController {
     @GetMapping()
     public ResponseEntity<ApiResponse> searchWithTitle(
         @RequestParam(value = "title") @NotBlank String title,
-        Pageable pageable,
+        @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
         @AuthenticationPrincipal JwtAuthentication authentication) {
         Page<ArticleBriefViewResponse> articleBriefViewResponse = articleSearchService.findByTitle(
             title, pageable, Optional.ofNullable(authentication));
@@ -45,11 +48,22 @@ public class ArticleSearchController {
         );
     }
 
-    @GetMapping(value = "/filters", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(value = "/filters")
     public ResponseEntity<ApiResponse> searchByFilters(
-        @ModelAttribute SearchFilterRequest searchFilterRequest,
-        Pageable pageable,
+        @RequestParam(value = "title") @Nullable String title,
+        @RequestParam(value = "category") @Nullable Integer category,
+        @RequestParam(value = "tradeMethod") @Nullable Integer tradeMethod,
+        @RequestParam(value = "minPrice") @Nullable Integer minPrice,
+        @RequestParam(value = "maxPrice") @Nullable Integer maxPrice,
+        @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
         @AuthenticationPrincipal JwtAuthentication authentication) {
+
+        SearchFilterRequest searchFilterRequest = SearchFilterRequest.builder()
+            .title(title)
+            .category(category)
+            .tradeMethod(tradeMethod)
+            .minPrice(minPrice)
+            .maxPrice(maxPrice).build();
 
         Page<ArticleBriefViewResponse> articleBriefViewResponsePage = articleSearchService.findByFilter(
             searchFilterRequest, pageable, Optional.ofNullable(authentication)
