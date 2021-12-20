@@ -17,4 +17,6 @@ public interface LikeArticleRepository extends JpaRepository<LikeArticle, Long> 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE LikeArticle la SET la.article = NULL WHERE la.article = :article")
     void doOnDeleteSetNullFromArticle(Article article);
+
+    boolean existsByMemberAndArticleId(Member currentMember, Long articleId);
 }

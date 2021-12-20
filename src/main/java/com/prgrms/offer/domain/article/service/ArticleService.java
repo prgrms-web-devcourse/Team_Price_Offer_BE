@@ -12,6 +12,7 @@ import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
 import com.prgrms.offer.domain.article.repository.LikeArticleRepository;
 import com.prgrms.offer.domain.article.repository.ProductImageRepository;
+import com.prgrms.offer.domain.article.repository.TemporalArticle;
 import com.prgrms.offer.domain.member.model.entity.Member;
 import com.prgrms.offer.domain.member.repository.MemberRepository;
 
@@ -245,24 +246,25 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleWithOfferBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
+    public Page<ArticleBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
-        Page<Offer> offerPage;
+        Page<TemporalArticle> articlePage;
         if(tradeStatusCode == TradeStatus.COMPLETED.getCode()) {
-            offerPage = offerRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeStatusCode(offerer, tradeStatusCode, pageable);
         }else{
-            offerPage = offerRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
+            articlePage = articleRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
         }
-        return offerPage.map(o -> makeBriefViewResponseWithLikeInfoAndOfferInfo(o, offerer));
+
+        return articlePage.map(ta -> makeBriefViewResponseWithLikeInfoFromTemporalArticle(ta, offerer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ArticleWithOfferBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Offer offer, Member currentMember) {
-        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, offer.getArticle());
+    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoFromTemporalArticle(TemporalArticle temporalArticle, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticleId(currentMember, temporalArticle.getId());
 
-        return converter.toArticleWithOfferBriefViewResponse(offer.getArticle(), isLiked, offer);
+        return converter.toArticleBriefViewResponse(temporalArticle, isLiked);
     }
 
     private void validateWriterOrElseThrow(Article article, String principal) {
