@@ -1,9 +1,9 @@
 package com.prgrms.offer.domain.search.model.dto;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
+@Builder
 @Getter
 public class SearchFilterRequest {
 
