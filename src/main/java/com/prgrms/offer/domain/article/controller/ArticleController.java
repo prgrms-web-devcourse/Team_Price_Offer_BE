@@ -155,7 +155,7 @@ public class ArticleController {
 
         validateJwtAuthentication(authentication);
 
-        Page<TemporalArticle> pageResponses = articleService.findAllByMyOffers(pageable, tradeStatusCode, authentication);
+        Page<ArticleBriefViewResponse> pageResponses = articleService.findAllByMyOffers(pageable, tradeStatusCode, authentication);
 
         PageInfo pageInfo = getPageInfo(pageResponses);
 

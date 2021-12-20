@@ -246,7 +246,7 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TemporalArticle> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
+    public Page<ArticleBriefViewResponse> findAllByMyOffers(Pageable pageable, int tradeStatusCode, JwtAuthentication authentication) {
         Member offerer = memberRepository.findByPrincipal(authentication.loginId)
                 .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
 
@@ -257,15 +257,14 @@ public class ArticleService {
             articlePage = articleRepository.findAllByOffererAndTradeInProgress(offerer, pageable);
         }
 
-        return articlePage;
-        //return articlePage.map(a -> makeBriefViewResponseWithLikeInfoAndOfferInfo(a, offerer));
+        return articlePage.map(ta -> makeBriefViewResponseWithLikeInfoFromTemporalArticle(ta, offerer));
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoAndOfferInfo(Article article, Member currentMember) {
-        boolean isLiked = likeArticleRepository.existsByMemberAndArticle(currentMember, article);
+    ArticleBriefViewResponse makeBriefViewResponseWithLikeInfoFromTemporalArticle(TemporalArticle temporalArticle, Member currentMember) {
+        boolean isLiked = likeArticleRepository.existsByMemberAndArticleId(currentMember, temporalArticle.getId());
 
-        return converter.toArticleBriefViewResponse(article, isLiked);
+        return converter.toArticleBriefViewResponse(temporalArticle, isLiked);
     }
 
     private void validateWriterOrElseThrow(Article article, String principal) {
