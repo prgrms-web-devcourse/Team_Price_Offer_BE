@@ -6,12 +6,15 @@ import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.model.value.TradeStatus;
 import com.prgrms.offer.domain.search.model.dto.SearchFilterRequest;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-public class CustomizedArticleRepositoryImpl implements CustomizedArticleRepository {
+public class CustomizedArticleRepositoryImpl extends QuerydslRepositorySupport implements
+    CustomizedArticleRepository {
 
     private static final List<Integer> tradeStatusOnSaleOrBooked =
         Arrays.asList(TradeStatus.ON_SALE.getCode(), TradeStatus.RESERVING.getCode());
@@ -19,6 +22,7 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
     private final JPAQueryFactory jpaQueryFactory;
 
     public CustomizedArticleRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+        super(Article.class);
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
@@ -27,16 +31,16 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
         SearchFilterRequest searchFilterRequest,
         Pageable pageable) {
 
-        return jpaQueryFactory.selectFrom(article)
+        JPAQuery<Article> query = jpaQueryFactory.selectFrom(article)
             .where(
                 onSaleOrBooked(),
                 containsIgnoreTitle(searchFilterRequest.getTitle()),
                 eqCategoryCode(searchFilterRequest.getCategoryCode()),
                 eqTradeMethodCode(searchFilterRequest.getTradeMethodCode()),
-                priceInRange(searchFilterRequest.getMinPrice(), searchFilterRequest.getMaxPrice()))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
+                priceInRange(searchFilterRequest.getMinPrice(), searchFilterRequest.getMaxPrice()));
+
+        List<Article> articleList = getQuerydsl().applyPagination(pageable, query).fetch();
+        return articleList;
     }
 
     @Override
