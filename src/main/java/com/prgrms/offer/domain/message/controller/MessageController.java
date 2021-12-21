@@ -18,6 +18,7 @@ import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,7 +56,8 @@ public class MessageController {
     }
 
     @GetMapping("/messageBox")
-    public ResponseEntity<ApiResponse> getMessageBox(Pageable pageable,
+    public ResponseEntity<ApiResponse> getMessageBox(
+        @PageableDefault Pageable pageable,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
         validateJwtAuthentication(authentication);
@@ -91,9 +93,8 @@ public class MessageController {
     @GetMapping("/messageRoom/{messageRoomId}/contents")
     public ResponseEntity<ApiResponse> getMessageRoomContents(
         @PathVariable @Min(1) long messageRoomId,
-        Pageable pageable,
-        @AuthenticationPrincipal JwtAuthentication authentication)
-        throws CloneNotSupportedException {
+        @PageableDefault Pageable pageable,
+        @AuthenticationPrincipal JwtAuthentication authentication) {
 
         validateJwtAuthentication(authentication);
 
@@ -113,7 +114,7 @@ public class MessageController {
     }
 
     @GetMapping("/messageRoom/{messageRoomId}/messageRoomInfo")
-    public ResponseEntity<ApiResponse> getMessageRoom(
+    public ResponseEntity<ApiResponse> getMessageRoomInfo(
         @PathVariable @Min(1) long messageRoomId,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 

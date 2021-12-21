@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MessageService {
 
+    private static final double REQURIED_CONTENTS_SIZE = 10.0;
     private final MessageRepository messageRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final MemberRepository memberRepository;
@@ -111,18 +112,14 @@ public class MessageService {
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.EXITED_MESSAGE_ROOM));
 
-        Member me = memberRepository.findByPrincipal(loginId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        // 다른 멤버의 대화방에 접근한 경우
-        if (myMessageRoom.getMember().getId() != me.getId()) {
-            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-        }
+        isAuthenticatedUser(loginId, myMessageRoom);
 
         // 상대방이 대화방을 나간 상황
         Member messagePartner = myMessageRoom.getMessagePartner();
 
-        if (messagePartner == null) throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
+        if (messagePartner == null) {
+            throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
+        }
 
         MessageRoom receiverMessageRoom = messageRoomRepository.findByMemberAndOffer(
                 messagePartner, myMessageRoom.getOffer())
@@ -149,16 +146,19 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,Pageable pageable)
-        throws CloneNotSupportedException {
+    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,
+        Pageable pageable) {
 
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
-        List<Message> messageList = messageRepository.findByMessageRoomOrderByMessageIdDesc(myMessageRoom, pageable);
+        isAuthenticatedUser(loginId, myMessageRoom);
+
+        Page<Message> messageContentPage = messageRepository.findByMessageRoomOrderByMessageIdAsc(
+            myMessageRoom, pageable);
         long numMessage = messageRepository.countAllByMessageRoom(myMessageRoom);
 
-        return messageConverter.toMessageContentResponsePage(messageList, numMessage, pageable);
+        return messageContentPage.map(message -> messageConverter.toMessageContentResponsePage(message));
     }
 
     @Transactional(readOnly = true)
@@ -167,12 +167,20 @@ public class MessageService {
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
+        isAuthenticatedUser(loginId, myMessageRoom);
+
         Member messagePartner = myMessageRoom.getMessagePartner();
 
         Offer offer = myMessageRoom.getOffer();
         Article article = myMessageRoom.getArticle();
 
-        return messageConverter.toMessageRoomInfoResponse(messagePartner, article, offer);
+        long numMessageContent = messageRepository.countAllByMessageRoom(myMessageRoom);
+
+        long lastPageOfMessageContents = (long) Math.ceil(
+            numMessageContent / REQURIED_CONTENTS_SIZE);
+
+        return messageConverter.toMessageRoomInfoResponse(messagePartner, article, offer,
+            lastPageOfMessageContents);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -184,5 +192,16 @@ public class MessageService {
         return messageRoomRepository.save(new MessageRoom(member1, member2, article, offer));
     }
 
+    private Member isAuthenticatedUser(String loginId, MessageRoom myMessageRoom) {
+        Member me = memberRepository.findByPrincipal(loginId)
+            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        // 다른 멤버의 대화방에 접근한 경우
+        if (me.getId() != myMessageRoom.getMember().getId()) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+
+        return me;
+    }
 
 }

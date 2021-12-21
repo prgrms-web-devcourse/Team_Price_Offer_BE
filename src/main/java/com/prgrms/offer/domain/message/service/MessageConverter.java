@@ -10,18 +10,10 @@ import com.prgrms.offer.domain.message.model.entity.MessageRoom;
 import com.prgrms.offer.domain.offer.model.entity.Offer;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MessageConverter {
-
-    private final MessageContentResponseComparator messageContentResponseComparator = new MessageContentResponseComparator();
 
     public Message createMessage(boolean isSendMessage, String content, MessageRoom messageRoom) {
         return Message.builder()
@@ -38,41 +30,27 @@ public class MessageConverter {
     }
 
 
-    public Page<MessageContentResponse> toMessageContentResponsePage(
-        List<Message> messageList, long numMessage, Pageable pageable) {
+    public MessageContentResponse toMessageContentResponsePage(
+        Message message) {
 
-        List<MessageContentResponse> messageContentResponseList =
-            messageList.stream().map(e -> new MessageContentResponse(
-                        e.getMessageId(),
-                        e.getContent(),
-                        e.isSendMessage(),
-                        e.getCreatedDate()
-                    )
-                )
-                .collect(Collectors.toList());
+        MessageContentResponse messageContentResponse = new MessageContentResponse(
+            message.getMessageId(),
+            message.getContent(),
+            message.isSendMessage(),
+            message.getCreatedDate()
+        );
 
-        messageContentResponseList.sort(messageContentResponseComparator);
-
-        final Page<MessageContentResponse> page =
-            new PageImpl<>(messageContentResponseList, pageable, numMessage);
-
-        return page;
+        return messageContentResponse;
     }
 
     public MessageRoomInfoResponse toMessageRoomInfoResponse(Member messagePartner, Article article,
-        Offer offer) {
+        Offer offer, long lastPageOfMessageContents) {
         return new MessageRoomInfoResponse(
             MessageRoomInfoResponse.ArticleInfo.createArticleInfo(article, offer),
-            MessageRoomInfoResponse.MessagePartnerInfo.createMessagePartnerInfo(messagePartner)
+            MessageRoomInfoResponse.MessagePartnerInfo.createMessagePartnerInfo(messagePartner),
+            lastPageOfMessageContents
         );
     }
 
-    class MessageContentResponseComparator implements Comparator<MessageContentResponse> {
-
-        @Override
-        public int compare(MessageContentResponse o1, MessageContentResponse o2) {
-            return o1.getMessageId() > o2.getMessageId() ? 1 : -1;
-        }
-    }
 
 }
