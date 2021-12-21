@@ -173,7 +173,13 @@ public class MessageService {
         Offer offer = myMessageRoom.getOffer();
         Article article = myMessageRoom.getArticle();
 
-        return messageConverter.toMessageRoomInfoResponse(messagePartner, article, offer);
+        long numMessageContent = messageRepository.countAllByMessageRoom(myMessageRoom);
+
+        long lastPageOfMessageContents = (long) Math.ceil(
+            numMessageContent / REQURIED_CONTENTS_SIZE);
+
+        return messageConverter.toMessageRoomInfoResponse(messagePartner, article, offer,
+            lastPageOfMessageContents);
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
