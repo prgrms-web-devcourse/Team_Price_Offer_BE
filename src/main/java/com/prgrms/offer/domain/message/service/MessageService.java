@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MessageService {
 
+    private static final double REQURIED_CONTENTS_SIZE = 10.0;
     private final MessageRepository messageRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final MemberRepository memberRepository;
@@ -149,16 +150,16 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,Pageable pageable)
-        throws CloneNotSupportedException {
+    public Page<MessageContentResponse> getMessageRoomContents(long messageRoomId, String loginId,
+        Pageable pageable) {
 
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
-        List<Message> messageList = messageRepository.findByMessageRoomOrderByMessageIdDesc(myMessageRoom, pageable);
+        Page<Message> messageContentPage = messageRepository.findByMessageRoomOrderByMessageIdAsc(myMessageRoom, pageable);
         long numMessage = messageRepository.countAllByMessageRoom(myMessageRoom);
 
-        return messageConverter.toMessageContentResponsePage(messageList, numMessage, pageable);
+        return messageContentPage.map(message -> messageConverter.toMessageContentResponsePage(message));
     }
 
     @Transactional(readOnly = true)
