@@ -20,7 +20,21 @@
 ## API Document
 - [Link](https://github.com/prgrms-web-devcourse/Team_Price_Offer_BE/wiki/API)
 
+## Tech Stack
+
+- Java 11
+- Spring Boot 2.5.6
+- Spring Security 5.5.3
+- Spring Data JPA 2.5.6
+- Swagger 2.3
+- MySQL 8
+- AWS S3
+
 ## Architecture
+
+
+![image](https://user-images.githubusercontent.com/63030569/146950936-8048e151-61ea-41e2-892d-471835a6a730.png)
+
 
 ## ERD
 
