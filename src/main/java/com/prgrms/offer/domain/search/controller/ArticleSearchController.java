@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,8 +50,8 @@ public class ArticleSearchController {
     @GetMapping(value = "/filters")
     public ResponseEntity<ApiResponse> searchByFilters(
         @RequestParam(value = "title") @Nullable String title,
-        @RequestParam(value = "category") @Nullable Integer category,
-        @RequestParam(value = "tradeMethod") @Nullable Integer tradeMethod,
+        @RequestParam(value = "categoryCode") @Nullable Integer categoryCode,
+        @RequestParam(value = "tradeMethodCode") @Nullable Integer tradeMethodCode,
         @RequestParam(value = "minPrice") @Nullable Integer minPrice,
         @RequestParam(value = "maxPrice") @Nullable Integer maxPrice,
         @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
@@ -60,8 +59,8 @@ public class ArticleSearchController {
 
         SearchFilterRequest searchFilterRequest = SearchFilterRequest.builder()
             .title(title)
-            .category(category)
-            .tradeMethod(tradeMethod)
+            .categoryCode(categoryCode)
+            .tradeMethodCode(tradeMethodCode)
             .minPrice(minPrice)
             .maxPrice(maxPrice).build();
 
