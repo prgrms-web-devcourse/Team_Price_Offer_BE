@@ -114,7 +114,7 @@ public class MessageController {
     }
 
     @GetMapping("/messageRoom/{messageRoomId}/messageRoomInfo")
-    public ResponseEntity<ApiResponse> getMessageRoom(
+    public ResponseEntity<ApiResponse> getMessageRoomInfo(
         @PathVariable @Min(1) long messageRoomId,
         @AuthenticationPrincipal JwtAuthentication authentication) {
 
