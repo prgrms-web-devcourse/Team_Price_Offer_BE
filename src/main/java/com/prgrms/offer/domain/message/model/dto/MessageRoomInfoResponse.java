@@ -13,6 +13,7 @@ public class MessageRoomInfoResponse  {
 
     private ArticleInfo articleInfo;
     private MessagePartnerInfo messagePartnerInfo;
+    private long lastPageOfMessageContents;
 
     @AllArgsConstructor
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
