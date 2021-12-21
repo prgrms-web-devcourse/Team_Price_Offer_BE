@@ -112,18 +112,14 @@ public class MessageService {
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.EXITED_MESSAGE_ROOM));
 
-        Member me = memberRepository.findByPrincipal(loginId)
-            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
-
-        // 다른 멤버의 대화방에 접근한 경우
-        if (myMessageRoom.getMember().getId() != me.getId()) {
-            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
-        }
+        isAuthenticatedUser(loginId, myMessageRoom);
 
         // 상대방이 대화방을 나간 상황
         Member messagePartner = myMessageRoom.getMessagePartner();
 
-        if (messagePartner == null) throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
+        if (messagePartner == null) {
+            throw new BusinessException(ResponseMessage.MEMBER_NOT_FOUND);
+        }
 
         MessageRoom receiverMessageRoom = messageRoomRepository.findByMemberAndOffer(
                 messagePartner, myMessageRoom.getOffer())
@@ -156,7 +152,10 @@ public class MessageService {
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
 
-        Page<Message> messageContentPage = messageRepository.findByMessageRoomOrderByMessageIdAsc(myMessageRoom, pageable);
+        isAuthenticatedUser(loginId, myMessageRoom);
+
+        Page<Message> messageContentPage = messageRepository.findByMessageRoomOrderByMessageIdAsc(
+            myMessageRoom, pageable);
         long numMessage = messageRepository.countAllByMessageRoom(myMessageRoom);
 
         return messageContentPage.map(message -> messageConverter.toMessageContentResponsePage(message));
@@ -167,6 +166,8 @@ public class MessageService {
 
         MessageRoom myMessageRoom = messageRoomRepository.findById(messageRoomId)
             .orElseThrow(() -> new BusinessException(ResponseMessage.MESSAGE_ROOM_NOT_FOUND));
+
+        isAuthenticatedUser(loginId, myMessageRoom);
 
         Member messagePartner = myMessageRoom.getMessagePartner();
 
@@ -191,5 +192,16 @@ public class MessageService {
         return messageRoomRepository.save(new MessageRoom(member1, member2, article, offer));
     }
 
+    private Member isAuthenticatedUser(String loginId, MessageRoom myMessageRoom) {
+        Member me = memberRepository.findByPrincipal(loginId)
+            .orElseThrow(() -> new BusinessException(ResponseMessage.MEMBER_NOT_FOUND));
+
+        // 다른 멤버의 대화방에 접근한 경우
+        if (me.getId() != myMessageRoom.getMember().getId()) {
+            throw new BusinessException(ResponseMessage.PERMISSION_DENIED);
+        }
+
+        return me;
+    }
 
 }
