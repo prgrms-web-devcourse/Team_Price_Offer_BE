@@ -13,8 +13,8 @@ import org.springframework.data.domain.Pageable;
 
 public class CustomizedArticleRepositoryImpl implements CustomizedArticleRepository {
 
-    private static final List<Integer> tradeStatusOnSaleOrBooked = Arrays.asList(
-        TradeStatus.ON_SALE.getCode(), TradeStatus.RESERVING.getCode());
+    private static final List<Integer> tradeStatusOnSaleOrBooked =
+        Arrays.asList(TradeStatus.ON_SALE.getCode(), TradeStatus.RESERVING.getCode());
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -23,16 +23,16 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
     }
 
     @Override
-    public List<Article> findByTradeStatusCodeInAndFilter(
-        Integer[] tradeStatusCodeArray,
+    public List<Article> findByOnSaleOrBookedInAndFilter(
         SearchFilterRequest searchFilterRequest,
         Pageable pageable) {
 
         return jpaQueryFactory.selectFrom(article)
-            .where(onSellingOrBooked(),
+            .where(
+                onSaleOrBooked(),
                 containsIgnoreTitle(searchFilterRequest.getTitle()),
-                eqCategory(searchFilterRequest.getCategory()),
-                eqTradeMethod(searchFilterRequest.getTradeMethod()),
+                eqCategoryCode(searchFilterRequest.getCategoryCode()),
+                eqTradeMethodCode(searchFilterRequest.getTradeMethodCode()),
                 priceInRange(searchFilterRequest.getMinPrice(), searchFilterRequest.getMaxPrice()))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -40,17 +40,20 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
     }
 
     @Override
-    public Long countAllByTradeStatusCodeInAndFilter(
-        Integer[] tradeStatusCodeArray,
+    public Long countAllByOnSaleOrBookedInAndFilter(
         SearchFilterRequest searchFilterRequest) {
         return jpaQueryFactory.selectFrom(article)
-            .where(onSellingOrBooked(),
+            .where(
+                onSaleOrBooked(),
                 containsIgnoreTitle(searchFilterRequest.getTitle()),
-                eqCategory(searchFilterRequest.getCategory()))
+                eqCategoryCode(searchFilterRequest.getCategoryCode()),
+                eqTradeMethodCode(searchFilterRequest.getTradeMethodCode()),
+                priceInRange(searchFilterRequest.getMinPrice(), searchFilterRequest.getMaxPrice())
+            )
             .fetchCount();
     }
 
-    private BooleanExpression onSellingOrBooked() {
+    private BooleanExpression onSaleOrBooked() {
         return article.tradeStatusCode.in(tradeStatusOnSaleOrBooked);
     }
 
@@ -58,12 +61,12 @@ public class CustomizedArticleRepositoryImpl implements CustomizedArticleReposit
         return title == null ? null : article.title.containsIgnoreCase(title);
     }
 
-    private BooleanExpression eqCategory(Integer categoryCode) {
+    private BooleanExpression eqCategoryCode(Integer categoryCode) {
         return categoryCode == null ? null : article.categoryCode.eq(categoryCode);
     }
 
-    private BooleanExpression eqTradeMethod(Integer tradeMethod) {
-        return tradeMethod == null ? null : article.tradeMethodCode.eq(tradeMethod);
+    private BooleanExpression eqTradeMethodCode(Integer tradeMethodCode) {
+        return tradeMethodCode == null ? null : article.tradeMethodCode.eq(tradeMethodCode);
     }
 
     private BooleanExpression priceInRange(Integer minPrice, Integer maxPrice) {

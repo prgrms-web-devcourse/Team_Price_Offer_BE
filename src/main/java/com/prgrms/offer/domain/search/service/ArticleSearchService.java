@@ -62,10 +62,10 @@ public class ArticleSearchService {
         Pageable pageable,
         Optional<JwtAuthentication> authentication) {
 
-        List<Article> articleList = articleRepository.findByTradeStatusCodeInAndFilter(
-            tradeStatusCodeArray, searchFilterRequest, pageable);
+        List<Article> articleList = articleRepository.findByOnSaleOrBookedInAndFilter(
+            searchFilterRequest, pageable);
 
-        long numContents = articleRepository.countAllByTradeStatusCodeInAndFilter(tradeStatusCodeArray, searchFilterRequest);
+        long numContents = articleRepository.countAllByOnSaleOrBookedInAndFilter(searchFilterRequest);
 
         if (authentication.isEmpty()) {
             return (Page<ArticleBriefViewResponse>) toPage(articleList.stream().map(

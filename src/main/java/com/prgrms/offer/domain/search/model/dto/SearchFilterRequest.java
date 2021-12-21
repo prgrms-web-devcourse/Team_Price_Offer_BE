@@ -8,8 +8,8 @@ import lombok.Getter;
 public class SearchFilterRequest {
 
     private String title;
-    private Integer category;
-    private Integer tradeMethod;
+    private Integer categoryCode;
+    private Integer tradeMethodCode;
     private Integer minPrice;
     private Integer maxPrice;
 
