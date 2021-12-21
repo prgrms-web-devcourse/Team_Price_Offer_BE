@@ -38,6 +38,6 @@ git clone git@github.com:prgrms-web-devcourse/Team_Price_Offer_BE.git
 cd Team_Price_Offer_BE
 sudo chmod 777 ./gradlew
 ./gradlew build
-java –jar {build/libs/jar file}
+java –jar build/libs/{jar file}
 ```
 
