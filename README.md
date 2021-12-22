@@ -6,6 +6,8 @@
 
 </div>
   
+  구매자가 가격을 제안하는 신개념 중고거래 플랫폼 OFFER!
+  
 ## Members
 
 <div align="center">
