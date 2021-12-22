@@ -2,11 +2,13 @@
 
 <img width="350" alt="offerlogo" src="https://user-images.githubusercontent.com/55920132/146873000-a3b69146-f06b-44aa-828e-75e36f7a2463.png">
 
+### 구매자가 가격을 제안하는 신개념 중고거래 플랫폼 OFFER!
+  
 </div>
 
+---
+
 </div>
-  
-  구매자가 가격을 제안하는 신개념 중고거래 플랫폼 OFFER!
   
 ## Members
 
@@ -18,9 +20,6 @@
 | 백엔드 | 백엔드 | 백엔드 | 프론트엔드 | 프론트엔드 | 프론트엔드 |
 
 </div>
-
-## API Document
-- [Link](https://github.com/prgrms-web-devcourse/Team_Price_Offer_BE/wiki/API)
 
 ## Tech Stack
 
@@ -57,3 +56,7 @@ sudo chmod 777 ./gradlew
 java –jar build/libs/{jar file}
 ```
 
+## Reference Documents
+- [API Document](https://github.com/prgrms-web-devcourse/Team_Price_Offer_BE/wiki/API)
+- [Front-end Repo](https://github.com/prgrms-web-devcourse/Team_Price_Offer_FE)
+- [요구사항 분석 및 일정관리](https://www.notion.so/backend-devcourse/4-Price-Offer-1144520571434792b3ce34c74f721c5f)
