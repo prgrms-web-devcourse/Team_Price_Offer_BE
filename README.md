@@ -8,16 +8,12 @@
 </div>
 
 ---
+
+## **💸서비스 이용하기**
+- [링크](https://offerprice.vercel.app/)
   
 ## **💸 와이어프레임, 디자인**
 - **[Offer Figma 보러가기](https://www.figma.com/file/PhqIqgC8ZJ1ovQTqLQuKKD/%EC%A1%B0%EC%95%84%EC%9A%94-%EC%A1%B0%EC%95%84%EC%9A%94?node-id=136%3A565)**
-
-
-
-## **💸 프로젝트 명**
-```
-Offer
-```
 
 ## **💸 프로젝트 개요**
 ```
