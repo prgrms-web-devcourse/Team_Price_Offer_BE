@@ -47,7 +47,7 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
         Member member = processUserOAuth2UserJoin(principal, registrationId);
         String token = generateToken(member);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth/kakao")
+        String targetUrl = UriComponentsBuilder.fromUriString("https://offerprice.vercel.app/oauth/kakao")
                 .queryParam("token", token)
                 .build().toUriString();
 
