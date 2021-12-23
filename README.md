@@ -4,6 +4,11 @@
 
 ### 구매자가 가격을 제안하는 신개념 중고거래 플랫폼 OFFER!
   
+  
+</div>
+
+---
+  
 ## **💸 와이어프레임, 디자인**
 - **[Offer Figma 보러가기](https://www.figma.com/file/PhqIqgC8ZJ1ovQTqLQuKKD/%EC%A1%B0%EC%95%84%EC%9A%94-%EC%A1%B0%EC%95%84%EC%9A%94?node-id=136%3A565)**
 
@@ -70,8 +75,6 @@ Offer
 ✔️ 상품 판매 완료 후, 상호간 거래 후기 작성
 ```
   
-  
-</div>
 
 ---
 
