@@ -1,6 +1,7 @@
 package com.prgrms.offer.domain.message.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.config.PropertyProvider;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.domain.article.model.entity.Article;
 import com.prgrms.offer.domain.article.repository.ArticleRepository;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MessageService {
 
-    private static final double REQURIED_CONTENTS_SIZE = 10.0;
     private final MessageRepository messageRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final MemberRepository memberRepository;
@@ -38,6 +38,8 @@ public class MessageService {
     private final MessageConverter messageConverter;
     private final MessageRoomConverter messageRoomConverter;
     private final OfferRepository offerRepository;
+
+    private final PropertyProvider propertyProvider;
 
     // 이미 보낸적 있는 사람에겐 채팅방 생성하지 않고 기존 채팅방 사용하기
     @Transactional
@@ -177,7 +179,7 @@ public class MessageService {
         long numMessageContent = messageRepository.countAllByMessageRoom(myMessageRoom);
 
         long lastPageOfMessageContents = (long) Math.ceil(
-            numMessageContent / REQURIED_CONTENTS_SIZE);
+            numMessageContent / propertyProvider.getREQURIED_CONTENTS_SIZE());
 
         return messageConverter.toMessageRoomInfoResponse(messagePartner, article, offer,
             lastPageOfMessageContents);

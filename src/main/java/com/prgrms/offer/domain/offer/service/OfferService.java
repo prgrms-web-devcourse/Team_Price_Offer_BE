@@ -1,6 +1,7 @@
 package com.prgrms.offer.domain.offer.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.config.PropertyProvider;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.entity.Article;
@@ -27,10 +28,9 @@ public class OfferService {
     private final OfferRepository offerRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
-
     private final OfferConverter converter;
 
-    private final int MAX_AVAIL_OFFER_COUNT = 2;
+    private final PropertyProvider propertyProvider;
 
     @Transactional
     public OfferResponse offer(OfferCreateRequest request, Long articleId, JwtAuthentication authentication) {
@@ -40,7 +40,7 @@ public class OfferService {
         List<Offer> offers = offerRepository.findAllByOffererIdAndArticleId(offerer.getId(), articleId);
         int offerCountOfCurrentMember = offers.size();
 
-        if (offerCountOfCurrentMember >= MAX_AVAIL_OFFER_COUNT) {
+        if (offerCountOfCurrentMember >= propertyProvider.getMAX_AVAIL_OFFER_COUNT()) {
             throw new BusinessException(ResponseMessage.EXCEED_OFFER_COUNT);
         }
 
