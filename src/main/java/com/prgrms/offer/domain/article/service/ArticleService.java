@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.article.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
+import com.prgrms.offer.core.config.PropertyProvider;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.dto.*;
@@ -45,12 +46,9 @@ public class ArticleService {
     private final ReviewRepository reviewRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final ArticleConverter converter;
-
     private final S3ImageUploader s3ImageUploader;
 
-    private final String PRODUCT_IMAGE_DIR = "productImage";
-    private final int MAX_IMAGE_SIZE = 3;
-    private final String NO_IMG = "no-Img";
+    private final PropertyProvider propertyProvider;
 
     public CodeAndNameInfosResponse getAllCodeAndNameInfos() {
         return converter.toCodeAndNameInfosResponse();
@@ -60,7 +58,7 @@ public class ArticleService {
         List<String> imageUrls = new ArrayList<>();
 
         for (var image : images) {
-            String uploadedImageUrl = s3ImageUploader.upload(image, PRODUCT_IMAGE_DIR);
+            String uploadedImageUrl = s3ImageUploader.upload(image, propertyProvider.getPRODUCT_IMG_DIR());
             imageUrls.add(uploadedImageUrl);
         }
 
@@ -96,7 +94,7 @@ public class ArticleService {
 
             var firstImgUrl = request.getImageUrls().get(0);
             articleEntity.updateMainImageUrl(
-                    firstImgUrl.equals(NO_IMG) || firstImgUrl == null || firstImgUrl.isEmpty() ?
+                    firstImgUrl.equals(propertyProvider.getNO_IMG()) || firstImgUrl == null || firstImgUrl.isEmpty() ?
                             null : request.getImageUrls().get(0)
             );
 
@@ -132,7 +130,7 @@ public class ArticleService {
         }
 
         int curSize = response.getImageUrls().size();
-        for (int i = 1; i <= MAX_IMAGE_SIZE - curSize; i++) {
+        for (int i = 1; i <= propertyProvider.getNUM_OF_REGISTERABLE_IMG() - curSize; i++) {
             response.getImageUrls().add(null);
         }
 
@@ -277,7 +275,7 @@ public class ArticleService {
     @Transactional(propagation = Propagation.MANDATORY)
     void saveImagseUrls(Article article, List<String> imageUrls) {
         for (var imageUrl : imageUrls) {
-            if (imageUrl.equals(NO_IMG) || imageUrl == null || imageUrl.isEmpty()) {
+            if (imageUrl.equals(propertyProvider.getNO_IMG()) || imageUrl == null || imageUrl.isEmpty()) {
                 continue;
             }
 

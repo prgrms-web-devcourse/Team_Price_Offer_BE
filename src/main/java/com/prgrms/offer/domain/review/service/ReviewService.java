@@ -1,6 +1,7 @@
 package com.prgrms.offer.domain.review.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
+import com.prgrms.offer.core.config.PropertyProvider;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.domain.article.model.entity.Article;
@@ -32,11 +33,9 @@ public class ReviewService {
     private final OfferRepository offerRepository;
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
-
     private final ReviewConverter converter;
 
-    private final String BUYER = "buyer";
-    private final String SELLER = "seller";
+    private final PropertyProvider propertyProvider;
 
     @Transactional
     public ReviewCreateResponse createReview(Long articleId, ReviewCreateRequest request, JwtAuthentication authentication) {
@@ -129,9 +128,9 @@ public class ReviewService {
     }
 
     private boolean getRevieweeRoleIsBuyerOrElseThrow(String role) {
-        if (role.equals(BUYER)) {
+        if (role.equals(propertyProvider.getBUYER())) {
             return true;
-        } else if (role.equals(SELLER)) {
+        } else if (role.equals(propertyProvider.getSELLER())) {
             return false;
         } else {
             throw new BusinessException(ResponseMessage.INVALID_ROLE);

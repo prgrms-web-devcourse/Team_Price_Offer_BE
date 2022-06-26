@@ -2,6 +2,7 @@ package com.prgrms.offer.domain.member.service;
 
 import com.prgrms.offer.common.message.ResponseMessage;
 import com.prgrms.offer.common.utils.S3ImageUploader;
+import com.prgrms.offer.core.config.PropertyProvider;
 import com.prgrms.offer.core.error.exception.BusinessException;
 import com.prgrms.offer.core.jwt.JwtAuthentication;
 import com.prgrms.offer.core.jwt.JwtAuthenticationToken;
@@ -32,8 +33,6 @@ import java.util.Optional;
 @Transactional
 public class MemberService {
 
-    private static final String PROFILE_IMG_DIR = "profileImage";
-
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
@@ -43,6 +42,8 @@ public class MemberService {
     private final ReviewRepository reviewRepository;
     private final OfferRepository offerRepository;
     private final LikeArticleRepository likeArticleRepository;
+
+    private final PropertyProvider propertyProvider;
 
     @Transactional(readOnly = true)
     public Member login(String principal, String credentials) {
@@ -124,7 +125,7 @@ public class MemberService {
     }
 
     public String getProfileImageUrl(MultipartFile image) throws IOException {
-        return s3ImageUploader.upload(image, PROFILE_IMG_DIR);
+        return s3ImageUploader.upload(image, propertyProvider.getPROFILE_IMG_DIR());
     }
 
     public MemberResponse editProfile(JwtAuthentication authentication, ProfileEdit request) {
